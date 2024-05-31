@@ -4,7 +4,7 @@ import { Outlet } from "react-router-dom";
 const BoardPages = () => {
   return (
     <React.Fragment>
-      <div>AAAA</div>
+      <div>THIS IS BOARD PAGE</div>
       <Outlet />
     </React.Fragment>
   );

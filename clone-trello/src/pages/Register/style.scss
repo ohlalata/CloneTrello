@@ -1,7 +1,7 @@
-.back-ground {
+.register__wrapper {
   height: 100vh;
 }
-.background-signup {
+.register__container {
   min-height: calc(100% - 100px);
   display: flex;
   flex-direction: column;
@@ -9,7 +9,7 @@
   justify-content: center;
 }
 
-.form-signup {
+.register__section {
   display: flex;
   flex-direction: column;
   margin: 0px auto;
@@ -21,12 +21,12 @@
   box-sizing: border-box;
 }
 
-.logo {
+.image__logo {
   object-fit: cover;
   height: 60px;
 }
 
-.btn-email-signup {
+.btn__email__register {
   height: 40px !important;
   line-height: 40px !important;
   background-color: #0f62df;
@@ -53,7 +53,7 @@
   color: white !important;
 }
 
-.btn-signup-google {
+.btn__register-google {
   box-shadow: none;
   font-weight: bold;
   border: 0px;
@@ -64,13 +64,13 @@
   width: 100%;
 }
 
-.logoGoogle {
+.image__logo-Google {
   height: 30px;
   width: 30px;
   object-fit: cover;
 }
 
-.btn-signup-microsoft {
+.btn-register-microsoft {
   box-shadow: none;
   font-weight: bold;
   border: 0px;
@@ -79,18 +79,6 @@
   line-height: 36px !important;
   background: rgb(255, 255, 255) !important;
   width: 100%;
-}
-
-.logoGoogle {
-  height: 30px;
-  width: 30px;
-  object-fit: cover;
-}
-
-.logoMicrosoft {
-  height: 23px;
-  width: 23px;
-  object-fit: cover;
 }
 
 .have-account {
@@ -99,31 +87,31 @@
   font-size: 14px;
 }
 
-.image-left {
+.image__image-background-left {
   height: 300px;
   width: 300px;
   overflow: hidden;
 }
 
-.image-left img {
+.image__image-background-left img {
   width: 100%;
   height: 100%;
   object-fit: cover;
 }
 
-.image-right {
+.image__image-background-right {
   height: 300px;
   width: 300px;
   overflow: hidden;
 }
 
-.image-right img {
+.image__image-background-right img {
   width: 100%;
   height: 100%;
   object-fit: cover;
 }
 
-.position-image {
+.block__position-image {
   bottom: 1px;
   width: 100%;
 }
@@ -132,6 +120,22 @@
   right: 20px;
 }
 
-.a {
+.form__description {
   font-size: 12px;
+}
+
+.full-name__label {
+  font-size: 12px;
+}
+
+.password__label {
+  font-size: 12px;
+}
+
+.email__label {
+  font-size: 14px;
+}
+
+.form__email {
+  font-size: 14px;
 }
