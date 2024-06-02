@@ -5,7 +5,7 @@ import { toast } from "react-toastify";
 import "react-toastify/ReactToastify.css";
 import { useNavigate } from "react-router-dom";
 import * as constant from "../../shared/constants";
-import loginServices from "../../api/Services/login.services";
+import loginServices from "../../api/Services/login.Services";
 
 const RegisterPages = () => {
   const navigate = useNavigate();

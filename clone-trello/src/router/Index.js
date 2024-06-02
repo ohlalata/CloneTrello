@@ -29,11 +29,13 @@ const Index = () => {
           );
         if (!route?.index)
           return (
-            <Route path={route.path} element={route.component}>
+            <Route path={route.path} element={route.component} key={idx}>
               (
               {route?.children &&
                 route.children.map((r) => {
-                  return <Route path={r.path} element={r.component} />;
+                  return (
+                    <Route path={r.path} element={r.component} key={idx} />
+                  );
                 })}
               )
             </Route>

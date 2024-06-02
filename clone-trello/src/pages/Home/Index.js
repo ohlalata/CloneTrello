@@ -11,6 +11,14 @@ import { faBarsStaggered } from "@fortawesome/free-solid-svg-icons";
 import { faChevronDown } from "@fortawesome/free-solid-svg-icons";
 import boardService from "../../api/Services/board.services";
 import * as constants from "../../shared/constants";
+import {
+  Form,
+  Modal,
+  ModalBody,
+  ModalFooter,
+  ModalHeader,
+  ModalTitle,
+} from "react-bootstrap";
 
 import { Nav, Button, Collapse } from "react-bootstrap";
 
@@ -20,6 +28,19 @@ const HomePages = () => {
 
   const [open, setOpen] = useState(false);
   const [listBoard, setListBoard] = useState([]);
+
+  const [modalShow, setModalShow] = useState(false);
+
+  const [boardName, setBoardName] = useState("");
+
+  const handleModal = () => {
+    setModalShow(!modalShow);
+  };
+
+  const submitCreateBoard = () => {
+    handleCreateBoard();
+    setModalShow(false);
+  };
 
   const handleSelect = (selectedKey) => {
     setActiveKey(selectedKey);
@@ -35,6 +56,19 @@ const HomePages = () => {
       }
     } catch (error) {
       console.error(error);
+    }
+  };
+
+  const handleCreateBoard = async () => {
+    try {
+      const response = await boardService.createBoard(boardName);
+      if (response.data.code == 201) {
+        console.log("create board successfull!");
+        handleGetAllBoard();
+      }
+    } catch (error) {
+      console.error(error);
+      console.log("create board fail!");
     }
   };
 
@@ -61,13 +95,13 @@ const HomePages = () => {
                   Boards
                 </Nav.Link>
                 <Nav.Link eventKey="link-1" className="menu__nav-board">
-                  Activity
+                  Activity 1
                 </Nav.Link>
                 <Nav.Link eventKey="link-2" className="menu__nav-board">
-                  Link 2
+                  Activity 2
                 </Nav.Link>
                 <Nav.Link eventKey="link-3" className="menu__nav-board">
-                  link-3
+                  Activity 3
                 </Nav.Link>
               </Nav>
             </div>
@@ -95,9 +129,9 @@ const HomePages = () => {
                   <Collapse in={open}>
                     <div id="collapse-board-content">
                       <div className="mt-2 ps-2 d-flex flex-column gap-2">
-                        <div>Board content 1</div>
-                        <div>Board content 2</div>
-                        <div>Board content 3</div>
+                        <div>Board 2</div>
+                        <div>Board 3</div>
+                        <div>Board 4</div>
                       </div>
                     </div>
                   </Collapse>
@@ -161,11 +195,8 @@ const HomePages = () => {
                   <div className="d-flex gap-3 flex-wrap">
                     {listBoard.map((listBoards, key) => (
                       <div key={key} className="link-recenly-board rounded">
-                        <Link to={`board/board-content/${listBoards.id}`}>
-                          <div
-                            onClick={() => navigate("board/board-content")}
-                            className="p-2"
-                          >
+                        <Link to={`/board/board-content/${listBoards.id}`}>
+                          <div className="p-2">
                             <p className="text-white fw-bold">
                               {listBoards.name}
                             </p>
@@ -173,12 +204,41 @@ const HomePages = () => {
                         </Link>
                       </div>
                     ))}
-                    <div className="block__create-new-board p-2 bg-body-tertiary d-flex justify-content-center align-items-center border-opacity-10 rounded">
-                      <p className="mb-0 ">Create new board</p>
+                    <div>
+                      <div
+                        onClick={handleModal}
+                        className="block__create-new-board p-2 bg-body-secondary d-flex justify-content-center align-items-center border-opacity-10 rounded"
+                      >
+                        <p className="mb-0 ">Create new board</p>
+                      </div>
+                      <Modal show={modalShow} onHide={handleModal} centered>
+                        <ModalHeader closeButton>
+                          <ModalTitle>Create Board</ModalTitle>
+                        </ModalHeader>
+                        <ModalBody>
+                          <div>
+                            <Form.Label>Board Name</Form.Label>
+                            <Form.Control
+                              type="text"
+                              name="board-name"
+                              value={boardName}
+                              onChange={(e) => setBoardName(e.target.value)}
+                            />
+                          </div>
+                        </ModalBody>
+                        <ModalFooter>
+                          <button
+                            className="btn btn-primary"
+                            onClick={submitCreateBoard}
+                          >
+                            Create
+                          </button>
+                        </ModalFooter>
+                      </Modal>
                     </div>
                   </div>
                 </div>
-                <div className="mt-5">
+                <div className="mt-3">
                   <button className="btn btn__action-board">
                     View all closed board
                   </button>

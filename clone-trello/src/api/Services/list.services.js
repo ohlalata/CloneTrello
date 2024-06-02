@@ -23,4 +23,24 @@ const createList = async (boardId, name) => {
   return response;
 };
 
-export default { getAllList, createList };
+const updateListName = async (id, formData) => {
+  const serviceUrl = urlConstant.endpoint.list.updateListName.replace(
+    "${id}",
+    id
+  );
+  const config = {
+    header: {
+      "Content-Type": "multipart/form-data",
+    },
+  };
+  const response = await axiosLocalHost.sendAuthorizedRequest(
+    serviceUrl,
+    "PUT",
+    formData,
+    config
+  );
+
+  return response;
+};
+
+export default { getAllList, createList, updateListName };

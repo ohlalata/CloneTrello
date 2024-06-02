@@ -11,7 +11,7 @@ import BoardContentPages from "../pages/BoardContent";
 
 const UserRoutes = [
   {
-    path: "/",
+    path: "/home",
     index: true,
     component: <HomePages />,
   },
@@ -21,7 +21,7 @@ const UserRoutes = [
     component: <NavBar />,
   },
   {
-    path: "board",
+    path: "/board",
     component: <BoardPages />,
     children: [
       {

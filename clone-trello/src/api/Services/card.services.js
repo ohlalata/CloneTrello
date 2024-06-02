@@ -1,8 +1,11 @@
 import urlConstant from "../../commons/urlConstant";
 import axiosLocalHost from "../../utils/customAxios";
 
-const getAllCard = async () => {
-  const serviceUrl = urlConstant.endpoint.card.getAllCard;
+const getAllCard = async (listId) => {
+  const serviceUrl = urlConstant.endpoint.card.getAllCard.replace(
+    "${listId}",
+    listId
+  );
   const response = await axiosLocalHost.sendAuthorizedRequest(
     serviceUrl,
     "GET"
@@ -10,4 +13,14 @@ const getAllCard = async () => {
   return response;
 };
 
-export default { getAllCard };
+const createCard = async (listId, title) => {
+  const serviceUrl = urlConstant.endpoint.card.createCard;
+  const response = await axiosLocalHost.sendAuthorizedRequest(
+    serviceUrl,
+    "POST",
+    { listId, title }
+  );
+  return response;
+};
+
+export default { getAllCard, createCard };

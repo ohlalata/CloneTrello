@@ -9,13 +9,16 @@ export default {
     },
     board: {
       getAllBoard: "/Board/get-all",
+      createBoard: "/Board/create",
     },
     list: {
       getAllList: "/List/get-all?boardId=${boardId}",
       createList: "/List/create",
+      updateListName: "/List/update-name/${id}",
     },
     card: {
-      getAllCard: "/Card/get-all",
+      getAllCard: "/Card/get-all?listId=${listId}",
+      createCard: "/Card/create",
     },
     task: {
       getAllTask: "",

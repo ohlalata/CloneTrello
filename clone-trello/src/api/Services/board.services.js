@@ -10,4 +10,13 @@ const getAllBoard = async () => {
   return response;
 };
 
-export default { getAllBoard };
+const createBoard = async (name) => {
+  const serviceUrl = urlConstant.endpoint.board.createBoard;
+  const response = await axiosLocalHost.sendAuthorizedRequest(
+    serviceUrl,
+    "POST",
+    { name }
+  );
+  return response;
+};
+export default { getAllBoard, createBoard };

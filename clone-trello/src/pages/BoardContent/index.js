@@ -3,38 +3,25 @@ import React, { useRef, useState, useEffect } from "react";
 import "./style.scss";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faEllipsis } from "@fortawesome/free-solid-svg-icons";
-import { faPen } from "@fortawesome/free-solid-svg-icons";
 import { faPlus } from "@fortawesome/free-solid-svg-icons";
 import listServices from "../../api/Services/list.services";
 import { faXmark } from "@fortawesome/free-solid-svg-icons";
-import cardServices from "../../api/Services/card.services";
 import { useParams } from "react-router-dom";
+import Card from "../../components/Card";
 
 const BoardContentPages = () => {
   const { id } = useParams();
-
   const textareaRef = useRef(null);
-  const textareaRefCardTitle = useRef(null);
   const inputAddList = useRef(null);
-
-  const [isEditingTitleList, setIsEditingTitleList] = useState(false);
+  const [isEditingTitleList, setIsEditingTitleList] = useState(null);
   const [inputTitleList, setInputTitleList] = useState("");
-  const [isEditingCardTitle, setIsEditingCardTitle] = useState(false);
-  const [inputCard, setInputCard] = useState("");
   const [allList, setAllList] = useState([]);
-  const [isAddListInputVisible, setIsAddListInputVisible] = useState(false);
   const [titleList, setTitleList] = useState("");
-  const [boardId, setBoardId] = useState();
+  const [isAddListInputVisible, setIsAddListInputVisible] = useState(false);
 
-  const [listCard, setListCard] = useState([]);
-
-  const handleClickTitleList = () => {
-    setIsEditingTitleList(true);
+  const handleClickTitleList = (listIdVisible) => {
+    setIsEditingTitleList(listIdVisible);
   };
-
-  useEffect(() => {
-    console.log("id", id);
-  }, [id]);
 
   const handleChangeListTitle = (e) => {
     setInputTitleList(e.target.value);
@@ -43,33 +30,19 @@ const BoardContentPages = () => {
     textarea.style.height = `${textarea.scrollHeight}px`;
   };
 
-  const handleEditClickCardTitle = () => {
-    setIsEditingCardTitle(true);
-  };
-
-  const handleChangeCardTitle = (e) => {
-    setInputCard(e.target.value);
-    const textareaCardTitle = textareaRefCardTitle.current;
-    textareaCardTitle.style.height = "auto";
-    textareaCardTitle.style.height = `${textareaCardTitle.scrollHeight}px`;
-  };
-
-  // const handleBlurCardTitle = () => {
-  //   setIsEditingCardTitle(false);
-  // };
-
-  // const handleBlurListTitle = () => {
-  //   setIsEditingTitleList(false);
-  // };
-
-  const handleInputAddList = () => {
-    setIsAddListInputVisible(true);
+  const handleBlurListTitle = (listID) => {
+    handleUpdateListName(listID);
+    setIsEditingTitleList(false);
   };
 
   const handleClickInputAddListOutside = (e) => {
     if (inputAddList.current && !inputAddList.current.contains(e.target)) {
       setIsAddListInputVisible(false);
     }
+  };
+
+  const handleInputAddList = () => {
+    setIsAddListInputVisible(true);
   };
 
   useEffect(() => {
@@ -85,23 +58,38 @@ const BoardContentPages = () => {
 
   const handleGetAllList = async () => {
     try {
-      const response = await listServices.getAllList();
+      const response = await listServices.getAllList(id);
       if (response.data.code == 200) {
         setAllList(response.data.data);
         console.log("get list list successfull!");
-        console.log(response.data.data);
-        setBoardId(response.data.data[0].boardId);
       }
     } catch (error) {
       console.error(error);
     }
   };
 
+  const handleUpdateListName = async (listID) => {
+    const formData = new FormData();
+    formData.append("BoardId", id);
+    formData.append("Name", inputTitleList);
+    try {
+      const response = await listServices.updateListName(listID, formData);
+      if (response.data.code == 200) {
+        console.log("update list name successfull!");
+        handleGetAllList();
+      }
+    } catch (error) {
+      console.error(error);
+      console.log("handle update list name fail!");
+    }
+  };
+
   const handleCreateList = async () => {
     try {
-      const response = await listServices.createList(boardId, titleList);
+      const response = await listServices.createList(id, titleList);
       if (response.data.code == 201) {
         console.log("create list successfull!");
+        setTitleList("");
         handleGetAllList();
       }
     } catch (error) {
@@ -109,46 +97,36 @@ const BoardContentPages = () => {
     }
   };
 
-  const handleGetAllCard = async () => {
-    try {
-      const response = await cardServices.getAllCard();
-      if (response.data.code == 200) {
-        setListCard(response.data.data);
-        console.log("get all card successfully!");
-        console.log(response.data.data);
-      }
-    } catch (error) {
-      console.log(error);
-    }
-  };
-
   useEffect(() => {
     handleGetAllList();
-    handleGetAllCard();
   }, []);
 
   return (
     <React.Fragment>
       <div className="d-flex board-canvas">
         <div className="d-flex w-100">
-          <ol className="block__catalog-list-content d-flex gap-2">
+          <ol className="block__catalog-list-content d-flex gap-1">
             {allList.map((catalogList, key) => (
               <li key={key} className="list-to-list" data-testid="list-wrapper">
-                <div className="to-list">
+                <div className="to-list ">
                   <div className="title-to-list">
                     <div className="to-title">
-                      {isEditingTitleList ? (
-                        <textarea
-                          ref={textareaRef}
-                          placeholder={inputTitleList}
-                          type="text"
-                          value={inputTitleList}
-                          onChange={handleChangeListTitle}
-                        ></textarea>
+                      {isEditingTitleList == catalogList.id ? (
+                        <div>
+                          <textarea
+                            rows={1}
+                            ref={textareaRef}
+                            placeholder={catalogList.name}
+                            value={inputTitleList}
+                            onChange={handleChangeListTitle}
+                            autoFocus
+                            onBlur={() => handleBlurListTitle(catalogList.id)}
+                          ></textarea>
+                        </div>
                       ) : (
                         <h6
                           className="mb-0 list-content-text"
-                          onClick={handleClickTitleList}
+                          onClick={() => handleClickTitleList(catalogList.id)}
                         >
                           {catalogList.name}
                         </h6>
@@ -161,53 +139,12 @@ const BoardContentPages = () => {
                       </button>
                     </div>
                   </div>
-                  <ol className="list-card">
-                    {listCard.map((catalogCard, key) => (
-                      <li key={key}>
-                        <div className="list-content">
-                          <div className="list-content-cover">
-                            <div className="list-content-proress"></div>
-                            {isEditingCardTitle ? (
-                              <textarea
-                                className="list-content-text-input"
-                                placeholder="Enter a title..."
-                                type="text"
-                                value={inputCard}
-                                onChange={handleChangeCardTitle}
-                                ref={textareaRefCardTitle}
-                              ></textarea>
-                            ) : (
-                              <p className="list-content-text">
-                                {catalogCard.title}
-                              </p>
-                            )}
-                          </div>
-                          <button
-                            className="btn-edit-card-title"
-                            onClick={handleEditClickCardTitle}
-                          >
-                            <span>
-                              <FontAwesomeIcon icon={faPen} size="xs" />
-                            </span>
-                          </button>
-                        </div>
-                      </li>
-                    ))}
-                  </ol>
-                  <div className="add-a-list">
-                    <span>
-                      <FontAwesomeIcon icon={faPlus} />
-                    </span>
-                    <button>Add a card</button>
-                  </div>
+                  <Card listIdProps={catalogList.id} />
                 </div>
               </li>
             ))}
 
             <li>
-              <div>
-                <h2>this is content id: {id}</h2>
-              </div>
               <div>
                 <div className="block__add-list">
                   {isAddListInputVisible ? (
@@ -216,7 +153,6 @@ const BoardContentPages = () => {
                         <input
                           className="w-100 border border-1 border-primary rounded-1"
                           placeholder="Enter list title..."
-                          type="text"
                           value={titleList}
                           onChange={(e) => setTitleList(e.target.value)}
                         ></input>
