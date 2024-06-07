@@ -1,6 +1,6 @@
 /* eslint-disable no-undef */
 import React, { useState, useEffect } from "react";
-import { Outlet, Link, useNavigate } from "react-router-dom";
+import { Outlet, Link } from "react-router-dom";
 import "./style.scss";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faClock } from "@fortawesome/free-regular-svg-icons";
@@ -21,11 +21,10 @@ import {
 } from "react-bootstrap";
 
 import { Nav, Button, Collapse } from "react-bootstrap";
+import NavBar from "../../components/Navbar";
 
 const HomePages = () => {
   const [activeKey, setActiveKey] = useState("/home");
-  const navigate = useNavigate();
-
   const [open, setOpen] = useState(false);
   const [listBoard, setListBoard] = useState([]);
 
@@ -78,7 +77,8 @@ const HomePages = () => {
 
   return (
     <React.Fragment>
-      <Outlet />
+      {/* <Outlet /> */}
+      <NavBar />
       <div style={{ display: "block" }}>
         <div className="d-flex align-items-start flex-row justify-content-center">
           <nav className="block__nav-list-board">
@@ -117,7 +117,7 @@ const HomePages = () => {
                   <Button
                     className="d-flex btn__collapse-board justify-content-between"
                     onClick={() => setOpen(!open)}
-                    aria-controls="collapse-board-content"
+                    aria-controls="collapse-list-board-menu"
                     aria-expanded={open}
                   >
                     <span>Board 1</span>
@@ -127,7 +127,7 @@ const HomePages = () => {
                   </Button>
 
                   <Collapse in={open}>
-                    <div id="collapse-board-content">
+                    <div id="collapse-list-board-menu">
                       <div className="mt-2 ps-2 d-flex flex-column gap-2">
                         <div>Board 2</div>
                         <div>Board 3</div>
@@ -149,7 +149,7 @@ const HomePages = () => {
               </div>
               <div className="d-flex gap-3 mt-2 flex-wrap">
                 <div>
-                  <div className="link-recenly-board rounded">
+                  <div className="block__recenly-board rounded">
                     <div className="p-2">
                       <p className="text-white fw-bold">Hello</p>
                     </div>
@@ -194,7 +194,7 @@ const HomePages = () => {
                 <div>
                   <div className="d-flex gap-3 flex-wrap">
                     {listBoard.map((listBoards, key) => (
-                      <div key={key} className="link-recenly-board rounded">
+                      <div key={key} className="block__your-board rounded">
                         <Link to={`/board/board-content/${listBoards.id}`}>
                           <div className="p-2">
                             <p className="text-white fw-bold">

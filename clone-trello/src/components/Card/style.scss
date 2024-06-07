@@ -1,4 +1,4 @@
-.list-card {
+.block__list-card {
   display: flex;
   flex-direction: column;
   flex: 1 1 auto;
@@ -13,7 +13,7 @@
   scrollbar-width: thin;
 }
 
-.list-card li {
+.block__list-card li {
   display: flex;
   flex-direction: column;
   row-gap: 8px;
@@ -21,7 +21,7 @@
   padding-bottom: 4px;
 }
 
-.list-content {
+.block__card-wraper {
   background-color: #ffffff;
   border-radius: 8px;
   box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 6px -1px,
@@ -33,7 +33,7 @@
   scroll-margin: 8px;
 }
 
-.list-content-cover {
+.block__card-content {
   display: flow-root;
   position: relative;
   padding: 8px 12px 4px;
@@ -41,27 +41,23 @@
   z-index: 10;
 }
 
-.btn-edit-card-title {
+.btn__edit-card-title {
   display: none;
-  position: absolute;
-  top: 0.4px;
-  right: 2px;
-  border-radius: 16px;
-  padding: 6px 8px;
+
   background-color: #ffffff;
   z-index: 10;
   border: 0px;
 }
 
-.list-content:hover {
+.block__card-wraper:hover {
   border: solid 2px #0d6efd;
 }
 
-.list-content:hover .btn-edit-card-title {
+.block__card-wraper:hover .btn__edit-card-title {
   display: block;
 }
 
-.list-content-text {
+.label-card-title {
   display: block;
   width: 100%;
   margin-bottom: 4px;
@@ -70,9 +66,10 @@
   white-space: normal;
 }
 
-.list-content-text-input {
+.textarea__input-card-tite {
   resize: none;
-  border: 0px;
+  border: none;
+  outline: none;
   width: 100%;
 }
 
@@ -138,4 +135,14 @@
   border: 0px;
   width: 100%;
   border-radius: 5px;
+}
+
+.block__modal-header {
+  border-bottom: none !important;
+}
+
+.block__input-description {
+  background-color: #e4e6ea;
+  border-radius: 5px;
+  height: 60px;
 }

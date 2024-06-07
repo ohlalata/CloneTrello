@@ -90,6 +90,7 @@ const BoardContentPages = () => {
       if (response.data.code == 201) {
         console.log("create list successfull!");
         setTitleList("");
+        setIsAddListInputVisible(false);
         handleGetAllList();
       }
     } catch (error) {
@@ -103,14 +104,18 @@ const BoardContentPages = () => {
 
   return (
     <React.Fragment>
-      <div className="d-flex board-canvas">
+      <div className="d-flex block__board-content-container">
         <div className="d-flex w-100">
-          <ol className="block__catalog-list-content d-flex gap-1">
+          <ol className="block__catalog-list d-flex gap-1">
             {allList.map((catalogList, key) => (
-              <li key={key} className="list-to-list" data-testid="list-wrapper">
-                <div className="to-list ">
-                  <div className="title-to-list">
-                    <div className="to-title">
+              <li
+                key={key}
+                className="block__list-element"
+                data-testid="list-wrapper"
+              >
+                <div className="block__list-element-wraper ">
+                  <div className="block__list-title-wraper">
+                    <div className="block__list-title">
                       {isEditingTitleList == catalogList.id ? (
                         <div>
                           <textarea
@@ -125,7 +130,7 @@ const BoardContentPages = () => {
                         </div>
                       ) : (
                         <h6
-                          className="mb-0 list-content-text"
+                          className="mb-0 label-list-title"
                           onClick={() => handleClickTitleList(catalogList.id)}
                         >
                           {catalogList.name}
@@ -134,7 +139,7 @@ const BoardContentPages = () => {
                     </div>
 
                     <div>
-                      <button className="option-to-title">
+                      <button className="btn__list-option">
                         <FontAwesomeIcon icon={faEllipsis} />
                       </button>
                     </div>
@@ -155,6 +160,7 @@ const BoardContentPages = () => {
                           placeholder="Enter list title..."
                           value={titleList}
                           onChange={(e) => setTitleList(e.target.value)}
+                          autoFocus
                         ></input>
                         <div className="d-flex justify-content-start gap-3">
                           <button

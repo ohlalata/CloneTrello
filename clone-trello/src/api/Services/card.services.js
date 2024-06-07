@@ -23,4 +23,19 @@ const createCard = async (listId, title) => {
   return response;
 };
 
-export default { getAllCard, createCard };
+const updateCardTitle = async (id, formData) => {
+  const serviceUrl = urlConstant.endpoint.card.updateCard.replace("${id}", id);
+  const config = {
+    header: {
+      "Content-Type": "multipart/form-data",
+    },
+  };
+  const response = await axiosLocalHost.sendAuthorizedRequest(
+    serviceUrl,
+    "PUT",
+    formData,
+    config
+  );
+  return response;
+};
+export default { getAllCard, createCard, updateCardTitle };

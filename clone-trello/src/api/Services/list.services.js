@@ -24,10 +24,7 @@ const createList = async (boardId, name) => {
 };
 
 const updateListName = async (id, formData) => {
-  const serviceUrl = urlConstant.endpoint.list.updateListName.replace(
-    "${id}",
-    id
-  );
+  const serviceUrl = urlConstant.endpoint.list.updateList.replace("${id}", id);
   const config = {
     header: {
       "Content-Type": "multipart/form-data",
@@ -39,7 +36,6 @@ const updateListName = async (id, formData) => {
     formData,
     config
   );
-
   return response;
 };
 

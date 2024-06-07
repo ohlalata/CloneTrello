@@ -5,7 +5,7 @@ import { toast } from "react-toastify";
 import "react-toastify/ReactToastify.css";
 import { useNavigate } from "react-router-dom";
 import * as constant from "../../shared/constants";
-import loginServices from "../../api/Services/login.Services";
+import loginServices from "../../api/Services/login.services";
 
 const RegisterPages = () => {
   const navigate = useNavigate();
@@ -74,7 +74,7 @@ const RegisterPages = () => {
               </div>
 
               <div className="d-flex justify-content-center mt-4 mb-1">
-                <h6>Sign up to continue</h6>
+                <h6>Register to continue</h6>
               </div>
             </div>
             <div>
@@ -181,7 +181,7 @@ const RegisterPages = () => {
             </div>
             <div className="mt-4 d-flex justify-content-center">
               <p>
-                <a className="have-account" href="/login">
+                <a className="link__login" href="/login">
                   Already have an Atlassian account? Log in
                 </a>
               </p>

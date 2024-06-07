@@ -1,10 +1,10 @@
-.board-canvas {
+.block__board-content-container {
   flex-grow: 1;
   margin-top: 12px;
   position: relative;
 }
 
-.block__catalog-list-content {
+.block__catalog-list {
   bottom: 0;
   left: 0;
   margin-bottom: 8px;
@@ -27,7 +27,7 @@
   height: 98vh;
 }
 
-.list-to-list {
+.block__list-element {
   padding: 0 6px;
   align-self: flex-start;
   flex-shrink: 0;
@@ -36,7 +36,7 @@
   white-space: nowrap;
 }
 
-.to-list {
+.block__list-element-wraper {
   background-color: #f1f2f4;
   border-radius: 12px;
   box-shadow: rgba(0, 0, 0, 0.16) 0px 1px 4px;
@@ -54,7 +54,7 @@
   vertical-align: top;
 }
 
-.title-to-list {
+.block__list-title-wraper {
   display: flex;
   row-gap: 0;
   padding: 8px 8px 0;
@@ -65,7 +65,7 @@
   flex-wrap: wrap;
 }
 
-.to-title {
+.block__list-title {
   position: relative;
   flex-basis: min-content;
   flex-grow: 1;
@@ -75,7 +75,7 @@
   width: 100%;
 }
 
-.to-title h6 {
+.block__list-title h6 {
   display: block;
   font-size: 14px;
   font-weight: 600;
@@ -88,7 +88,7 @@
   cursor: pointer;
 }
 
-.to-title textarea {
+.block__list-title textarea {
   border-radius: 8px;
   padding: 4px 8px;
   box-shadow: none;
@@ -102,7 +102,7 @@
   //padding: 6px 8px 6px 12px;
 }
 
-.option-to-title {
+.btn__list-option {
   flex-grow: 0;
   flex-shrink: 0;
   margin-bottom: 0px;
@@ -113,8 +113,17 @@
   border: 0px;
 }
 
-.option-to-title:hover {
+.btn__list-option:hover {
   background-color: #d2d7e0;
+}
+
+.label-list-title {
+  display: block;
+  width: 100%;
+  margin-bottom: 4px;
+  overflow: hidden;
+  overflow-wrap: break-word;
+  white-space: normal;
 }
 
 // .list-card {
