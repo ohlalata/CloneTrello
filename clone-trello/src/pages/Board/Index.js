@@ -1,10 +1,12 @@
 import React from "react";
 import { Outlet } from "react-router-dom";
+import NavBar from "../../components/Navbar/index";
 
 const BoardPages = () => {
   return (
     <React.Fragment>
-      <div>THIS IS BOARD PAGE</div>
+      {/* <div>THIS IS BOARD PAGE</div> */}
+      <NavBar />
       <Outlet />
     </React.Fragment>
   );

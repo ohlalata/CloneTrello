@@ -10,9 +10,9 @@ const NavBar = () => {
     <React.Fragment>
       <nav class="navbar bg-body-tertiary">
         <div class="container-fluid">
-          <div className="ms-5">
+          <div className="ms-3">
             <a class="navbar-brand fs-4 fw-bolder" style={{ color: "#455570" }}>
-              Trello
+              Trellone
             </a>
           </div>
 

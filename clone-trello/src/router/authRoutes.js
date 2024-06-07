@@ -1,6 +1,6 @@
 import React from "react";
-import LoginPages from "../pages/Login";
-import RegisterPages from "../pages/Register";
+import LoginPages from "../pages/login";
+import RegisterPages from "../pages/register";
 
 const AuthRoutes = [
   { path: "/", component: <LoginPages /> },

@@ -70,18 +70,7 @@
   object-fit: cover;
 }
 
-.btn-register-microsoft {
-  box-shadow: none;
-  font-weight: bold;
-  border: 0px;
-  border-radius: 3px;
-  height: 40px !important;
-  line-height: 36px !important;
-  background: rgb(255, 255, 255) !important;
-  width: 100%;
-}
-
-.have-account {
+.link__login {
   color: #0052cc;
   text-decoration: none;
   font-size: 14px;
@@ -114,10 +103,6 @@
 .block__position-image {
   bottom: 1px;
   width: 100%;
-}
-
-.image-right {
-  right: 20px;
 }
 
 .form__description {

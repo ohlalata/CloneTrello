@@ -3,11 +3,11 @@ import React from "react";
 import NavBar from "../components/Navbar";
 
 //Home section
-import HomePages from "../pages/Home";
+import HomePages from "../pages/home";
 
 //Board section
-import BoardPages from "../pages/Board";
-import BoardContentPages from "../pages/BoardContent";
+import BoardPages from "../pages/board";
+import BoardContentPages from "../pages/boardContent";
 
 const UserRoutes = [
   {

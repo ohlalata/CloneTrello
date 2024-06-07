@@ -1,7 +1,7 @@
-.back-ground {
+.login__wrapper {
   height: 100vh;
 }
-.background-login {
+.login__container {
   min-height: calc(100% - 100px);
   display: flex;
   flex-direction: column;
@@ -9,7 +9,7 @@
   justify-content: center;
 }
 
-.form-login {
+.login__section {
   display: flex;
   flex-direction: column;
   margin: 0px auto;
@@ -26,7 +26,7 @@
   height: 60px;
 }
 
-.btn-email-submit {
+.btn__email-submit {
   height: 40px !important;
   line-height: 40px !important;
   background-color: #0f62df;
@@ -53,7 +53,7 @@
   color: white !important;
 }
 
-.btn-login-google {
+.btn__login-google {
   box-shadow: none;
   font-weight: bold;
   border: 0px;
@@ -64,70 +64,53 @@
   width: 100%;
 }
 
-.logoGoogle {
+.image__logo-Google {
   height: 30px;
   width: 30px;
   object-fit: cover;
 }
 
-.btn-login-microsoft {
-  box-shadow: none;
-  font-weight: bold;
-  border: 0px;
-  border-radius: 3px;
-  height: 40px !important;
-  line-height: 36px !important;
-  background: rgb(255, 255, 255) !important;
-  width: 100%;
-}
-
-.logoGoogle {
-  height: 30px;
-  width: 30px;
-  object-fit: cover;
-}
-
-.cant-login {
+.link__cant-login {
   color: #0052cc;
   text-decoration: none;
   font-size: 14px;
 }
 
-.create-an-account {
+.link__create-account {
   color: #0052cc;
   text-decoration: none;
   font-size: 14px;
 }
 
-.image-left {
+.block__image-left {
   height: 300px;
   width: 300px;
   overflow: hidden;
 }
 
-.image-left img {
+.block__image-left img {
   width: 100%;
   height: 100%;
   object-fit: cover;
 }
 
-.image-right {
+.block__image-right {
   height: 300px;
   width: 300px;
   overflow: hidden;
 }
 
-.image-right img {
+.block__image-right img {
   width: 100%;
   height: 100%;
   object-fit: cover;
 }
 
-.position-image {
+.block__position-image {
   bottom: 1px;
   width: 100%;
 }
 
-.image-right {
+.block__image-right {
   right: 20px;
 }

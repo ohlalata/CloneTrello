@@ -4,21 +4,22 @@ export default {
   base: SERVICE_URL,
   endpoint: {
     auth: {
-      login: "/User/login",
-      register: "/User/registration",
+      login: "/user/login?email=${email}&password=${password}",
+      register: "/user/registration",
     },
     board: {
-      getAllBoard: "/Board/get-all",
-      createBoard: "/Board/create",
+      getAllBoard: "/board/get-all",
+      createBoard: "/board/create",
     },
     list: {
-      getAllList: "/List/get-all?boardId=${boardId}",
-      createList: "/List/create",
-      updateListName: "/List/update-name/${id}",
+      getAllList: "/list/get-all?boardId=${boardId}",
+      createList: "/list/create",
+      updateList: "/list/update-name/${id}",
     },
     card: {
-      getAllCard: "/Card/get-all?listId=${listId}",
-      createCard: "/Card/create",
+      getAllCard: "/card/get-all?listId=${listId}",
+      createCard: "/card/create",
+      updateCard: "/card/update/${id}",
     },
     task: {
       getAllTask: "",

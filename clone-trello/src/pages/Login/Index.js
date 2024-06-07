@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import "./style.scss";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPen } from "@fortawesome/free-solid-svg-icons";
-import loginService from "../../api/Services/login.Services";
+import loginService from "../../api/Services/login.services";
 import { toast } from "react-toastify";
 import "react-toastify/ReactToastify.css";
 import { useNavigate } from "react-router-dom";
@@ -52,9 +52,9 @@ const LoginPages = () => {
 
   return (
     <React.Fragment>
-      <div className="back-ground">
-        <div className="background-login">
-          <section className="form-login">
+      <div className="login__wrapper">
+        <div className="login__container">
+          <section className="login__section">
             <div className="d-flex flex-column">
               <div className="text-center">
                 <img className="logo" alt="Logo" src={constants.LOGO_TRELLO} />
@@ -97,8 +97,8 @@ const LoginPages = () => {
                 )}
                 {enterConinue && (
                   <button
-                    className="btn-email-submit"
-                    id="login-submit"
+                    className="btn__email-submit"
+                    id="login-continue"
                     onClick={tempEnter}
                   >
                     <span>Continue</span>
@@ -107,7 +107,7 @@ const LoginPages = () => {
 
                 {enterSubmit && (
                   <button
-                    className="btn-email-submit"
+                    className="btn__email-submit"
                     id="login-submit"
                     onClick={handleLogin}
                   >
@@ -122,11 +122,11 @@ const LoginPages = () => {
               </p>
               <div className="d-flex flex-column gap-3">
                 <div className="d-flex justify-content-center border border-dark-subtle rounded-1">
-                  <button className="btn-login-google d-flex justify-content-center">
+                  <button className="btn__login-google d-flex justify-content-center">
                     <span style={{ height: "40px", width: "40px" }}>
                       <img
                         src={constants.LOGO_GOOGLE}
-                        className="logoGoogle"
+                        className="image__logo-Google"
                         alt="logo Google"
                       />
                     </span>
@@ -137,11 +137,11 @@ const LoginPages = () => {
             </div>
             <div className="mt-4 d-flex justify-content-center gap-2">
               <p>
-                <a className="cant-login">Can't login?</a>
+                <a className="link__cant-login">Can't login?</a>
               </p>
               <p>•</p>
               <p>
-                <a className="create-an-account" href="/register">
+                <a className="link__create-account" href="/register">
                   Create an account
                 </a>
               </p>
@@ -149,11 +149,11 @@ const LoginPages = () => {
           </section>
         </div>
 
-        <div className="d-flex justify-content-between z-3 position-absolute position-image">
-          <div className="image-left">
+        <div className="d-flex justify-content-between z-3 position-absolute block__position-image">
+          <div className="block__image-left">
             <img src={constants.BACKGROUND_LEFT} alt="image login left" />
           </div>
-          <div className="image-right">
+          <div className="block__image-right">
             <img src={constants.BACKGROUND_RIGHT} alt="image login right" />
           </div>
         </div>
