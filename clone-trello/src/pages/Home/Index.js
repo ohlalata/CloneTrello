@@ -21,7 +21,7 @@ import {
 } from "react-bootstrap";
 
 import { Nav, Button, Collapse } from "react-bootstrap";
-import NavBar from "../../components/Navbar";
+import NavBar from "../../components/navbar";
 
 const HomePages = () => {
   const [activeKey, setActiveKey] = useState("/home");
