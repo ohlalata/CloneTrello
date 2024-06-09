@@ -9,6 +9,11 @@ import { Modal, ModalBody, ModalHeader } from "react-bootstrap";
 import { faTable } from "@fortawesome/free-solid-svg-icons";
 import { faAlignLeft } from "@fortawesome/free-solid-svg-icons";
 import { faListUl } from "@fortawesome/free-solid-svg-icons";
+import * as constants from "../../shared/constants";
+import { faUser } from "@fortawesome/free-regular-svg-icons";
+import { faClock } from "@fortawesome/free-regular-svg-icons";
+
+import { faTrashCan } from "@fortawesome/free-regular-svg-icons";
 
 const Card = (listIdProps) => {
   const textareaRefCardTitle = useRef(null);
@@ -34,7 +39,8 @@ const Card = (listIdProps) => {
     setAddCardTitleVisible(true);
   };
 
-  const handleEditClickCardTitle = (cardIdVisible) => {
+  const handleEditClickCardTitle = (cardIdVisible, e) => {
+    e.stopPropagation();
     setEditingCardTitle(cardIdVisible);
   };
 
@@ -124,30 +130,35 @@ const Card = (listIdProps) => {
                       onChange={handleChangeCardTitle}
                       ref={textareaRefCardTitle}
                       autoFocus
+                      onClick={(e) => e.stopPropagation()}
                     ></textarea>
-                    <div className="d-flex justify-content-around pb-2">
+
+                    <div
+                      onClick={(e) => e.stopPropagation()}
+                      className="d-flex justify-content-around"
+                    >
                       <button
                         className="btn btn-primary btn-sm col-5"
                         onClick={() => handleUpdateCardTitle(catalogCard.id)}
                       >
                         <span className="fw-semibold">Save</span>
                       </button>
-                      <button className="btn btn-secondary btn-sm col-5">
-                        <span
-                          className="fw-semibold"
-                          onClick={() => setEditingCardTitle(false)}
-                        >
-                          Cancel
-                        </span>
+                      <button
+                        className="btn btn-secondary btn-sm col-5"
+                        onClick={() => setEditingCardTitle(false)}
+                      >
+                        <span className="fw-semibold">Cancel</span>
                       </button>
                     </div>
                   </div>
                 ) : (
-                  <div className="d-flex">
+                  <div className="d-flex align-items-center">
                     <p className="label-card-title">{catalogCard.title}</p>
                     <button
                       className="btn__edit-card-title"
-                      onClick={() => handleEditClickCardTitle(catalogCard.id)}
+                      onClick={(e) =>
+                        handleEditClickCardTitle(catalogCard.id, e)
+                      }
                     >
                       <span>
                         <FontAwesomeIcon icon={faPen} size="sm" />
@@ -168,53 +179,107 @@ const Card = (listIdProps) => {
           centered
           size="lg"
         >
-          <ModalHeader closeButton className="block__modal-header">
-            <div className="d-flex gap-2 justify-content-start align-items-center">
-              <FontAwesomeIcon icon={faTable} size="lg" />
-              <span className="fs-4 fw-semibold">{modalCardDetail.title}</span>
+          <ModalHeader closeButton className="block__modal-header ">
+            <div className="d-flex flex-column">
+              <div className="d-flex gap-2 justify-content-start align-items-center ">
+                <FontAwesomeIcon icon={faTable} size="lg" />
+                <span className="fs-4 fw-semibold">
+                  {modalCardDetail.title}
+                </span>
+              </div>
+              <span>in list ... </span>
             </div>
-            <span>in list ... </span>
           </ModalHeader>
           <ModalBody>
             <div className="d-flex ">
-              <div className="col-9">
-                <div>CCCCC</div>
+              <div className="col-9 px-2">
                 <div>
-                  <div>
-                    <div className="d-flex justify-content-between">
-                      <div className="d-flex gap-3 align-items-center">
-                        <div>
-                          <FontAwesomeIcon icon={faAlignLeft} />
-                        </div>
-                        <div>
-                          <span className="fs-5 fw-semibold">Description</span>
-                        </div>
-                      </div>
-
+                  <div className="d-flex justify-content-between">
+                    <div className="d-flex gap-2 align-items-center">
                       <div>
-                        <button className="btn btn-secondary btn-sm">
-                          <span>Edit</span>
-                        </button>
+                        <FontAwesomeIcon icon={faAlignLeft} />
                       </div>
-                    </div>
-                    <div>
-                      <div className="block__input-description p-2 mt-3">
-                        <span className="fw-semibold">
-                          Add a more detailed description...{" "}
+                      <div>
+                        <span className="label__modal-description fw-semibold">
+                          Description
                         </span>
                       </div>
-                      <p className="mb-0">Description</p>
+                    </div>
+
+                    <div>
+                      <button className="btn btn-secondary btn-sm">
+                        <span className="fw-semibold">Edit</span>
+                      </button>
                     </div>
                   </div>
                   <div>
-                    <div></div>
-                    <div></div>
-                    <div></div>
+                    <div className="block__input-description p-2 mt-3">
+                      <span
+                        className="fw-semibold ps-1"
+                        style={{ fontSize: "15px" }}
+                      >
+                        Add a more detailed description...{" "}
+                      </span>
+                    </div>
+                    <p className="mb-0">Description</p>
                   </div>
-                  <div>Comment</div>
+                </div>
+                <div className="d-flex justify-content-between">
+                  <div className="d-flex gap-2 align-items-center">
+                    <div>
+                      <FontAwesomeIcon icon={faListUl} />
+                    </div>
+                    <div>
+                      <span className="label__modal-activity fw-semibold">
+                        Activity
+                      </span>
+                    </div>
+                  </div>
+
+                  <div>
+                    <button className="btn btn-secondary btn-sm">
+                      <span className="fw-semibold">Show details</span>
+                    </button>
+                  </div>
+                </div>
+                <div className="d-flex mt-3 gap-2">
+                  <div className="block__user-comment">
+                    <img src={constants.USER_UNDEFINE} />
+                  </div>
+                  <div className="flex-fill p-2 block__input-comment">
+                    <span>Write a comment...</span>
+                  </div>
                 </div>
               </div>
-              <div className="col-3">BBBBB</div>
+              <div className="col-3 px-2">
+                <div className="d-flex flex-column gap-2">
+                  <div className="d-flex align-items-center gap-2 p-2 fw-semibold block__card-action">
+                    <div>
+                      <FontAwesomeIcon icon={faUser} />
+                    </div>
+                    <span>Join</span>
+                  </div>
+
+                  <div className="d-flex align-items-center gap-2 p-2 fw-semibold block__card-action">
+                    <div>
+                      <FontAwesomeIcon icon={faUser} />
+                    </div>
+                    <span>Members</span>
+                  </div>
+                  <div className="d-flex align-items-center gap-2 p-2 fw-semibold block__card-action">
+                    <div>
+                      <FontAwesomeIcon icon={faClock} />
+                    </div>
+                    <span>Dates</span>
+                  </div>
+                  <div className="d-flex align-items-center gap-2 p-2 fw-semibold block__card-action">
+                    <div>
+                      <FontAwesomeIcon icon={faTrashCan} />
+                    </div>
+                    <span>Archive</span>
+                  </div>
+                </div>
+              </div>
             </div>
           </ModalBody>
         </Modal>

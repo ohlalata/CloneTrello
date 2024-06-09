@@ -7,7 +7,7 @@ import { faPlus } from "@fortawesome/free-solid-svg-icons";
 import listServices from "../../api/Services/list.services";
 import { faXmark } from "@fortawesome/free-solid-svg-icons";
 import { useParams } from "react-router-dom";
-import Card from "../../components/Card";
+import Card from "../../components/card";
 
 const BoardContentPages = () => {
   const { id } = useParams();
