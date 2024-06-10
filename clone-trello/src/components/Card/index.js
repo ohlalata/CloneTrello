@@ -171,7 +171,7 @@ const Card = (listIdProps) => {
           </li>
         ))}
       </ol>
-      {/* ---------- */}
+
       {isModalCardShow && modalCardDetail && (
         <Modal
           show={isModalCardShow}
@@ -221,10 +221,9 @@ const Card = (listIdProps) => {
                         Add a more detailed description...{" "}
                       </span>
                     </div>
-                    <p className="mb-0">Description</p>
                   </div>
                 </div>
-                <div className="d-flex justify-content-between">
+                <div className="d-flex justify-content-between mt-3">
                   <div className="d-flex gap-2 align-items-center">
                     <div>
                       <FontAwesomeIcon icon={faListUl} />
@@ -242,7 +241,7 @@ const Card = (listIdProps) => {
                     </button>
                   </div>
                 </div>
-                <div className="d-flex mt-3 gap-2">
+                <div className="d-flex mt-3 gap-2 mt-3">
                   <div className="block__user-comment">
                     <img src={constants.USER_UNDEFINE} />
                   </div>
