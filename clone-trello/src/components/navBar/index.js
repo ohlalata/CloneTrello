@@ -17,22 +17,7 @@ const NavBar = () => {
           </div>
 
           <div className="d-flex flex-fill gap-2">
-            <div>
-              <Dropdown>
-                <Dropdown.Toggle id="dropdown-basic" variant="light">
-                  Workspaces
-                </Dropdown.Toggle>
-
-                <Dropdown.Menu>
-                  <Dropdown.Item href="#/action-1">
-                    Your Workspaces
-                  </Dropdown.Item>
-                  <Dropdown.Divider />
-                  <Dropdown.Item href="#/action-2">Workspaces 1</Dropdown.Item>
-                  <Dropdown.Item href="#/action-3">Workspaces 2</Dropdown.Item>
-                </Dropdown.Menu>
-              </Dropdown>
-            </div>
+            <div></div>
             <div>
               <Dropdown>
                 <Dropdown.Toggle id="dropdown-basic" variant="light">
@@ -45,35 +30,7 @@ const NavBar = () => {
                 </Dropdown.Menu>
               </Dropdown>
             </div>
-            <div>
-              <Dropdown>
-                <Dropdown.Toggle id="dropdown-basic" variant="light">
-                  Starred
-                </Dropdown.Toggle>
 
-                <Dropdown.Menu>
-                  <Dropdown.Item href="#/action-1">Action</Dropdown.Item>
-                  <Dropdown.Item href="#/action-2">
-                    Another action
-                  </Dropdown.Item>
-                  <Dropdown.Item href="#/action-3">
-                    Something else
-                  </Dropdown.Item>
-                </Dropdown.Menu>
-              </Dropdown>
-            </div>
-            <div>
-              <Dropdown>
-                <Dropdown.Toggle id="dropdown-basic" variant="light">
-                  More
-                </Dropdown.Toggle>
-
-                <Dropdown.Menu>
-                  <Dropdown.Item href="#/action-2">Template 1</Dropdown.Item>
-                  <Dropdown.Item href="#/action-3">Template 2</Dropdown.Item>
-                </Dropdown.Menu>
-              </Dropdown>
-            </div>
             <div>
               <button type="button" class="btn btn-primary">
                 <span className="fw-semibold">Create</span>
@@ -103,7 +60,7 @@ const NavBar = () => {
             <div>
               <div>
                 <img
-                  src={constants.USER_UNDEFINE}
+                  src={constants.USER_UNDEFINE_URL}
                   alt="a"
                   className="image-user"
                 />

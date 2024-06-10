@@ -17,7 +17,6 @@ const RegisterPages = () => {
 
   const tempRegister = (event) => {
     event.preventDefault();
-
     setFormVisible(false);
   };
 
@@ -30,7 +29,6 @@ const RegisterPages = () => {
         nameRegister
       );
       if (response.data.code == 201) {
-        console.log("Register successfull!");
         toast.success("Register Successfully!");
         let accessToken;
         try {
@@ -44,18 +42,16 @@ const RegisterPages = () => {
             if (accessToken) {
               localStorage.setItem("accessToken", accessToken);
               toast.success("Login Successfully!");
-              console.log("login throught register successfull!");
               navigate("/home");
             }
           }
         } catch (error) {
           console.error(error);
-          console.log("login throught register fail!");
         }
       }
     } catch (error) {
       console.error(error);
-      toast.success("Register Failed!");
+      toast.error("Register Failed!");
     }
   };
 
@@ -69,7 +65,7 @@ const RegisterPages = () => {
                 <img
                   className="image__logo"
                   alt="Logo"
-                  src={constant.LOGO_TRELLO}
+                  src={constant.LOGO_TRELLO_URL}
                 />
               </div>
 
@@ -143,7 +139,7 @@ const RegisterPages = () => {
 
                 {formVisible ? (
                   <button
-                    className="btn__email__register"
+                    className="btn__email-register"
                     id="register__temp-submit"
                     onClick={tempRegister}
                   >
@@ -152,7 +148,7 @@ const RegisterPages = () => {
                 ) : (
                   <button
                     onClick={handleRegister}
-                    className="btn__email__register"
+                    className="btn__email-register"
                     id="sign__submit"
                   >
                     <span>Continue</span>
@@ -169,8 +165,8 @@ const RegisterPages = () => {
                   <button className="btn__register-google d-flex justify-content-center">
                     <span style={{ height: "40px", width: "40px" }}>
                       <img
-                        src={constant.LOGO_GOOGLE}
-                        className="image__logo-Google"
+                        src={constant.LOGO_GOOGLE_URL}
+                        className="image__google"
                         alt="logo Google"
                       />
                     </span>
@@ -181,7 +177,7 @@ const RegisterPages = () => {
             </div>
             <div className="mt-4 d-flex justify-content-center">
               <p>
-                <a className="link__login" href="/login">
+                <a className="link__login" href="/">
                   Already have an Atlassian account? Log in
                 </a>
               </p>
@@ -190,11 +186,11 @@ const RegisterPages = () => {
         </div>
 
         <div className="d-flex justify-content-between z-3 position-absolute block__position-image">
-          <div className="image__image-background-left">
-            <img src={constant.BACKGROUND_LEFT} alt="image login left" />
+          <div className="image__image-left">
+            <img src={constant.BACKGROUND_LEFT_URL} alt="image login left" />
           </div>
-          <div className="image__image-background-right">
-            <img src={constant.BACKGROUND_RIGHT} alt="image login right" />
+          <div className="image__image-right">
+            <img src={constant.BACKGROUND_RIGHT_URL} alt="image login right" />
           </div>
         </div>
       </div>

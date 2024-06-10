@@ -57,7 +57,11 @@ const LoginPages = () => {
           <section className="login__section">
             <div className="d-flex flex-column">
               <div className="text-center">
-                <img className="logo" alt="Logo" src={constants.LOGO_TRELLO} />
+                <img
+                  className="logo"
+                  alt="Logo"
+                  src={constants.LOGO_TRELLO_URL}
+                />
               </div>
 
               <div className="d-flex justify-content-center mt-4 mb-1">
@@ -125,7 +129,7 @@ const LoginPages = () => {
                   <button className="btn__login-google d-flex justify-content-center">
                     <span style={{ height: "40px", width: "40px" }}>
                       <img
-                        src={constants.LOGO_GOOGLE}
+                        src={constants.LOGO_GOOGLE_URL}
                         className="image__logo-Google"
                         alt="logo Google"
                       />
@@ -151,10 +155,10 @@ const LoginPages = () => {
 
         <div className="d-flex justify-content-between z-3 position-absolute block__position-image">
           <div className="block__image-left">
-            <img src={constants.BACKGROUND_LEFT} alt="image login left" />
+            <img src={constants.BACKGROUND_LEFT_URL} alt="image login left" />
           </div>
           <div className="block__image-right">
-            <img src={constants.BACKGROUND_RIGHT} alt="image login right" />
+            <img src={constants.BACKGROUND_RIGHT_URL} alt="image login right" />
           </div>
         </div>
       </div>
