@@ -1,6 +1,6 @@
 import React from "react";
 //Nav Bar
-import NavBar from "../components/navbar";
+import NavBar from "../components/navBar";
 
 //Home section
 import HomePages from "../pages/home";

@@ -9,7 +9,7 @@ import { faUser } from "@fortawesome/free-solid-svg-icons";
 import { faTrashCan } from "@fortawesome/free-solid-svg-icons";
 import { faBarsStaggered } from "@fortawesome/free-solid-svg-icons";
 import { faChevronDown } from "@fortawesome/free-solid-svg-icons";
-import boardService from "../../api/Services/board.services";
+import boardService from "../../api/Services/board";
 import * as constants from "../../shared/constants";
 import {
   Form,
@@ -21,7 +21,7 @@ import {
 } from "react-bootstrap";
 
 import { Nav, Button, Collapse } from "react-bootstrap";
-import NavBar from "../../components/navbar";
+import NavBar from "../../components/navBar";
 
 const HomePages = () => {
   const [activeKey, setActiveKey] = useState("/home");

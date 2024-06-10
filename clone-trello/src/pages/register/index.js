@@ -1,11 +1,11 @@
 import React, { useState } from "react";
 import "./style.scss";
-import registerServices from "../../api/Services/register.services";
+import registerServices from "../../api/Services/register";
 import { toast } from "react-toastify";
 import "react-toastify/ReactToastify.css";
 import { useNavigate } from "react-router-dom";
 import * as constant from "../../shared/constants";
-import loginServices from "../../api/Services/login.services";
+import loginServices from "../../api/Services/login";
 
 const RegisterPages = () => {
   const navigate = useNavigate();

@@ -2,7 +2,7 @@ import React, { useRef, useState, useEffect } from "react";
 import "./style.scss";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPen } from "@fortawesome/free-solid-svg-icons";
-import cardServices from "../../api/Services/card.services";
+import cardServices from "../../api/Services/card";
 import { faPlus } from "@fortawesome/free-solid-svg-icons";
 import { faXmark } from "@fortawesome/free-solid-svg-icons";
 import { Modal, ModalBody, ModalHeader } from "react-bootstrap";

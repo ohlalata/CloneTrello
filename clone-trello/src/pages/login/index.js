@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import "./style.scss";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPen } from "@fortawesome/free-solid-svg-icons";
-import loginService from "../../api/Services/login.services";
+import loginService from "../../api/Services/login";
 import { toast } from "react-toastify";
 import "react-toastify/ReactToastify.css";
 import { useNavigate } from "react-router-dom";
