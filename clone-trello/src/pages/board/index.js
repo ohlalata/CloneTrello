@@ -5,7 +5,6 @@ import NavBar from "../../components/navbar/index";
 const BoardPages = () => {
   return (
     <React.Fragment>
-      {/* <div>THIS IS BOARD PAGE</div> */}
       <NavBar />
       <Outlet />
     </React.Fragment>
