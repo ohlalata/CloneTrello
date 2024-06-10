@@ -4,7 +4,7 @@ import "./style.scss";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faEllipsis } from "@fortawesome/free-solid-svg-icons";
 import { faPlus } from "@fortawesome/free-solid-svg-icons";
-import listServices from "../../api/Services/list.services";
+import listServices from "../../api/Services/list";
 import { faXmark } from "@fortawesome/free-solid-svg-icons";
 import { useParams } from "react-router-dom";
 import Card from "../../components/card";
