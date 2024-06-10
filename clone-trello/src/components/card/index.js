@@ -187,7 +187,7 @@ const Card = (listIdProps) => {
                   {modalCardDetail.title}
                 </span>
               </div>
-              <span>in list ... </span>
+              <span>in list {listIdProps.listNameProps}</span>
             </div>
           </ModalHeader>
           <ModalBody>
@@ -213,15 +213,20 @@ const Card = (listIdProps) => {
                     </div>
                   </div>
                   <div>
-                    <div className="block__input-description p-2 mt-3">
-                      <span
-                        className="fw-semibold ps-1"
-                        style={{ fontSize: "15px" }}
-                      >
-                        Add a more detailed description...{" "}
-                      </span>
-                    </div>
+                    {modalCardDetail.description == null ? (
+                      <div className="block__input-description p-2 mt-3">
+                        <span
+                          className="fw-semibold ps-1"
+                          style={{ fontSize: "15px" }}
+                        >
+                          Add a more detailed description...{" "}
+                        </span>
+                      </div>
+                    ) : (
+                      <div>{modalCardDetail.description}</div>
+                    )}
                   </div>
+                  <div>Rich Text</div>
                 </div>
                 <div className="d-flex justify-content-between mt-3">
                   <div className="d-flex gap-2 align-items-center">
@@ -243,7 +248,7 @@ const Card = (listIdProps) => {
                 </div>
                 <div className="d-flex mt-3 gap-2 mt-3">
                   <div className="block__user-comment">
-                    <img src={constants.USER_UNDEFINE} />
+                    <img src={constants.USER_UNDEFINE_URL} />
                   </div>
                   <div className="flex-fill p-2 block__input-comment">
                     <span>Write a comment...</span>
@@ -265,12 +270,7 @@ const Card = (listIdProps) => {
                     </div>
                     <span>Members</span>
                   </div>
-                  <div className="d-flex align-items-center gap-2 p-2 fw-semibold block__card-action">
-                    <div>
-                      <FontAwesomeIcon icon={faClock} />
-                    </div>
-                    <span>Dates</span>
-                  </div>
+
                   <div className="d-flex align-items-center gap-2 p-2 fw-semibold block__card-action">
                     <div>
                       <FontAwesomeIcon icon={faTrashCan} />

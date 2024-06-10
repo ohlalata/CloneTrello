@@ -85,3 +85,21 @@
 .btn__collapse-board:hover {
   background-color: #a8b0bc !important;
 }
+
+.block__add-member {
+  margin-right: 13px;
+}
+
+.block__board-action {
+  padding-left: 8px;
+  color: #2e405e !important;
+}
+
+.block__board-action span {
+  font-size: 14px;
+}
+
+.block__board-action:hover {
+  background-color: #b5bdc9c4;
+  border-radius: 5px;
+}

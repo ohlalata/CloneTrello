@@ -144,7 +144,10 @@ const BoardContentPages = () => {
                       </button>
                     </div>
                   </div>
-                  <Card listIdProps={catalogList.id} />
+                  <Card
+                    listIdProps={catalogList.id}
+                    listNameProps={catalogList.name}
+                  />
                 </div>
               </li>
             ))}
