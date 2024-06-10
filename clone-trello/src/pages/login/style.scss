@@ -1,0 +1,116 @@
+.login__wrapper {
+  height: 100vh;
+}
+.login__container {
+  min-height: calc(100% - 100px);
+  display: flex;
+  flex-direction: column;
+  -webkit-box-pack: center;
+  justify-content: center;
+}
+
+.login__section {
+  display: flex;
+  flex-direction: column;
+  margin: 0px auto;
+  width: 400px;
+  padding: 32px 40px;
+  background: rgb(255, 255, 255);
+  border-radius: 3px;
+  box-shadow: rgba(0, 0, 0, 0.1) 0px 0px 10px;
+  box-sizing: border-box;
+}
+
+.logo {
+  object-fit: cover;
+  height: 60px;
+}
+
+.btn__email-submit {
+  height: 40px !important;
+  line-height: 40px !important;
+  background-color: #0f62df;
+  -webkit-box-align: baseline;
+  align-items: baseline;
+  border-width: 0px;
+  border-radius: 3px;
+  box-sizing: border-box;
+  display: inline-flex;
+  font-size: inherit;
+  font-style: normal;
+  font-family: inherit;
+  font-weight: 500;
+  max-width: 100%;
+  position: relative;
+  text-align: center;
+  text-decoration: none;
+  white-space: nowrap;
+  padding: 0px 10px;
+  vertical-align: middle;
+  width: 100%;
+  -webkit-box-pack: center;
+  justify-content: center;
+  color: white !important;
+}
+
+.btn__login-google {
+  box-shadow: none;
+  font-weight: bold;
+  border: 0px;
+  border-radius: 3px;
+  height: 40px !important;
+  line-height: 36px !important;
+  background: rgb(255, 255, 255) !important;
+  width: 100%;
+}
+
+.image__logo-Google {
+  height: 30px;
+  width: 30px;
+  object-fit: cover;
+}
+
+.link__cant-login {
+  color: #0052cc;
+  text-decoration: none;
+  font-size: 14px;
+}
+
+.link__create-account {
+  color: #0052cc;
+  text-decoration: none;
+  font-size: 14px;
+}
+
+.block__image-left {
+  height: 300px;
+  width: 300px;
+  overflow: hidden;
+}
+
+.block__image-left img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.block__image-right {
+  height: 300px;
+  width: 300px;
+  overflow: hidden;
+}
+
+.block__image-right img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.block__position-image {
+  bottom: 1px;
+  width: 100%;
+}
+
+.block__image-right {
+  right: 20px;
+}
