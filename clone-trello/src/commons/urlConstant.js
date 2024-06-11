@@ -7,7 +7,9 @@ export default {
       login: "/user/login?email=${email}&password=${password}",
       register: "/user/registration",
     },
-    user: {},
+    user: {
+      getUserById: "/user/get/${id}",
+    },
     board: {
       getAllBoard: "/board/get-all",
       createBoard: "/board/create",

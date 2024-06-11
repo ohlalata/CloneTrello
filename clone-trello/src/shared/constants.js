@@ -15,3 +15,5 @@ export const USER_UNDEFINE_URL =
 // ====== Background ======
 export const BOARD_DEFAULT_BACKGROUND_URL =
   "https://firebasestorage.googleapis.com/v0/b/clonetrello-103ad.appspot.com/o/Background-1.png?alt=media&token=a347d2cc-b5b8-4cc7-b9a5-c6eb8bff3e34";
+export const BOARD_DETAIL_BACKGROUND_URL =
+  "https://firebasestorage.googleapis.com/v0/b/clonetrello-103ad.appspot.com/o/pexels-rpnickson-2559941.jpg?alt=media&token=6fa791ce-433e-481d-afc8-79b745d3af7c";
