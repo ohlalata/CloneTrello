@@ -11,7 +11,11 @@ const NavBar = () => {
       <nav class="navbar bg-body-tertiary">
         <div class="container-fluid">
           <div className="ms-3">
-            <a class="navbar-brand fs-4 fw-bolder" style={{ color: "#455570" }}>
+            <a
+              class="navbar-brand fs-4 fw-bolder"
+              style={{ color: "#455570" }}
+              href="/home"
+            >
               Trellone
             </a>
           </div>

@@ -1,4 +1,3 @@
-/* eslint-disable no-undef */
 import React, { useState, useEffect } from "react";
 import { Outlet, Link } from "react-router-dom";
 import "./style.scss";
@@ -24,6 +23,7 @@ import { Nav, Button, Collapse } from "react-bootstrap";
 import NavBar from "../../components/navBar";
 import { faUserGroup } from "@fortawesome/free-solid-svg-icons";
 import { faPlus } from "@fortawesome/free-solid-svg-icons";
+import userService from "../../api/Services/user";
 
 const HomePages = () => {
   const [activeKey, setActiveKey] = useState("/home");
@@ -35,6 +35,8 @@ const HomePages = () => {
   const [modalShow, setModalShow] = useState(false);
 
   const [boardName, setBoardName] = useState("");
+
+  const [createdUser, setCreatedUser] = useState("");
 
   const handleToggle = (key) => {
     setOpenItems((prevState) => ({
@@ -56,11 +58,29 @@ const HomePages = () => {
     setActiveKey(selectedKey);
   };
 
+  const handleGetUserById = async (id) => {
+    try {
+      const response = await userService.getUserById(id);
+      if (response.data.code == 200) {
+        console.log(response.data.data.name);
+        setCreatedUser(response.data.data.name);
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
   const handleGetAllBoard = async () => {
     try {
       const response = await boardService.getAllBoard();
       if (response.data.code == 200) {
-        setListBoard(response.data.data);
+        const result = response.data.data;
+        // result.forEach((obj) => {
+        //   handleGetUserById(obj.createdUser);
+        //   obj.userNameeeeee = createdUser;
+        // });
+        // console.log(result);
+        setListBoard(result);
       }
     } catch (error) {
       console.error(error);
@@ -176,7 +196,7 @@ const HomePages = () => {
                   </div>
 
                   <div className="d-flex gap-2">
-                    <div>
+                    {/* <div>
                       <button type="button" class="btn btn__action-board">
                         <FontAwesomeIcon icon={faEye} /> Views
                       </button>
@@ -190,7 +210,7 @@ const HomePages = () => {
                       <button type="button" class="btn btn__action-board">
                         <FontAwesomeIcon icon={faBarsStaggered} /> All
                       </button>
-                    </div>
+                    </div> */}
                     <div>
                       <button type="button" class="btn btn__action-board">
                         <FontAwesomeIcon icon={faTrashCan} /> Delete
@@ -202,11 +222,25 @@ const HomePages = () => {
                   <div className="d-flex gap-3 flex-wrap">
                     {listBoard.map((listBoards, key) => (
                       <div key={key} className="block__your-board rounded">
-                        <Link to={`/board/board-content/${listBoards.id}`}>
-                          <div className="p-2">
-                            <p className="text-white fw-bold">
-                              {listBoards.name}
-                            </p>
+                        <Link
+                          to={`/board/board-content/${listBoards.id}`}
+                          style={{ textDecoration: "none" }}
+                        >
+                          <div className="p-2 d-flex flex-column justify-content-between h-100">
+                            <div className="d-flex justify-content-between">
+                              <p className="text-white fw-bold mb-0">
+                                {listBoards.name}
+                              </p>
+                              <div>
+                                <input type="checkbox"></input>
+                              </div>
+                            </div>
+
+                            <div className="d-flex justify-content-end">
+                              <span className="text-white fw-bold mb-0 ">
+                                {listBoards.userNameeeeee} aaaa
+                              </span>
+                            </div>
                           </div>
                         </Link>
                       </div>
