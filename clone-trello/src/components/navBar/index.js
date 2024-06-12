@@ -49,26 +49,18 @@ const NavBar = () => {
       <nav className="navbar bg-body-tertiary">
         <div className="container-fluid">
           <div className="ms-3">
-            <a className="navbar-brand fs-4 fw-bolder" style={{ color: "#455570" }}>
+            <a
+              class="navbar-brand fs-4 fw-bolder"
+              style={{ color: "#455570" }}
+              href="/home"
+            >
               Trellone
             </a>
           </div>
 
           <div className="d-flex flex-fill gap-2">
-            <div>
-              <Dropdown>
-                <Dropdown.Toggle id="dropdown-basic" variant="light">
-                  Workspaces
-                </Dropdown.Toggle>
 
-                <Dropdown.Menu>
-                  <Dropdown.Item href="#/action-1">Your Workspaces</Dropdown.Item>
-                  <Dropdown.Divider />
-                  <Dropdown.Item href="#/action-2">Workspaces 1</Dropdown.Item>
-                  <Dropdown.Item href="#/action-3">Workspaces 2</Dropdown.Item>
-                </Dropdown.Menu>
-              </Dropdown>
-            </div>
+            <div></div>
             <div>
               <Dropdown>
                 <Dropdown.Toggle id="dropdown-basic" variant="light">
@@ -78,31 +70,6 @@ const NavBar = () => {
                 <Dropdown.Menu>
                   <Dropdown.Item href="#/action-2">Workspaces 1</Dropdown.Item>
                   <Dropdown.Item href="#/action-3">Workspaces 2</Dropdown.Item>
-                </Dropdown.Menu>
-              </Dropdown>
-            </div>
-            <div>
-              <Dropdown>
-                <Dropdown.Toggle id="dropdown-basic" variant="light">
-                  Starred
-                </Dropdown.Toggle>
-
-                <Dropdown.Menu>
-                  <Dropdown.Item href="#/action-1">Action</Dropdown.Item>
-                  <Dropdown.Item href="#/action-2">Another action</Dropdown.Item>
-                  <Dropdown.Item href="#/action-3">Something else</Dropdown.Item>
-                </Dropdown.Menu>
-              </Dropdown>
-            </div>
-            <div>
-              <Dropdown>
-                <Dropdown.Toggle id="dropdown-basic" variant="light">
-                  More
-                </Dropdown.Toggle>
-
-                <Dropdown.Menu>
-                  <Dropdown.Item href="#/action-2">Template 1</Dropdown.Item>
-                  <Dropdown.Item href="#/action-3">Template 2</Dropdown.Item>
                 </Dropdown.Menu>
               </Dropdown>
             </div>
@@ -151,7 +118,14 @@ const NavBar = () => {
               <FontAwesomeIcon icon={faCircleQuestion} size="lg" color="#909191" />
             </div>
             <div>
-              <img src={constants.USER_UNDEFINE} alt="user" className="image-user" />
+
+              <div>
+                <img
+                  src={constants.USER_UNDEFINE_URL}
+                  alt="a"
+                  className="image-user"
+                />
+              </div>
             </div>
           </div>
         </div>

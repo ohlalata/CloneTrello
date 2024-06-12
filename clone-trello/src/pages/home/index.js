@@ -1,4 +1,3 @@
-/* eslint-disable no-undef */
 import React, { useState, useEffect } from "react";
 import { Outlet, Link } from "react-router-dom";
 import "./style.scss";
@@ -22,15 +21,29 @@ import {
 
 import { Nav, Button, Collapse } from "react-bootstrap";
 import NavBar from "../../components/navBar";
+import { faUserGroup } from "@fortawesome/free-solid-svg-icons";
+import { faPlus } from "@fortawesome/free-solid-svg-icons";
+import userService from "../../api/Services/user";
 
 const HomePages = () => {
   const [activeKey, setActiveKey] = useState("/home");
-  const [open, setOpen] = useState(false);
+
+  const [openItems, setOpenItems] = useState({});
+
   const [listBoard, setListBoard] = useState([]);
 
   const [modalShow, setModalShow] = useState(false);
 
   const [boardName, setBoardName] = useState("");
+
+  const [createdUser, setCreatedUser] = useState("");
+
+  const handleToggle = (key) => {
+    setOpenItems((prevState) => ({
+      ...prevState,
+      [key]: !prevState[key],
+    }));
+  };
 
   const handleModal = () => {
     setModalShow(!modalShow);
@@ -45,13 +58,29 @@ const HomePages = () => {
     setActiveKey(selectedKey);
   };
 
+  const handleGetUserById = async (id) => {
+    try {
+      const response = await userService.getUserById(id);
+      if (response.data.code == 200) {
+        console.log(response.data.data.name);
+        setCreatedUser(response.data.data.name);
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
   const handleGetAllBoard = async () => {
     try {
       const response = await boardService.getAllBoard();
       if (response.data.code == 200) {
-        setListBoard(response.data.data);
-
-        console.log("get list successfull!");
+        const result = response.data.data;
+        // result.forEach((obj) => {
+        //   handleGetUserById(obj.createdUser);
+        //   obj.userNameeeeee = createdUser;
+        // });
+        // console.log(result);
+        setListBoard(result);
       }
     } catch (error) {
       console.error(error);
@@ -77,7 +106,6 @@ const HomePages = () => {
 
   return (
     <React.Fragment>
-      {/* <Outlet /> */}
       <NavBar />
       <div style={{ display: "block" }}>
         <div className="d-flex align-items-start flex-row justify-content-center">
@@ -90,18 +118,9 @@ const HomePages = () => {
                 activeKey={activeKey}
                 onSelect={handleSelect}
               >
-                <Nav.Link href="/home" className="menu__nav-board">
+                <Nav.Link href="/home" className="menu__nav-board fw-semibold">
                   {" "}
                   Boards
-                </Nav.Link>
-                <Nav.Link eventKey="link-1" className="menu__nav-board">
-                  Activity 1
-                </Nav.Link>
-                <Nav.Link eventKey="link-2" className="menu__nav-board">
-                  Activity 2
-                </Nav.Link>
-                <Nav.Link eventKey="link-3" className="menu__nav-board">
-                  Activity 3
                 </Nav.Link>
               </Nav>
             </div>
@@ -111,31 +130,39 @@ const HomePages = () => {
             ></div>
 
             <div>
-              <p className="mb-1 ps-1 fw-semibold">workspaces</p>
+              <p className="mb-1 ps-1 fw-semibold fs-5">workspaces</p>
               <div className="d-flex flex-column gap-2">
-                <div>
-                  <Button
-                    className="d-flex btn__collapse-board justify-content-between"
-                    onClick={() => setOpen(!open)}
-                    aria-controls="collapse-list-board-menu"
-                    aria-expanded={open}
-                  >
-                    <span>Board 1</span>
-                    <span>
-                      <FontAwesomeIcon icon={faChevronDown} />
-                    </span>
-                  </Button>
+                {listBoard.map((listBoardSide, key) => (
+                  <div key={key}>
+                    <Button
+                      className="d-flex btn__collapse-board justify-content-between"
+                      onClick={() => handleToggle(key)}
+                      aria-controls={`collapse-list-board-menu-${key}`}
+                      aria-expanded={openItems[key] || false}
+                    >
+                      <span className="fw-semibold">{listBoardSide.name}</span>
+                      <span>
+                        <FontAwesomeIcon icon={faChevronDown} />
+                      </span>
+                    </Button>
 
-                  <Collapse in={open}>
-                    <div id="collapse-list-board-menu">
-                      <div className="mt-2 ps-2 d-flex flex-column gap-2">
-                        <div>Board 2</div>
-                        <div>Board 3</div>
-                        <div>Board 4</div>
+                    <Collapse in={openItems[key] || false}>
+                      <div id={`collapse-list-board-menu-${key}`}>
+                        <div className="mt-2 ps-2 d-flex flex-column gap-2">
+                          <div className="d-flex justify-content-between block__board-action">
+                            <div className="d-flex gap-2 align-items-center">
+                              <FontAwesomeIcon icon={faUserGroup} size="sm" />
+                              <span className="fw-semibold">Member</span>
+                            </div>
+                            <div className="block__add-member">
+                              <FontAwesomeIcon icon={faPlus} />
+                            </div>
+                          </div>
+                        </div>
                       </div>
-                    </div>
-                  </Collapse>
-                </div>
+                    </Collapse>
+                  </div>
+                ))}
               </div>
             </div>
           </nav>
@@ -163,13 +190,13 @@ const HomePages = () => {
                 <div className="d-flex justify-content-between">
                   <div className="d-flex gap-2 align-items-center">
                     <div className="block__image-user-board">
-                      <img src={constants.USER_UNDEFINE} alt="" />
+                      <img src={constants.USER_UNDEFINE_URL} alt="" />
                     </div>
                     <h6 className="mb-0">user's boards</h6>
                   </div>
 
                   <div className="d-flex gap-2">
-                    <div>
+                    {/* <div>
                       <button type="button" class="btn btn__action-board">
                         <FontAwesomeIcon icon={faEye} /> Views
                       </button>
@@ -183,7 +210,7 @@ const HomePages = () => {
                       <button type="button" class="btn btn__action-board">
                         <FontAwesomeIcon icon={faBarsStaggered} /> All
                       </button>
-                    </div>
+                    </div> */}
                     <div>
                       <button type="button" class="btn btn__action-board">
                         <FontAwesomeIcon icon={faTrashCan} /> Delete
@@ -195,11 +222,25 @@ const HomePages = () => {
                   <div className="d-flex gap-3 flex-wrap">
                     {listBoard.map((listBoards, key) => (
                       <div key={key} className="block__your-board rounded">
-                        <Link to={`/board/board-content/${listBoards.id}`}>
-                          <div className="p-2">
-                            <p className="text-white fw-bold">
-                              {listBoards.name}
-                            </p>
+                        <Link
+                          to={`/board/board-content/${listBoards.id}`}
+                          style={{ textDecoration: "none" }}
+                        >
+                          <div className="p-2 d-flex flex-column justify-content-between h-100">
+                            <div className="d-flex justify-content-between">
+                              <p className="text-white fw-bold mb-0">
+                                {listBoards.name}
+                              </p>
+                              <div>
+                                <input type="checkbox"></input>
+                              </div>
+                            </div>
+
+                            <div className="d-flex justify-content-end">
+                              <span className="text-white fw-bold mb-0 ">
+                                {listBoards.userNameeeeee} aaaa
+                              </span>
+                            </div>
                           </div>
                         </Link>
                       </div>

@@ -113,63 +113,65 @@ const Card = (listIdProps) => {
   return (
     <React.Fragment>
       <ol className="block__list-card">
-        {listCard.map((catalogCard, key) => (
-          <li key={key}>
-            <div
-              className="block__card-wraper"
-              onClick={() => handleModalCard(catalogCard)}
-            >
-              <div className="block__card-content">
-                <div className="block__card-proress"></div>
-                {EditingCardTitle == catalogCard.id ? (
-                  <div>
-                    <textarea
-                      className="textarea__input-card-tite"
-                      placeholder="Enter a title..."
-                      value={inputTitleCard}
-                      onChange={handleChangeCardTitle}
-                      ref={textareaRefCardTitle}
-                      autoFocus
-                      onClick={(e) => e.stopPropagation()}
-                    ></textarea>
+        {listCard
+          .sort((a, b) => new Date(a.createdDate) - new Date(b.createdDate))
+          .map((catalogCard, key) => (
+            <li key={key}>
+              <div
+                className="block__card-wraper"
+                onClick={() => handleModalCard(catalogCard)}
+              >
+                <div className="block__card-content">
+                  <div className="block__card-proress"></div>
+                  {EditingCardTitle == catalogCard.id ? (
+                    <div>
+                      <textarea
+                        className="textarea__input-card-tite"
+                        placeholder="Enter a title..."
+                        value={inputTitleCard}
+                        onChange={handleChangeCardTitle}
+                        ref={textareaRefCardTitle}
+                        autoFocus
+                        onClick={(e) => e.stopPropagation()}
+                      ></textarea>
 
-                    <div
-                      onClick={(e) => e.stopPropagation()}
-                      className="d-flex justify-content-around"
-                    >
-                      <button
-                        className="btn btn-primary btn-sm col-5"
-                        onClick={() => handleUpdateCardTitle(catalogCard.id)}
+                      <div
+                        onClick={(e) => e.stopPropagation()}
+                        className="d-flex justify-content-around"
                       >
-                        <span className="fw-semibold">Save</span>
-                      </button>
+                        <button
+                          className="btn btn-primary btn-sm col-5"
+                          onClick={() => handleUpdateCardTitle(catalogCard.id)}
+                        >
+                          <span className="fw-semibold">Save</span>
+                        </button>
+                        <button
+                          className="btn btn-secondary btn-sm col-5"
+                          onClick={() => setEditingCardTitle(false)}
+                        >
+                          <span className="fw-semibold">Cancel</span>
+                        </button>
+                      </div>
+                    </div>
+                  ) : (
+                    <div className="d-flex align-items-center">
+                      <p className="label-card-title">{catalogCard.title}</p>
                       <button
-                        className="btn btn-secondary btn-sm col-5"
-                        onClick={() => setEditingCardTitle(false)}
+                        className="btn__edit-card-title"
+                        onClick={(e) =>
+                          handleEditClickCardTitle(catalogCard.id, e)
+                        }
                       >
-                        <span className="fw-semibold">Cancel</span>
+                        <span>
+                          <FontAwesomeIcon icon={faPen} size="sm" />
+                        </span>
                       </button>
                     </div>
-                  </div>
-                ) : (
-                  <div className="d-flex align-items-center">
-                    <p className="label-card-title">{catalogCard.title}</p>
-                    <button
-                      className="btn__edit-card-title"
-                      onClick={(e) =>
-                        handleEditClickCardTitle(catalogCard.id, e)
-                      }
-                    >
-                      <span>
-                        <FontAwesomeIcon icon={faPen} size="sm" />
-                      </span>
-                    </button>
-                  </div>
-                )}
+                  )}
+                </div>
               </div>
-            </div>
-          </li>
-        ))}
+            </li>
+          ))}
       </ol>
 
       {isModalCardShow && modalCardDetail && (
@@ -187,7 +189,7 @@ const Card = (listIdProps) => {
                   {modalCardDetail.title}
                 </span>
               </div>
-              <span>in list ... </span>
+              <span>in list {listIdProps.listNameProps}</span>
             </div>
           </ModalHeader>
           <ModalBody>
@@ -213,15 +215,20 @@ const Card = (listIdProps) => {
                     </div>
                   </div>
                   <div>
-                    <div className="block__input-description p-2 mt-3">
-                      <span
-                        className="fw-semibold ps-1"
-                        style={{ fontSize: "15px" }}
-                      >
-                        Add a more detailed description...{" "}
-                      </span>
-                    </div>
+                    {modalCardDetail.description == null ? (
+                      <div className="block__input-description p-2 mt-3">
+                        <span
+                          className="fw-semibold ps-1"
+                          style={{ fontSize: "15px" }}
+                        >
+                          Add a more detailed description...{" "}
+                        </span>
+                      </div>
+                    ) : (
+                      <div>{modalCardDetail.description}</div>
+                    )}
                   </div>
+                  <div>Rich Text</div>
                 </div>
                 <div className="d-flex justify-content-between mt-3">
                   <div className="d-flex gap-2 align-items-center">
@@ -243,7 +250,7 @@ const Card = (listIdProps) => {
                 </div>
                 <div className="d-flex mt-3 gap-2 mt-3">
                   <div className="block__user-comment">
-                    <img src={constants.USER_UNDEFINE} />
+                    <img src={constants.USER_UNDEFINE_URL} />
                   </div>
                   <div className="flex-fill p-2 block__input-comment">
                     <span>Write a comment...</span>
@@ -265,12 +272,7 @@ const Card = (listIdProps) => {
                     </div>
                     <span>Members</span>
                   </div>
-                  <div className="d-flex align-items-center gap-2 p-2 fw-semibold block__card-action">
-                    <div>
-                      <FontAwesomeIcon icon={faClock} />
-                    </div>
-                    <span>Dates</span>
-                  </div>
+
                   <div className="d-flex align-items-center gap-2 p-2 fw-semibold block__card-action">
                     <div>
                       <FontAwesomeIcon icon={faTrashCan} />

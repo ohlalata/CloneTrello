@@ -1,11 +1,14 @@
-const SERVICE_URL = "https://localhost:7201/api";
+// const SERVICE_URL = "https://localhost:7201/api";
 
 export default {
-  base: SERVICE_URL,
+  base: `https://${process.env.REACT_APP_BACKEND_HOST}:${process.env.REACT_APP_BACKEND_PORT}/api`,
   endpoint: {
     auth: {
       login: "/user/login?email=${email}&password=${password}",
       register: "/user/registration",
+    },
+    user: {
+      getUserById: "/user/get/${id}",
     },
     board: {
       getAllBoard: "/board/get-all",

@@ -107,47 +107,52 @@ const BoardContentPages = () => {
       <div className="d-flex block__board-content-container">
         <div className="d-flex w-100">
           <ol className="block__catalog-list d-flex gap-1">
-            {allList.map((catalogList, key) => (
-              <li
-                key={key}
-                className="block__list-element"
-                data-testid="list-wrapper"
-              >
-                <div className="block__list-element-wraper ">
-                  <div className="block__list-title-wraper">
-                    <div className="block__list-title">
-                      {isEditingTitleList == catalogList.id ? (
-                        <div>
-                          <textarea
-                            rows={1}
-                            ref={textareaRef}
-                            placeholder={catalogList.name}
-                            value={inputTitleList}
-                            onChange={handleChangeListTitle}
-                            autoFocus
-                            onBlur={() => handleBlurListTitle(catalogList.id)}
-                          ></textarea>
-                        </div>
-                      ) : (
-                        <h6
-                          className="mb-0 label-list-title"
-                          onClick={() => handleClickTitleList(catalogList.id)}
-                        >
-                          {catalogList.name}
-                        </h6>
-                      )}
-                    </div>
+            {allList
+              .sort((a, b) => a.position - b.position)
+              .map((catalogList, key) => (
+                <li
+                  key={key}
+                  className="block__list-element"
+                  data-testid="list-wrapper"
+                >
+                  <div className="block__list-element-wraper ">
+                    <div className="block__list-title-wraper">
+                      <div className="block__list-title">
+                        {isEditingTitleList == catalogList.id ? (
+                          <div>
+                            <textarea
+                              rows={1}
+                              ref={textareaRef}
+                              placeholder={catalogList.name}
+                              value={inputTitleList}
+                              onChange={handleChangeListTitle}
+                              autoFocus
+                              onBlur={() => handleBlurListTitle(catalogList.id)}
+                            ></textarea>
+                          </div>
+                        ) : (
+                          <h6
+                            className="mb-0 label-list-title"
+                            onClick={() => handleClickTitleList(catalogList.id)}
+                          >
+                            {catalogList.name}
+                          </h6>
+                        )}
+                      </div>
 
-                    <div>
-                      <button className="btn__list-option">
-                        <FontAwesomeIcon icon={faEllipsis} />
-                      </button>
+                      <div>
+                        <button className="btn__list-option">
+                          <FontAwesomeIcon icon={faEllipsis} />
+                        </button>
+                      </div>
                     </div>
+                    <Card
+                      listIdProps={catalogList.id}
+                      listNameProps={catalogList.name}
+                    />
                   </div>
-                  <Card listIdProps={catalogList.id} />
-                </div>
-              </li>
-            ))}
+                </li>
+              ))}
 
             <li>
               <div>
