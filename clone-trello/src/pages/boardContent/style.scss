@@ -127,6 +127,72 @@
   overflow-wrap: break-word;
   white-space: normal;
 }
+.position-relative {
+  position: relative;
+}
+
+.dropdown-menu {
+  display: none;
+  position: absolute;
+  top: 100%;
+  right: 0;
+  z-index: 1000;
+  min-width: 160px;
+  padding: 0.5rem 0;
+  margin: 0.125rem 0 0;
+  font-size: 1rem;
+  color: #212529;
+  text-align: left;
+  list-style: none;
+  background-color: #fff;
+  background-clip: padding-box;
+  border: 1px solid rgba(0, 0, 0, 0.15);
+  border-radius: 0.25rem;
+  box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.175);
+}
+
+.dropdown-menu.show {
+  display: block;
+}
+
+.dropdown-item {
+  display: block;
+  width: 100%;
+  padding: 0.25rem 1.5rem;
+  clear: both;
+  font-weight: 400;
+  color: #212529;
+  text-align: inherit;
+  white-space: nowrap;
+  background-color: transparent;
+  border: 0;
+  cursor: pointer;
+}
+
+.dropdown-item:hover {
+  background-color: #f8f9fa;
+}
+.dropdown-header {
+  position: relative;
+}
+
+.dropdown-header .flex-grow-1 {
+  position: absolute;
+  left: 0;
+  right: 0;
+  display: flex;
+  justify-content: center;
+}
+.dropdown-menu .dropdown-header,
+.dropdown-menu .dropdown-item {
+  font-size: 1rem; 
+  padding: 0.5rem 1rem; 
+  margin: 0; 
+}
+.dropdown-menu-right {
+  right: auto;
+  left: 0;
+}
 
 // .list-card {
 //   display: flex;

@@ -19,11 +19,13 @@ export default {
       getAllList: "/list/get-all?boardId=${boardId}",
       createList: "/list/create",
       updateList: "/list/update-name/${id}",
+      archiveList: "/list/change-status/${id}?isActive=${isActive}",
     },
     card: {
       getAllCard: "/card/get-all?listId=${listId}",
       createCard: "/card/create",
       updateCard: "/card/update/${id}",
+      archiveCard: "/card/change-status/${id}?isActive=${isActive}",
     },
     task: {
       getAllTask: "",
