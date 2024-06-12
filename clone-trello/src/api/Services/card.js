@@ -38,4 +38,16 @@ const updateCardTitle = async (id, formData) => {
   );
   return response;
 };
-export default { getAllCard, createCard, updateCardTitle };
+const changeStatus = async (id, isActive) => {
+  const serviceUrl = urlConstant.endpoint.card.archiveCard
+    .replace("${id}", id)
+    .replace("${isActive}", isActive);
+
+  const response = await axiosLocalHost.sendAuthorizedRequest(
+    serviceUrl,
+    "PUT"
+  );
+
+  return response;
+};
+export default { getAllCard, createCard, updateCardTitle, changeStatus };

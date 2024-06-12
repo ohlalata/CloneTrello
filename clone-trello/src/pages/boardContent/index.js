@@ -8,6 +8,8 @@ import listServices from "../../api/Services/list";
 import { faXmark } from "@fortawesome/free-solid-svg-icons";
 import { useParams } from "react-router-dom";
 import Card from "../../components/card";
+import { toast } from "react-toastify";
+import "react-toastify/ReactToastify.css";
 
 const BoardContentPages = () => {
   const { id } = useParams();
@@ -18,6 +20,7 @@ const BoardContentPages = () => {
   const [allList, setAllList] = useState([]);
   const [titleList, setTitleList] = useState("");
   const [isAddListInputVisible, setIsAddListInputVisible] = useState(false);
+  const [dropdownVisible, setDropdownVisible] = useState(null);
 
   const handleClickTitleList = (listIdVisible) => {
     setIsEditingTitleList(listIdVisible);
@@ -61,7 +64,7 @@ const BoardContentPages = () => {
       const response = await listServices.getAllList(id);
       if (response.data.code == 200) {
         setAllList(response.data.data);
-        console.log("get list list successfull!");
+        console.log("get list list successful!");
       }
     } catch (error) {
       console.error(error);
@@ -75,7 +78,7 @@ const BoardContentPages = () => {
     try {
       const response = await listServices.updateListName(listID, formData);
       if (response.data.code == 200) {
-        console.log("update list name successfull!");
+        console.log("update list name successful!");
         handleGetAllList();
       }
     } catch (error) {
@@ -88,7 +91,7 @@ const BoardContentPages = () => {
     try {
       const response = await listServices.createList(id, titleList);
       if (response.data.code == 201) {
-        console.log("create list successfull!");
+        console.log("create list successful!");
         setTitleList("");
         setIsAddListInputVisible(false);
         handleGetAllList();
@@ -96,6 +99,26 @@ const BoardContentPages = () => {
     } catch (error) {
       console.error(error);
     }
+  };
+
+  const handleArchiveList = async (listID) => {
+    try {
+      const response = await listServices.changeStatus(listID, false);
+      if (response.data.code == 200) {
+        window.location.reload();
+        console.log("archive list successful!");
+        toast.success("List archived successfully!");
+        handleGetAllList();
+      }
+    } catch (error) {
+      toast.error("List archived failed!");
+      console.error(error);
+    }
+  };
+
+  const handleDropdownClick = (listID) => {
+    console.log("Dropdown clicked for list ID:", listID);
+    setDropdownVisible(dropdownVisible === listID ? null : listID);
   };
 
   useEffect(() => {
@@ -140,10 +163,28 @@ const BoardContentPages = () => {
                         )}
                       </div>
 
-                      <div>
-                        <button className="btn__list-option">
+                      <div className="position-relative">
+                        <button
+                          className="btn__list-option"
+                          onClick={() => handleDropdownClick(catalogList.id)}
+                        >
                           <FontAwesomeIcon icon={faEllipsis} />
                         </button>
+                        {dropdownVisible === catalogList.id && (
+                          <div className="dropdown-menu dropdown-menu-right show">
+                            <div className="dropdown-header d-flex justify-content-between align-items-center">
+                              <div className="flex-grow-1 text-center">
+                                <span>List actions</span>
+                              </div>
+                            </div>
+                            <button
+                              className="dropdown-item"
+                              onClick={() => handleArchiveList(catalogList.id)}
+                            >
+                              Archive this list
+                            </button>
+                          </div>
+                        )}
                       </div>
                     </div>
                     <Card

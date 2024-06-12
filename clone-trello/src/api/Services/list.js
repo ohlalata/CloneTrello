@@ -38,5 +38,17 @@ const updateListName = async (id, formData) => {
   );
   return response;
 };
+const changeStatus = async (id, isActive) => {
+  const serviceUrl = urlConstant.endpoint.list.archiveList
+    .replace("${id}", id)
+    .replace("${isActive}", isActive);
 
-export default { getAllList, createList, updateListName };
+  const response = await axiosLocalHost.sendAuthorizedRequest(
+    serviceUrl,
+    "PUT"
+  );
+
+  return response;
+};
+
+export default { getAllList, createList, updateListName, changeStatus };
