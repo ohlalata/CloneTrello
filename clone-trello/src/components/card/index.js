@@ -12,8 +12,9 @@ import { faListUl } from "@fortawesome/free-solid-svg-icons";
 import * as constants from "../../shared/constants";
 import { faUser } from "@fortawesome/free-regular-svg-icons";
 import { faClock } from "@fortawesome/free-regular-svg-icons";
-
 import { faTrashCan } from "@fortawesome/free-regular-svg-icons";
+import { toast } from "react-toastify";
+import "react-toastify/ReactToastify.css";
 
 const Card = (listIdProps) => {
   const textareaRefCardTitle = useRef(null);
@@ -103,6 +104,20 @@ const Card = (listIdProps) => {
     } catch (error) {
       console.error(error);
       console.log("create card fail!");
+    }
+  };
+
+  const handleArchiveCard = async (cardID) => {
+    try {
+      const response = await cardServices.changeStatus(cardID, false);
+      if (response.data.code === 200) {
+        console.log("archive card successfully!");
+        toast.success("Card archived successfully!");
+        handleGetAllCard();
+      }
+    } catch (error) {
+      toast.error("Card archived failed!");
+      console.error(error);
     }
   };
 
@@ -277,7 +292,7 @@ const Card = (listIdProps) => {
                     <div>
                       <FontAwesomeIcon icon={faTrashCan} />
                     </div>
-                    <span>Archive</span>
+                    <span onClick={() => handleArchiveCard(modalCardDetail.id)}>Archive</span>
                   </div>
                 </div>
               </div>
