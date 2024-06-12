@@ -13,6 +13,7 @@ export default {
     board: {
       getAllBoard: "/board/get-all",
       createBoard: "/board/create",
+      getBoardByName: "/board/get-all?PageIndex=1&PageSize=50&name=${boardName}",
     },
     list: {
       getAllList: "/list/get-all?boardId=${boardId}",

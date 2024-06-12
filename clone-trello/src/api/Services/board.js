@@ -19,4 +19,13 @@ const createBoard = async (name) => {
   );
   return response;
 };
-export default { getAllBoard, createBoard };
+
+const getBoardByName = async (boardName) => {
+  console.log("Fetching board by name:", boardName);
+  const serviceUrl = urlConstant.endpoint.board.getBoardByName.replace("${boardName}", boardName);
+  console.log("Service URL:", serviceUrl);
+  const response = await axiosLocalHost.sendAuthorizedRequest(serviceUrl, "GET");
+  return response;
+};
+
+export default { getAllBoard, createBoard, getBoardByName };
