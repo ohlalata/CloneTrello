@@ -3,7 +3,11 @@ import { Dropdown } from "react-bootstrap";
 import { Link, useParams, useNavigate } from "react-router-dom"; // Import Link component from react-router-dom
 import "./style.scss";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faBell, faCircleQuestion, faSearch } from "@fortawesome/free-solid-svg-icons";
+import {
+  faBell,
+  faCircleQuestion,
+  faSearch,
+} from "@fortawesome/free-solid-svg-icons";
 import * as constants from "../../shared/constants";
 import boardService from "../../api/Services/board";
 
@@ -58,21 +62,7 @@ const NavBar = () => {
             </a>
           </div>
 
-          <div className="d-flex flex-fill gap-2">
-
-            <div></div>
-            <div>
-              <Dropdown>
-                <Dropdown.Toggle id="dropdown-basic" variant="light">
-                  Recent
-                </Dropdown.Toggle>
-
-                <Dropdown.Menu>
-                  <Dropdown.Item href="#/action-2">Workspaces 1</Dropdown.Item>
-                  <Dropdown.Item href="#/action-3">Workspaces 2</Dropdown.Item>
-                </Dropdown.Menu>
-              </Dropdown>
-            </div>
+          <div className="d-flex flex-fill ms-5">
             <div>
               <button type="button" className="btn btn-primary">
                 <span className="fw-semibold">Create</span>
@@ -81,7 +71,9 @@ const NavBar = () => {
           </div>
 
           <form
-            className={`d-flex align-items-center position-relative ${isFocused ? "focused" : ""}`}
+            className={`d-flex align-items-center position-relative ${
+              isFocused ? "focused" : ""
+            }`}
             role="search"
             onSubmit={handleSearchSubmit}
           >
@@ -102,7 +94,11 @@ const NavBar = () => {
             {boardByName.length > 0 && isFocused && (
               <div className="search-results dropdown-menu show">
                 {boardByName.map((board, key) => (
-                  <button key={key} className="dropdown-item" onClick={() => handleBoardClick(board.id)}>
+                  <button
+                    key={key}
+                    className="dropdown-item"
+                    onClick={() => handleBoardClick(board.id)}
+                  >
                     {board.name}
                   </button>
                 ))}
@@ -115,10 +111,13 @@ const NavBar = () => {
               <FontAwesomeIcon icon={faBell} size="lg" color="#909191" />
             </div>
             <div>
-              <FontAwesomeIcon icon={faCircleQuestion} size="lg" color="#909191" />
+              <FontAwesomeIcon
+                icon={faCircleQuestion}
+                size="lg"
+                color="#909191"
+              />
             </div>
             <div>
-
               <div>
                 <img
                   src={constants.USER_UNDEFINE_URL}
