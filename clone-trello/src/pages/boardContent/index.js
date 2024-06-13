@@ -131,7 +131,7 @@ const BoardContentPages = () => {
       <div className="d-flex block__board-content-container">
         <div className="d-flex w-100">
           <ol className="block__catalog-list d-flex gap-1 flex-column p-1">
-            <NavbarBoardContent />
+            <NavbarBoardContent boardID={id} />
             <div className="d-flex">
               {allList
                 .sort((a, b) => a.position - b.position)

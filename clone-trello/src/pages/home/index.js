@@ -38,6 +38,8 @@ const HomePages = () => {
 
   const [yourBoard, setYourBoard] = useState([]);
 
+  const [modalShowDelete, setModalShowDelete] = useState(false);
+
   const handleToggle = (key) => {
     setOpenItems((prevState) => ({
       ...prevState,
@@ -63,6 +65,7 @@ const HomePages = () => {
       const response = await boardService.changeBoardStatus(id, false);
       if (response.data.code == 200) {
         console.log("delete board successfull");
+        setModalShowDelete(false);
         handleGetAllBoard();
       }
     } catch (error) {
@@ -184,14 +187,6 @@ const HomePages = () => {
                     <FontAwesomeIcon icon={faTable} size="xl" />
                     <h6 className="fw-bold my-1 fs-5">YOUR BOARDS</h6>
                   </div>
-
-                  <div className="d-flex gap-2">
-                    <div>
-                      <button type="button" class="btn btn__action-board">
-                        <FontAwesomeIcon icon={faTrashCan} /> Delete
-                      </button>
-                    </div>
-                  </div>
                 </div>
                 <div>
                   <div className="d-flex gap-3 flex-wrap">
@@ -216,15 +211,43 @@ const HomePages = () => {
                         <div className="d-flex justify-content-end pe-2 pb-1">
                           <span
                             style={{ color: "#ffffff" }}
-                            onClick={() =>
-                              handleUpdateBoardStatus(listBoards.id)
-                            }
+                            onClick={() => setModalShowDelete(true)}
                           >
                             <FontAwesomeIcon icon={faTrashCan} />
                           </span>
                         </div>
+
+                        <Modal show={modalShowDelete} centered>
+                          <ModalHeader closeButton>
+                            <ModalTitle>Confirm</ModalTitle>
+                          </ModalHeader>
+                          <ModalBody className="d-flex justify-content-center">
+                            <span className="fs-5 fw-bold">
+                              Are you sure delete board?{" "}
+                            </span>
+                          </ModalBody>
+                          <ModalFooter>
+                            <div className="d-flex justify-content-around gap-3 w-100">
+                              <button
+                                className="btn btn-secondary"
+                                onClick={() => setModalShowDelete(false)}
+                              >
+                                Cancel
+                              </button>
+                              <button
+                                className="btn btn-primary"
+                                onClick={() =>
+                                  handleUpdateBoardStatus(listBoards.id)
+                                }
+                              >
+                                Delete
+                              </button>
+                            </div>
+                          </ModalFooter>
+                        </Modal>
                       </div>
                     ))}
+
                     <div>
                       <div
                         onClick={handleModal}
