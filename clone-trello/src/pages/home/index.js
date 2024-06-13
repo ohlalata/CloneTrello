@@ -1,12 +1,8 @@
 import React, { useState, useEffect } from "react";
-import { Outlet, Link } from "react-router-dom";
+import { Link } from "react-router-dom";
 import "./style.scss";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faClock } from "@fortawesome/free-regular-svg-icons";
-import { faEye } from "@fortawesome/free-solid-svg-icons";
-import { faUser } from "@fortawesome/free-solid-svg-icons";
 import { faTrashCan } from "@fortawesome/free-solid-svg-icons";
-import { faBarsStaggered } from "@fortawesome/free-solid-svg-icons";
 import { faChevronDown } from "@fortawesome/free-solid-svg-icons";
 import boardService from "../../api/Services/board";
 import * as constants from "../../shared/constants";
@@ -24,6 +20,8 @@ import NavBar from "../../components/navBar";
 import { faUserGroup } from "@fortawesome/free-solid-svg-icons";
 import { faPlus } from "@fortawesome/free-solid-svg-icons";
 import userService from "../../api/Services/user";
+import { faTable } from "@fortawesome/free-solid-svg-icons";
+import { faTableList } from "@fortawesome/free-solid-svg-icons";
 
 const HomePages = () => {
   const [activeKey, setActiveKey] = useState("/home");
@@ -35,8 +33,6 @@ const HomePages = () => {
   const [modalShow, setModalShow] = useState(false);
 
   const [boardName, setBoardName] = useState("");
-
-  const [createdUser, setCreatedUser] = useState("");
 
   const handleToggle = (key) => {
     setOpenItems((prevState) => ({
@@ -63,7 +59,6 @@ const HomePages = () => {
       const response = await userService.getUserById(id);
       if (response.data.code == 200) {
         console.log(response.data.data.name);
-        setCreatedUser(response.data.data.name);
       }
     } catch (error) {
       console.error(error);
@@ -75,11 +70,6 @@ const HomePages = () => {
       const response = await boardService.getAllBoard();
       if (response.data.code == 200) {
         const result = response.data.data;
-        // result.forEach((obj) => {
-        //   handleGetUserById(obj.createdUser);
-        //   obj.userNameeeeee = createdUser;
-        // });
-        // console.log(result);
         setListBoard(result);
       }
     } catch (error) {
@@ -166,51 +156,16 @@ const HomePages = () => {
               </div>
             </div>
           </nav>
-          <div className="block__list-board">
-            <div>
-              <div className="d-flex gap-2">
-                <div>
-                  <FontAwesomeIcon icon={faClock} size="lg" />
-                </div>
-                <h6 className="mb-0">Recently viewed</h6>
-              </div>
-              <div className="d-flex gap-3 mt-2 flex-wrap">
-                <div>
-                  <div className="block__recenly-board rounded">
-                    <div className="p-2">
-                      <p className="text-white fw-bold">Hello</p>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
+          <div className="block__list-board d-flex flex-column gap-3">
             <div className="block__your-workspaces">
-              <h5 className="fw-bold my-3">YOUR BOARDS</h5>
               <div className="block__board-content d-flex flex-column gap-3">
                 <div className="d-flex justify-content-between">
                   <div className="d-flex gap-2 align-items-center">
-                    <div className="block__image-user-board">
-                      <img src={constants.USER_UNDEFINE_URL} alt="" />
-                    </div>
-                    <h6 className="mb-0">user's boards</h6>
+                    <FontAwesomeIcon icon={faTable} size="xl" />
+                    <h6 className="fw-bold my-1 fs-5">YOUR BOARDS</h6>
                   </div>
 
                   <div className="d-flex gap-2">
-                    {/* <div>
-                      <button type="button" class="btn btn__action-board">
-                        <FontAwesomeIcon icon={faEye} /> Views
-                      </button>
-                    </div>
-                    <div>
-                      <button type="button" class="btn btn__action-board">
-                        <FontAwesomeIcon icon={faUser} /> Member
-                      </button>
-                    </div>
-                    <div>
-                      <button type="button" class="btn btn__action-board">
-                        <FontAwesomeIcon icon={faBarsStaggered} /> All
-                      </button>
-                    </div> */}
                     <div>
                       <button type="button" class="btn btn__action-board">
                         <FontAwesomeIcon icon={faTrashCan} /> Delete
@@ -226,7 +181,7 @@ const HomePages = () => {
                           to={`/board/board-content/${listBoards.id}`}
                           style={{ textDecoration: "none" }}
                         >
-                          <div className="p-2 d-flex flex-column justify-content-between h-100">
+                          <div className="p-2">
                             <div className="d-flex justify-content-between">
                               <p className="text-white fw-bold mb-0">
                                 {listBoards.name}
@@ -234,12 +189,6 @@ const HomePages = () => {
                               <div>
                                 <input type="checkbox"></input>
                               </div>
-                            </div>
-
-                            <div className="d-flex justify-content-end">
-                              <span className="text-white fw-bold mb-0 ">
-                                {listBoards.userNameeeeee} aaaa
-                              </span>
                             </div>
                           </div>
                         </Link>
@@ -277,6 +226,53 @@ const HomePages = () => {
                         </ModalFooter>
                       </Modal>
                     </div>
+                  </div>
+                </div>
+                <div className="mt-3">
+                  <button className="btn btn__action-board">
+                    View all your board
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <div className="block__your-workspaces">
+              <div className="block__board-content d-flex flex-column gap-3">
+                <div className="d-flex justify-content-between">
+                  <div className="d-flex gap-2 align-items-center">
+                    <FontAwesomeIcon icon={faTableList} size="xl" />
+                    <h6 className="fw-bold my-1 fs-5">PUBLIC BOARDS</h6>
+                  </div>
+
+                  <div className="d-flex gap-2">
+                    <div>
+                      <button type="button" class="btn btn__action-board">
+                        <FontAwesomeIcon icon={faTrashCan} /> Delete
+                      </button>
+                    </div>
+                  </div>
+                </div>
+                <div>
+                  <div className="d-flex gap-3 flex-wrap">
+                    {listBoard.map((listBoards, key) => (
+                      <div key={key} className="block__your-board rounded">
+                        <Link
+                          to={`/board/board-content/${listBoards.id}`}
+                          style={{ textDecoration: "none" }}
+                        >
+                          <div className="p-2 ">
+                            <div className="d-flex justify-content-between">
+                              <p className="text-white fw-bold mb-0">
+                                {listBoards.name}
+                              </p>
+                              <div>
+                                <input type="checkbox"></input>
+                              </div>
+                            </div>
+                          </div>
+                        </Link>
+                      </div>
+                    ))}
                   </div>
                 </div>
                 <div className="mt-3">

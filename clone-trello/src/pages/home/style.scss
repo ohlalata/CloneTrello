@@ -1,6 +1,6 @@
 .block__list-board {
   margin: 50px 16px 0px;
-  max-width: 825px;
+  max-width: 830px;
   min-width: 288px;
   width: 100%;
 }
@@ -29,22 +29,11 @@
 }
 
 .block__your-workspaces {
-  margin-top: 90px;
+  margin-top: 15px;
 }
 
 .block__board-content {
   max-width: 1266px;
-}
-
-.block__image-user-board {
-  width: 35px;
-  height: 30px;
-}
-
-.block__image-user-board img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
 }
 
 .block__create-new-board {
@@ -58,6 +47,7 @@
 
 .btn__action-board {
   background-color: #f1f2f4 !important;
+  margin-right: 10px;
 }
 
 .menu__nav-board {
