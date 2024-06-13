@@ -4,7 +4,7 @@ export default {
   base: `https://${process.env.REACT_APP_BACKEND_HOST}:${process.env.REACT_APP_BACKEND_PORT}/api`,
   endpoint: {
     auth: {
-      login: "/user/login?email=${email}&password=${password}",
+      login: "/user/login",
       register: "/user/registration",
     },
     user: {
@@ -13,7 +13,8 @@ export default {
     board: {
       getAllBoard: "/board/get-all",
       createBoard: "/board/create",
-      getBoardByName: "/board/get-all?PageIndex=1&PageSize=50&name=${boardName}",
+      getBoardByName:
+        "/board/get-all?PageIndex=1&PageSize=50&name=${boardName}",
     },
     list: {
       getAllList: "/list/get-all?boardId=${boardId}",
