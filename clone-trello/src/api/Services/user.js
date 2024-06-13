@@ -9,5 +9,22 @@ const getUserById = async (id) => {
   );
   return response;
 };
+const getAllUser = async (email, name) => {
+  const serviceUrl = urlConstant.endpoint.user.getAllUser.replace("${email}", email).replace("${name}", name);
+  const response = await axiosLocalHost.sendAuthorizedRequest(
+    serviceUrl,
+    "GET"
+  );
+  return response;
+};
 
-export default { getUserById };
+const searchUsers = async (keyword) => {
+  const serviceUrl = `${urlConstant.base}${urlConstant.endpoint.user.getAllUser}?PageIndex=1&PageSize=50&email=${keyword}&name=${keyword}`;
+  const response = await axiosLocalHost.sendAuthorizedRequest(
+    serviceUrl,
+    "GET"
+  );
+  return response;
+};
+
+export default { getUserById, getAllUser, searchUsers };

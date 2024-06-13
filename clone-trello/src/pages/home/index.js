@@ -5,6 +5,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faTrashCan } from "@fortawesome/free-solid-svg-icons";
 import { faChevronDown } from "@fortawesome/free-solid-svg-icons";
 import boardService from "../../api/Services/board";
+import userService from "../../api/Services/user"; // Import userService
 import * as constants from "../../shared/constants";
 import {
   Form,
@@ -38,6 +39,11 @@ const HomePages = () => {
 
   const [yourBoard, setYourBoard] = useState([]);
 
+  const [inviteModalShow, setInviteModalShow] = useState(false);
+
+  const [searchKeyword, setSearchKeyword] = useState("");
+  const [searchResults, setSearchResults] = useState([]);
+
   const handleToggle = (key) => {
     setOpenItems((prevState) => ({
       ...prevState,
@@ -47,6 +53,10 @@ const HomePages = () => {
 
   const handleModal = () => {
     setModalShow(!modalShow);
+  };
+
+  const handleInviteModal = () => {
+    setInviteModalShow(!inviteModalShow);
   };
 
   const submitCreateBoard = () => {
@@ -62,7 +72,7 @@ const HomePages = () => {
     try {
       const response = await boardService.changeBoardStatus(id, false);
       if (response.data.code == 200) {
-        console.log("delete board successfull");
+        console.log("delete board successful");
         handleGetAllBoard();
       }
     } catch (error) {
@@ -92,7 +102,7 @@ const HomePages = () => {
     try {
       const response = await boardService.createBoard(boardName);
       if (response.data.code == 201) {
-        console.log("create board successfull!");
+        console.log("create board successful!");
         handleGetAllBoard();
       }
     } catch (error) {
@@ -113,6 +123,39 @@ const HomePages = () => {
       );
     }
   }, [createUser, listBoard]);
+
+  const handleMemberClick = (key) => {
+    handleToggle(key);
+    handleInviteModal();
+  };
+
+  const handleSearchChange = async (e) => {
+    setSearchKeyword(e.target.value);
+    if (e.target.value.length > 2) {
+      try {
+        const response = await userService.searchUsers(e.target.value);
+        if (response.data.code === 200) {
+          setSearchResults(response.data.data);
+        }
+      } catch (error) {
+        console.error(error);
+      }
+    } else {
+      setSearchResults([]);
+    }
+  };
+
+  const handleInviteUser = async (user, boardIndex) => {
+    try {
+      const response = await boardService.createBoardMember(user.id, yourBoard[boardIndex].id);
+      if (response.data.code === 201) {
+        console.log("User added to the board successfully!");
+        setInviteModalShow(false);
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  };
 
   return (
     <React.Fragment>
@@ -142,24 +185,26 @@ const HomePages = () => {
             <div>
               <p className="mb-1 ps-1 fw-semibold fs-5">workspaces</p>
               <div className="d-flex flex-column gap-2">
-                {yourBoard.map((listBoardSide, key) => (
-                  <div key={key}>
+                {yourBoard.map((listBoardSide, index) => (
+                  <div key={index}>
                     <Button
                       className="d-flex btn__collapse-board justify-content-between"
-                      onClick={() => handleToggle(key)}
-                      aria-controls={`collapse-list-board-menu-${key}`}
-                      aria-expanded={openItems[key] || false}
+                      onClick={() => handleToggle(index)}
+                      aria-controls={`collapse-list-board-menu-${index}`}
+                      aria-expanded={openItems[index] || false}
                     >
                       <span className="fw-semibold">{listBoardSide.name}</span>
                       <span>
                         <FontAwesomeIcon icon={faChevronDown} />
                       </span>
                     </Button>
-
-                    <Collapse in={openItems[key] || false}>
-                      <div id={`collapse-list-board-menu-${key}`}>
+                    <Collapse in={openItems[index] || false}>
+                      <div id={`collapse-list-board-menu-${index}`}>
                         <div className="mt-2 ps-2 d-flex flex-column gap-2">
-                          <div className="d-flex justify-content-between block__board-action">
+                          <div
+                            className="d-flex justify-content-between block__board-action"
+                            onClick={() => handleMemberClick(index)}
+                          >
                             <div className="d-flex gap-2 align-items-center">
                               <FontAwesomeIcon icon={faUserGroup} size="sm" />
                               <span className="fw-semibold">Member</span>
@@ -195,9 +240,9 @@ const HomePages = () => {
                 </div>
                 <div>
                   <div className="d-flex gap-3 flex-wrap">
-                    {yourBoard.map((listBoards, key) => (
+                    {yourBoard.map((listBoards, index) => (
                       <div
-                        key={key}
+                        key={index}
                         className="block__your-board rounded d-flex flex-column justify-content-between"
                       >
                         <Link
@@ -285,9 +330,9 @@ const HomePages = () => {
                 </div>
                 <div>
                   <div className="d-flex gap-3 flex-wrap">
-                    {listBoard.map((listBoards, key) => (
+                    {listBoard.map((listBoards, index) => (
                       <div
-                        key={key}
+                        key={index}
                         className="block__your-board rounded d-flex flex-column justify-content-between"
                       >
                         <Link
@@ -316,6 +361,37 @@ const HomePages = () => {
           </div>
         </div>
       </div>
+      <Modal show={inviteModalShow} onHide={handleInviteModal} centered>
+        <ModalHeader closeButton>
+          <ModalTitle>Invite to Board</ModalTitle>
+        </ModalHeader>
+        <ModalBody>
+          <Form.Control
+            type="text"
+            placeholder="Email address or name"
+            value={searchKeyword}
+            onChange={handleSearchChange}
+          />
+          <div className="mt-3">
+            {searchResults.map((user, index) => (
+              <div
+                key={index}
+                className="d-flex align-items-center justify-content-between border rounded p-2"
+                style={{ cursor: "pointer" }}
+                onClick={() => handleInviteUser(user, index)}
+              >
+                <span>{user.name}</span>
+                <span>{user.email}</span>
+              </div>
+            ))}
+          </div>
+        </ModalBody>
+        <ModalFooter>
+          <Button variant="secondary" onClick={handleInviteModal}>
+            Close
+          </Button>
+        </ModalFooter>
+      </Modal>
     </React.Fragment>
   );
 };
