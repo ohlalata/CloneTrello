@@ -111,6 +111,7 @@ const Card = (listIdProps) => {
     try {
       const response = await cardServices.changeStatus(cardID, false);
       if (response.data.code === 200) {
+        window.location.reload();
         console.log("archive card successfully!");
         toast.success("Card archived successfully!");
         handleGetAllCard();
