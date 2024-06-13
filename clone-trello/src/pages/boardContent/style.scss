@@ -20,10 +20,9 @@
   -webkit-user-select: none;
   user-select: none;
   white-space: nowrap;
-  display: flex;
-  flex-direction: row;
+  // display: flex;
+  // flex-direction: row;
   list-style: none;
-  padding: 15px 6px;
   height: 94vh;
   background-image: url("https://firebasestorage.googleapis.com/v0/b/clonetrello-103ad.appspot.com/o/pexels-rpnickson-2559941.jpg?alt=media&token=6fa791ce-433e-481d-afc8-79b745d3af7c");
   background-size: cover;
@@ -185,9 +184,9 @@
 }
 .dropdown-menu .dropdown-header,
 .dropdown-menu .dropdown-item {
-  font-size: 1rem; 
-  padding: 0.5rem 1rem; 
-  margin: 0; 
+  font-size: 1rem;
+  padding: 0.5rem 1rem;
+  margin: 0;
 }
 .dropdown-menu-right {
   right: auto;

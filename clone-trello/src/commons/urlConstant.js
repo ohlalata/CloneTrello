@@ -15,6 +15,7 @@ export default {
       createBoard: "/board/create",
       getBoardByName:
         "/board/get-all?PageIndex=1&PageSize=50&name=${boardName}",
+      updateBoardStatus: "/Board/change-status/${id}?isActive=${isActive}",
     },
     list: {
       getAllList: "/list/get-all?boardId=${boardId}",

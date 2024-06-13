@@ -113,6 +113,7 @@ const Card = (listIdProps) => {
       if (response.data.code === 200) {
         console.log("archive card successfully!");
         toast.success("Card archived successfully!");
+        setIsModalCardShow(false);
         handleGetAllCard();
       }
     } catch (error) {
@@ -288,11 +289,16 @@ const Card = (listIdProps) => {
                     <span>Members</span>
                   </div>
 
-                  <div className="d-flex align-items-center gap-2 p-2 fw-semibold block__card-action">
+                  <div
+                    className="d-flex align-items-center gap-2 p-2 fw-semibold block__card-action"
+                    style={{ cursor: "pointer" }}
+                  >
                     <div>
                       <FontAwesomeIcon icon={faTrashCan} />
                     </div>
-                    <span onClick={() => handleArchiveCard(modalCardDetail.id)}>Archive</span>
+                    <span onClick={() => handleArchiveCard(modalCardDetail.id)}>
+                      Archive
+                    </span>
                   </div>
                 </div>
               </div>

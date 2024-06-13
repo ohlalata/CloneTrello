@@ -1,6 +1,7 @@
 import React from "react";
 //Nav Bar
 import NavBar from "../components/navBar";
+import NavbarBoardContent from "../components/navBarBoardContent";
 
 //Home section
 import HomePages from "../pages/home";
@@ -19,6 +20,10 @@ const UserRoutes = [
   {
     path: "/navbar",
     component: <NavBar />,
+  },
+  {
+    path: "/navbar-board-content",
+    component: <NavbarBoardContent />,
   },
   {
     path: "/board",

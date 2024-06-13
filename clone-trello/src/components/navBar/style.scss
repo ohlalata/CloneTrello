@@ -5,34 +5,33 @@
 .navbar {
   .form-control {
     transition: width 0.3s ease-in-out;
-    width: 200px; // Initial width of the input
+    width: 200px;
   }
 
   .search-icon {
     position: absolute;
     top: 50%;
-    left: 10px; // Adjusted left position
+    left: 10px;
     transform: translateY(-50%);
     pointer-events: none;
-    z-index: 1; // Ensure the icon is above the input field
+    z-index: 1;
   }
 
   .focused {
     .form-control {
-      width: 500px; // Increased width when focused
+      width: 500px;
     }
   }
 
   .search-results {
     position: absolute;
-    top: calc(100% + 5px); // Adjust the top position of the dropdown
+    top: calc(100% + 5px);
     left: 0;
-    width: calc(100% - 2px); // Set the width equal to the input field
-    border: 1px solid #ced4da; // Add border
-    border-top: none; // Remove top border
-    z-index: 2; // Ensure it is above other content
-    max-height: 200px; // Add max height if needed
-    overflow-y: auto; // Add scrollbar if needed
+    width: calc(100% - 2px);
+    border: 1px solid #ced4da;
+    border-top: none;
+    z-index: 2;
+    max-height: 200px;
+    overflow-y: auto;
   }
 }
-
