@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { Dropdown } from "react-bootstrap";
 import { Link, useParams, useNavigate } from "react-router-dom"; // Import Link component from react-router-dom
 import "./style.scss";
@@ -10,6 +10,7 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import * as constants from "../../shared/constants";
 import boardService from "../../api/Services/board";
+import { debounce } from "lodash";
 
 const NavBar = () => {
   const { name } = useParams();
@@ -31,13 +32,15 @@ const NavBar = () => {
     }
   };
 
+  const debouncedGetBoardByName = useCallback(
+    debounce((term) => handleGetBoardByName(term), 500),
+    []
+  );
+
   const handleSearchChange = (event) => {
     setSearchTerm(event.target.value);
-    handleGetBoardByName(event.target.value);
+    debouncedGetBoardByName(event.target.value);
   };
-  useEffect(() => {
-    handleGetBoardByName(name);
-  }, [name]);
 
   const handleSearchSubmit = (event) => {
     event.preventDefault();
@@ -46,6 +49,10 @@ const NavBar = () => {
   const handleBoardClick = (boardId) => {
     navigate(`/board/board-content/${boardId}`);
   };
+
+  useEffect(() => {
+    handleGetBoardByName(name);
+  }, [name]);
 
   return (
     <React.Fragment>
@@ -68,11 +75,9 @@ const NavBar = () => {
               </button>
             </div>
           </div>
-
           <form
-            className={`d-flex align-items-center position-relative ${
-              isFocused ? "focused" : ""
-            }`}
+            className={`d-flex align-items-center position-relative ${isFocused ? "focused" : ""
+              }`}
             role="search"
             onSubmit={handleSearchSubmit}
           >
@@ -104,7 +109,6 @@ const NavBar = () => {
               </div>
             )}
           </form>
-
           <div className="ms-2 d-flex gap-3">
             <div>
               <FontAwesomeIcon icon={faBell} size="lg" color="#909191" />
