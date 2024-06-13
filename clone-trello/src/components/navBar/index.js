@@ -23,7 +23,6 @@ const NavBar = () => {
       const response = await boardService.getBoardByName(searchTerm);
       if (response.data.code === 200) {
         setBoardByName(response.data.data);
-        console.log("Board fetched successfully!");
       } else {
         console.error("Failed to fetch board.");
       }

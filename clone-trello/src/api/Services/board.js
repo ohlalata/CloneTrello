@@ -32,4 +32,15 @@ const getBoardByName = async (boardName) => {
   return response;
 };
 
-export default { getAllBoard, createBoard, getBoardByName };
+const changeBoardStatus = async (id, isActive) => {
+  const serviceUrl = urlConstant.endpoint.board.updateBoardStatus
+    .replace("${id}", id)
+    .replace("${isActive}", isActive);
+  const response = await axiosLocalHost.sendAuthorizedRequest(
+    serviceUrl,
+    "PUT"
+  );
+  return response;
+};
+
+export default { getAllBoard, createBoard, getBoardByName, changeBoardStatus };

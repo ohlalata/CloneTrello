@@ -8,6 +8,13 @@ const login = async (email, password) => {
     password,
   });
 
+  const accessToken = response.data.bearer;
+  if (accessToken) {
+    localStorage.setItem("accessToken", accessToken);
+  } else {
+    console.log("Access token not found!");
+  }
+
   return response;
 };
 

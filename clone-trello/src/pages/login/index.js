@@ -29,23 +29,14 @@ const LoginPages = () => {
 
   const handleLogin = async (e) => {
     e.preventDefault();
-    let accessToken;
     try {
       const response = await loginService.login(email, password);
       if (response.data.code == 200) {
-        console.log("Login Successfull!");
-
-        console.log(response.data.bearer);
-        accessToken = response.data.bearer;
-        if (accessToken) {
-          localStorage.setItem("accessToken", accessToken);
-          toast.success("Login Successfully!");
-          navigate("/home");
-        }
+        toast.success("Login Successfully!");
+        navigate("/home");
       }
     } catch (error) {
       toast.error("Login Failed!");
-
       console.error(error);
     }
   };

@@ -19,9 +19,9 @@ import { Nav, Button, Collapse } from "react-bootstrap";
 import NavBar from "../../components/navBar";
 import { faUserGroup } from "@fortawesome/free-solid-svg-icons";
 import { faPlus } from "@fortawesome/free-solid-svg-icons";
-import userService from "../../api/Services/user";
 import { faTable } from "@fortawesome/free-solid-svg-icons";
 import { faTableList } from "@fortawesome/free-solid-svg-icons";
+import { jwtDecode } from "jwt-decode";
 
 const HomePages = () => {
   const [activeKey, setActiveKey] = useState("/home");
@@ -33,6 +33,10 @@ const HomePages = () => {
   const [modalShow, setModalShow] = useState(false);
 
   const [boardName, setBoardName] = useState("");
+
+  const [createUser, setCreateUser] = useState("");
+
+  const [yourBoard, setYourBoard] = useState([]);
 
   const handleToggle = (key) => {
     setOpenItems((prevState) => ({
@@ -54,15 +58,22 @@ const HomePages = () => {
     setActiveKey(selectedKey);
   };
 
-  const handleGetUserById = async (id) => {
+  const handleUpdateBoardStatus = async (id) => {
     try {
-      const response = await userService.getUserById(id);
+      const response = await boardService.changeBoardStatus(id, false);
       if (response.data.code == 200) {
-        console.log(response.data.data.name);
+        console.log("delete board successfull");
+        handleGetAllBoard();
       }
     } catch (error) {
       console.error(error);
     }
+  };
+
+  const deCrypAccessToken = () => {
+    const toKen = localStorage.getItem("accessToken");
+    const deCrypAccessToken = jwtDecode(toKen);
+    setCreateUser(deCrypAccessToken.sub);
   };
 
   const handleGetAllBoard = async () => {
@@ -91,8 +102,17 @@ const HomePages = () => {
   };
 
   useEffect(() => {
+    deCrypAccessToken();
     handleGetAllBoard();
   }, []);
+
+  useEffect(() => {
+    if (createUser) {
+      setYourBoard(
+        listBoard.filter((board) => board.createdUser === createUser)
+      );
+    }
+  }, [createUser, listBoard]);
 
   return (
     <React.Fragment>
@@ -122,7 +142,7 @@ const HomePages = () => {
             <div>
               <p className="mb-1 ps-1 fw-semibold fs-5">workspaces</p>
               <div className="d-flex flex-column gap-2">
-                {listBoard.map((listBoardSide, key) => (
+                {yourBoard.map((listBoardSide, key) => (
                   <div key={key}>
                     <Button
                       className="d-flex btn__collapse-board justify-content-between"
@@ -175,8 +195,11 @@ const HomePages = () => {
                 </div>
                 <div>
                   <div className="d-flex gap-3 flex-wrap">
-                    {listBoard.map((listBoards, key) => (
-                      <div key={key} className="block__your-board rounded">
+                    {yourBoard.map((listBoards, key) => (
+                      <div
+                        key={key}
+                        className="block__your-board rounded d-flex flex-column justify-content-between"
+                      >
                         <Link
                           to={`/board/board-content/${listBoards.id}`}
                           style={{ textDecoration: "none" }}
@@ -186,12 +209,20 @@ const HomePages = () => {
                               <p className="text-white fw-bold mb-0">
                                 {listBoards.name}
                               </p>
-                              <div>
-                                <input type="checkbox"></input>
-                              </div>
                             </div>
                           </div>
                         </Link>
+
+                        <div className="d-flex justify-content-end pe-2 pb-1">
+                          <span
+                            style={{ color: "#ffffff" }}
+                            onClick={() =>
+                              handleUpdateBoardStatus(listBoards.id)
+                            }
+                          >
+                            <FontAwesomeIcon icon={faTrashCan} />
+                          </span>
+                        </div>
                       </div>
                     ))}
                     <div>
@@ -255,19 +286,19 @@ const HomePages = () => {
                 <div>
                   <div className="d-flex gap-3 flex-wrap">
                     {listBoard.map((listBoards, key) => (
-                      <div key={key} className="block__your-board rounded">
+                      <div
+                        key={key}
+                        className="block__your-board rounded d-flex flex-column justify-content-between"
+                      >
                         <Link
                           to={`/board/board-content/${listBoards.id}`}
                           style={{ textDecoration: "none" }}
                         >
                           <div className="p-2 ">
-                            <div className="d-flex justify-content-between">
+                            <div className="d-flex">
                               <p className="text-white fw-bold mb-0">
                                 {listBoards.name}
                               </p>
-                              <div>
-                                <input type="checkbox"></input>
-                              </div>
                             </div>
                           </div>
                         </Link>
