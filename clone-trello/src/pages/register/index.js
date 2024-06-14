@@ -186,10 +186,10 @@ const RegisterPages = () => {
         </div>
 
         <div className="d-flex justify-content-between z-3 position-absolute block__position-image">
-          <div className="image__image-left">
+          <div className="block__image-left">
             <img src={constant.BACKGROUND_LEFT_URL} alt="image login left" />
           </div>
-          <div className="image__image-right">
+          <div className="block__image-right">
             <img src={constant.BACKGROUND_RIGHT_URL} alt="image login right" />
           </div>
         </div>
