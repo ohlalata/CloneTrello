@@ -9,6 +9,7 @@ export default {
     },
     user: {
       getUserById: "/user/get/${id}",
+      getAllUser: "/user/get-all?PageIndex=1&PageSize=50&email=${email}&name=${name}",
     },
     board: {
       getAllBoard: "/board/get-all",
@@ -31,6 +32,10 @@ export default {
     },
     task: {
       getAllTask: "",
+    },
+    boardMember: {
+      createBoardMember: "boardMember/create",
+      getAllBoardMember: "/boardMember/get-all?boardId=${boardId}",
     },
   },
 };
