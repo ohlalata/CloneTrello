@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import "./style.scss";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faUserPlus } from "@fortawesome/free-solid-svg-icons";
@@ -7,10 +7,39 @@ import { faUserGroup } from "@fortawesome/free-solid-svg-icons";
 import boardService from "../../api/Services/board";
 
 const NavbarBoardContent = (boardID) => {
-  //console.log(boardID.boardID);
   const [boardName, setBoardName] = useState("");
 
-  const [listBoardName, setListBoardName] = useState([]);
+  const [inputBoardName, setInputBoardName] = useState("");
+  const [inputBoardNameTemp, setInputBoardNameTemp] = useState("");
+
+  const [isBoardNameVisible, setIsBoardNameVisible] = useState(false);
+
+  const boardNameRef = useRef(null);
+
+  const inputReff = useRef(null);
+  const spanReff = useRef(null);
+
+  const handleBoardName = () => {
+    setIsBoardNameVisible(true);
+    setInputBoardNameTemp(boardName);
+  };
+
+  const handleChangeBoardName = (e) => {
+    setInputBoardName(e.target.value);
+  };
+
+  const handleUpdateBoardName = async (id) => {
+    const formData = new FormData();
+    formData.append("Name", inputBoardName);
+    try {
+      const response = await boardService.updateBoardName(id, formData);
+      if (response.data.code == 200) {
+        console.log("update name successful");
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  };
 
   const handleGetAllBoard = async () => {
     try {
@@ -20,8 +49,6 @@ const NavbarBoardContent = (boardID) => {
         setBoardName(
           result.filter((board) => board.id == boardID.boardID)[0].name
         );
-        setListBoardName(result);
-        console.log(result);
       }
     } catch (error) {
       console.error(error);
@@ -38,9 +65,22 @@ const NavbarBoardContent = (boardID) => {
         <div className="container-fluid d-flex justify-content-between">
           <div className="d-flex gap-3">
             <div className="d-flex align-items-center">
-              <span className="fs-5 fw-bold" style={{ color: "#455570" }}>
-                {boardName}
-              </span>
+              {isBoardNameVisible ? (
+                <input
+                  className="input__board-name"
+                  value={inputBoardName}
+                  onChange={handleChangeBoardName}
+                  //onBlur={handleUpdateBoardName(boardID.boardID)}
+                ></input>
+              ) : (
+                <span
+                  className="fs-5 fw-bold"
+                  style={{ color: "#455570" }}
+                  onClick={() => handleBoardName(boardName)}
+                >
+                  {boardName}
+                </span>
+              )}
             </div>
             <div className="d-flex gap-2 block__change-visibility p-1 align-items-center">
               <span>
