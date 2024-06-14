@@ -35,6 +35,7 @@ export default {
     },
     boardMember: {
       createBoardMember: "boardMember/create",
+      getAllBoardMember: "/boardMember/get-all?boardId=${boardId}",
     },
   },
 };
