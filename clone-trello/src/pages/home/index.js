@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { Link } from "react-router-dom";
 import "./style.scss";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -27,6 +27,7 @@ import { faTableList } from "@fortawesome/free-solid-svg-icons";
 import { jwtDecode } from "jwt-decode";
 import { toast } from "react-toastify";
 import "react-toastify/ReactToastify.css";
+import { debounce } from "lodash";
 
 const HomePages = () => {
   const [activeKey, setActiveKey] = useState("/home");
@@ -137,7 +138,6 @@ const HomePages = () => {
   }, [createUser, listBoard]);
 
   const handleMemberClick = (index) => {
-    console.log('Clicked member for board index:', index); // Debugging log
     handleToggle(index);
     setSelectedBoardIndex(index);
     setInviteModalShow(true);
@@ -146,18 +146,24 @@ const HomePages = () => {
   const handleSearchChange = async (e) => {
     setSearchKeyword(e.target.value);
     if (e.target.value.length > 2) {
-      try {
-        const response = await userService.searchUsers(e.target.value);
-        if (response.data.code === 200) {
-          setSearchResults(response.data.data);
-        }
-      } catch (error) {
-        console.error(error);
-      }
+      fetchSearchResultsDebounced(e.target.value);
     } else {
       setSearchResults([]);
     }
   };
+
+  const fetchSearchResults = async (keyword) => {
+    try {
+      const response = await userService.searchUsers(keyword);
+      if (response.data.code === 200) {
+        setSearchResults(response.data.data);
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  const fetchSearchResultsDebounced = useCallback(debounce(fetchSearchResults, 500), []);
 
   const handleInviteUser = async (user) => {
     try {
@@ -171,13 +177,15 @@ const HomePages = () => {
           return;
         }
       }
-      
+
       const inviteResponse = await boardMemberService.createBoardMember(user.id, boardId);
       if (inviteResponse.data.code === 201) {
+        toast.success("Board member invited successfully!");
         setInviteModalShow(false);
         setError(""); // Clear error if invite is successful
       }
     } catch (error) {
+      toast.error("Board member invited failed!");
       setError("Invite board member failed!");
       console.error(error);
     }
