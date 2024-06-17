@@ -64,8 +64,6 @@ const NavbarBoardContent = (boardID) => {
         setBoardName(
           result.filter((board) => board.id == boardID.boardID)[0].name
         );
-
-        console.log(boardID.boardID);
       }
     } catch (error) {
       console.error(error);

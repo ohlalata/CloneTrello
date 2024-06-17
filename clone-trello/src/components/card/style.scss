@@ -156,7 +156,7 @@
 }
 
 .block__input-description {
-  background-color: #e2e4ea;
+  background-color: #d0d2d8;
   border-radius: 5px;
   height: 60px;
 }
@@ -187,6 +187,12 @@
 }
 
 .block__card-action {
-  background-color: #e2e4ea;
+  background-color: #d0d1d6;
   border-radius: 5px;
+  cursor: pointer;
+}
+
+.block__rich-text-editor {
+  background-color: #ffffff;
+  padding: 6px 5px 0px;
 }
