@@ -39,5 +39,8 @@ export default {
       createBoardMember: "boardMember/create",
       getAllBoardMember: "/boardMember/get-all?boardId=${boardId}",
     },
+    role: {
+      getAllRole: "/role/get-all?PageIndex=1&PageSize=50&Id=${Id}&name=${name}",
+    },
   },
 };
