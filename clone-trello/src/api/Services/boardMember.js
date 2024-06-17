@@ -21,5 +21,17 @@ const getAllBoardMember = async (boardId) => {
   );
   return response;
 };
+const changeStatus = async (id, isActive) => {
+  const serviceUrl = urlConstant.endpoint.boardMember.inactiveBoardMember
+    .replace("${id}", id)
+    .replace("${isActive}", isActive);
 
-export default { createBoardMember, getAllBoardMember };
+  const response = await axiosLocalHost.sendAuthorizedRequest(
+    serviceUrl,
+    "PUT"
+  );
+
+  return response;
+};
+
+export default { createBoardMember, getAllBoardMember, changeStatus };
