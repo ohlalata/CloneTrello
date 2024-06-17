@@ -435,7 +435,7 @@ const HomePages = () => {
         {selectedBoardIndex !== null && (
           <Modal show={inviteModalShow} onHide={handleInviteModal} centered>
             <ModalHeader closeButton>
-              <ModalTitle>Invite User</ModalTitle>
+              <ModalTitle>Invite User to Board</ModalTitle>
             </ModalHeader>
             <ModalBody>
               <Form onSubmit={handleSearchChange}>
@@ -451,7 +451,7 @@ const HomePages = () => {
                   {error}
                 </Alert>
               )}
-              <div className="mt-3">
+              <div className="mt-3 scrollable-container">
                 {searchResults.map((user, idx) => (
                   <div
                     key={idx}
@@ -465,6 +465,11 @@ const HomePages = () => {
                 ))}
               </div>
             </ModalBody>
+            <ModalFooter>
+              <Button variant="secondary" onClick={handleInviteModal}>
+                Cancel
+              </Button>
+            </ModalFooter>
           </Modal>
         )}
       </div>
