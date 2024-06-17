@@ -54,7 +54,6 @@ const HomePages = () => {
 
   const [modalShowDelete, setModalShowDelete] = useState(false);
 
-
   const handleToggle = (key) => {
     setOpenItems((prevState) => ({
       ...prevState,
@@ -167,7 +166,7 @@ const HomePages = () => {
 
   const handleInviteUser = async (user) => {
     try {
-      const boardId = yourBoard[selectedBoardIndex].id; // Get the correct board id
+      const boardId = yourBoard[selectedBoardIndex].id; 
       const response = await boardMemberService.getAllBoardMember(boardId);
       if (response.data.code === 200) {
         const members = response.data.data;
@@ -182,7 +181,7 @@ const HomePages = () => {
       if (inviteResponse.data.code === 201) {
         toast.success("Board member invited successfully!");
         setInviteModalShow(false);
-        setError(""); // Clear error if invite is successful
+        setError("");
       }
     } catch (error) {
       toast.error("Board member invited failed!");
@@ -193,10 +192,10 @@ const HomePages = () => {
 
   useEffect(() => {
     if (!inviteModalShow) {
-      setSearchResults([]); // Clear search results
-      setError(""); // Clear error
-      setSearchKeyword(""); // Clear search keyword
-      setSelectedBoardIndex(null); // Clear selected board index
+      setSearchResults([]);
+      setError(""); 
+      setSearchKeyword(""); 
+      setSelectedBoardIndex(null); 
     }
   }, [inviteModalShow]);
 
@@ -423,13 +422,9 @@ const HomePages = () => {
           </div>
         </div>
         {selectedBoardIndex !== null && (
-          <Modal
-            show={inviteModalShow}
-            onHide={handleInviteModal}
-            centered
-          >
+          <Modal show={inviteModalShow} onHide={handleInviteModal} centered>
             <ModalHeader closeButton>
-              <ModalTitle>Invite User</ModalTitle>
+              <ModalTitle>Invite User to Board</ModalTitle>
             </ModalHeader>
             <ModalBody>
               <Form onSubmit={handleSearchChange}>
@@ -441,7 +436,7 @@ const HomePages = () => {
                 />
               </Form>
               {error && <Alert variant="danger" className="small-alert">{error}</Alert>}
-              <div className="mt-3">
+              <div className="mt-3 scrollable-container">
                 {searchResults.map((user, idx) => (
                   <div
                     key={idx}
@@ -455,6 +450,11 @@ const HomePages = () => {
                 ))}
               </div>
             </ModalBody>
+            <ModalFooter>
+              <Button variant="secondary" onClick={handleInviteModal}>
+                Cancel
+              </Button>
+            </ModalFooter>
           </Modal>
         )}
       </div>
