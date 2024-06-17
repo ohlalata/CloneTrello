@@ -44,6 +44,9 @@ const HomePages = () => {
 
   const [yourBoard, setYourBoard] = useState([]);
 
+  const [deleteBoardId, setDeleteBoardId] = useState("");
+
+  const [deleteBoardName, setDeleteBoardName] = useState("");
 
   const [inviteModalShow, setInviteModalShow] = useState(false);
 
@@ -53,7 +56,6 @@ const HomePages = () => {
   const [selectedBoardIndex, setSelectedBoardIndex] = useState(null);
 
   const [modalShowDelete, setModalShowDelete] = useState(false);
-
 
   const handleToggle = (key) => {
     setOpenItems((prevState) => ({
@@ -70,6 +72,12 @@ const HomePages = () => {
     setInviteModalShow(!inviteModalShow);
   };
 
+  const handleDeleteModal = (id, name) => {
+    setModalShowDelete(true);
+    setDeleteBoardId(id);
+    setDeleteBoardName(name);
+  };
+
   const submitCreateBoard = () => {
     handleCreateBoard();
     setModalShow(false);
@@ -77,20 +85,6 @@ const HomePages = () => {
 
   const handleSelect = (selectedKey) => {
     setActiveKey(selectedKey);
-  };
-
-  const handleUpdateBoardStatus = async (id) => {
-    try {
-      const response = await boardService.changeBoardStatus(id, false);
-      if (response.data.code == 200) {
-
-        console.log("delete board successful");
-        setModalShowDelete(false);
-        handleGetAllBoard();
-      }
-    } catch (error) {
-      console.error(error);
-    }
   };
 
   const deCrypAccessToken = () => {
@@ -105,6 +99,18 @@ const HomePages = () => {
       if (response.data.code == 200) {
         const result = response.data.data;
         setListBoard(result);
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  const handleUpdateBoardStatus = async (id) => {
+    try {
+      const response = await boardService.changeBoardStatus(id, false);
+      if (response.data.code == 200) {
+        setModalShowDelete(false);
+        handleGetAllBoard();
       }
     } catch (error) {
       console.error(error);
@@ -163,26 +169,32 @@ const HomePages = () => {
     }
   };
 
-  const fetchSearchResultsDebounced = useCallback(debounce(fetchSearchResults, 500), []);
+  const fetchSearchResultsDebounced = useCallback(
+    debounce(fetchSearchResults, 500),
+    []
+  );
 
   const handleInviteUser = async (user) => {
     try {
-      const boardId = yourBoard[selectedBoardIndex].id; // Get the correct board id
+      const boardId = yourBoard[selectedBoardIndex].id;
       const response = await boardMemberService.getAllBoardMember(boardId);
       if (response.data.code === 200) {
         const members = response.data.data;
-        const isMember = members.some(member => member.userId === user.id);
+        const isMember = members.some((member) => member.userId === user.id);
         if (isMember) {
           setError("User is already a member of this board!");
           return;
         }
       }
 
-      const inviteResponse = await boardMemberService.createBoardMember(user.id, boardId);
+      const inviteResponse = await boardMemberService.createBoardMember(
+        user.id,
+        boardId
+      );
       if (inviteResponse.data.code === 201) {
         toast.success("Board member invited successfully!");
         setInviteModalShow(false);
-        setError(""); // Clear error if invite is successful
+        setError("");
       }
     } catch (error) {
       toast.error("Board member invited failed!");
@@ -193,10 +205,10 @@ const HomePages = () => {
 
   useEffect(() => {
     if (!inviteModalShow) {
-      setSearchResults([]); // Clear search results
-      setError(""); // Clear error
-      setSearchKeyword(""); // Clear search keyword
-      setSelectedBoardIndex(null); // Clear selected board index
+      setSearchResults([]);
+      setError("");
+      setSearchKeyword("");
+      setSelectedBoardIndex(null);
     }
   }, [inviteModalShow]);
 
@@ -275,19 +287,19 @@ const HomePages = () => {
                 </div>
                 <div>
                   <div className="d-flex gap-3 flex-wrap">
-                    {yourBoard.map((listBoards, index) => (
+                    {yourBoard.map((yourBoards, index) => (
                       <div
                         key={index}
                         className="block__your-board rounded d-flex flex-column justify-content-between"
                       >
                         <Link
-                          to={`/board/board-content/${listBoards.id}`}
+                          to={`/board/board-content/${yourBoards.id}`}
                           style={{ textDecoration: "none" }}
                         >
                           <div className="p-2">
                             <div className="d-flex justify-content-between">
                               <p className="text-white fw-bold mb-0">
-                                {listBoards.name}
+                                {yourBoards.name}
                               </p>
                             </div>
                           </div>
@@ -296,42 +308,48 @@ const HomePages = () => {
                         <div className="d-flex justify-content-end pe-2 pb-1">
                           <span
                             style={{ color: "#ffffff" }}
-                            onClick={() => setModalShowDelete(true)}
+                            onClick={() =>
+                              handleDeleteModal(yourBoards.id, yourBoards.name)
+                            }
                           >
                             <FontAwesomeIcon icon={faTrashCan} />
                           </span>
                         </div>
-
-                        <Modal show={modalShowDelete} centered>
-                          <ModalHeader closeButton>
-                            <ModalTitle>Confirm</ModalTitle>
-                          </ModalHeader>
-                          <ModalBody className="d-flex justify-content-center">
-                            <span className="fs-5 fw-bold">
-                              Are you sure delete board?{" "}
-                            </span>
-                          </ModalBody>
-                          <ModalFooter>
-                            <div className="d-flex justify-content-around gap-3 w-100">
-                              <button
-                                className="btn btn-secondary"
-                                onClick={() => setModalShowDelete(false)}
-                              >
-                                Cancel
-                              </button>
-                              <button
-                                className="btn btn-primary"
-                                onClick={() =>
-                                  handleUpdateBoardStatus(listBoards.id)
-                                }
-                              >
-                                Delete
-                              </button>
-                            </div>
-                          </ModalFooter>
-                        </Modal>
                       </div>
                     ))}
+
+                    <Modal
+                      show={modalShowDelete}
+                      centered
+                      onHide={() => setModalShowDelete(false)}
+                    >
+                      <ModalHeader closeButton>
+                        <ModalTitle>Confirm</ModalTitle>
+                      </ModalHeader>
+                      <ModalBody className="d-flex justify-content-center">
+                        <span className="fs-5 fw-bold">
+                          Are you sure delete {deleteBoardName} board?{" "}
+                        </span>
+                      </ModalBody>
+                      <ModalFooter>
+                        <div className="d-flex justify-content-around gap-3 w-100">
+                          <button
+                            className="btn btn-secondary"
+                            onClick={() => setModalShowDelete(false)}
+                          >
+                            Cancel
+                          </button>
+                          <button
+                            className="btn btn-primary"
+                            onClick={() =>
+                              handleUpdateBoardStatus(deleteBoardId)
+                            }
+                          >
+                            Delete
+                          </button>
+                        </div>
+                      </ModalFooter>
+                    </Modal>
 
                     <div>
                       <div
@@ -381,14 +399,6 @@ const HomePages = () => {
                     <FontAwesomeIcon icon={faTableList} size="xl" />
                     <h6 className="fw-bold my-1 fs-5">PUBLIC BOARDS</h6>
                   </div>
-
-                  <div className="d-flex gap-2">
-                    <div>
-                      <button type="button" class="btn btn__action-board">
-                        <FontAwesomeIcon icon={faTrashCan} /> Delete
-                      </button>
-                    </div>
-                  </div>
                 </div>
                 <div>
                   <div className="d-flex gap-3 flex-wrap">
@@ -423,11 +433,7 @@ const HomePages = () => {
           </div>
         </div>
         {selectedBoardIndex !== null && (
-          <Modal
-            show={inviteModalShow}
-            onHide={handleInviteModal}
-            centered
-          >
+          <Modal show={inviteModalShow} onHide={handleInviteModal} centered>
             <ModalHeader closeButton>
               <ModalTitle>Invite User</ModalTitle>
             </ModalHeader>
@@ -440,7 +446,11 @@ const HomePages = () => {
                   onChange={handleSearchChange}
                 />
               </Form>
-              {error && <Alert variant="danger" className="small-alert">{error}</Alert>}
+              {error && (
+                <Alert variant="danger" className="small-alert">
+                  {error}
+                </Alert>
+              )}
               <div className="mt-3">
                 {searchResults.map((user, idx) => (
                   <div

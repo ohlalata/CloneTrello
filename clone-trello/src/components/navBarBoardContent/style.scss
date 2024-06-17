@@ -21,5 +21,17 @@
 
 .input__board-name {
   border: none;
-  border-radius: 5px;
+  border-radius: 4px;
+  width: fit-content;
+  font-weight: bold;
+  color: #455570;
+}
+
+.hidden-span {
+  visibility: hidden;
+  white-space: pre;
+  position: absolute;
+  font-size: 16px;
+  font-family: Arial, sans-serif;
+  color: #455570;
 }

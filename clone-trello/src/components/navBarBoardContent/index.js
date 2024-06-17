@@ -5,16 +5,14 @@ import { faUserPlus } from "@fortawesome/free-solid-svg-icons";
 import { faEllipsis } from "@fortawesome/free-solid-svg-icons";
 import { faUserGroup } from "@fortawesome/free-solid-svg-icons";
 import boardService from "../../api/Services/board";
+import { toast } from "react-toastify";
+import "react-toastify/ReactToastify.css";
 
 const NavbarBoardContent = (boardID) => {
-  const [boardName, setBoardName] = useState("");
-
-  const [inputBoardName, setInputBoardName] = useState("");
-  const [inputBoardNameTemp, setInputBoardNameTemp] = useState("");
-
   const [isBoardNameVisible, setIsBoardNameVisible] = useState(false);
 
-  const boardNameRef = useRef(null);
+  const [boardName, setBoardName] = useState("");
+  const [inputBoardNameTemp, setInputBoardNameTemp] = useState(boardName);
 
   const inputReff = useRef(null);
   const spanReff = useRef(null);
@@ -25,16 +23,33 @@ const NavbarBoardContent = (boardID) => {
   };
 
   const handleChangeBoardName = (e) => {
-    setInputBoardName(e.target.value);
+    if (e.target.value == "") {
+      toast.error("Board name is required!");
+    }
+    setInputBoardNameTemp(e.target.value);
+  };
+
+  const adjustInputWidth = () => {
+    if (spanReff.current && inputReff.current) {
+      const spanWidth = spanReff.current.offsetWidth;
+      inputReff.current.style.width = `${spanWidth}px`;
+    }
   };
 
   const handleUpdateBoardName = async (id) => {
     const formData = new FormData();
-    formData.append("Name", inputBoardName);
+    if (inputBoardNameTemp == "") {
+      window.location.reload();
+    } else {
+      formData.append("Name", inputBoardNameTemp);
+    }
+
     try {
       const response = await boardService.updateBoardName(id, formData);
       if (response.data.code == 200) {
-        console.log("update name successful");
+        setIsBoardNameVisible(false);
+        setInputBoardNameTemp("");
+        handleGetAllBoard();
       }
     } catch (error) {
       console.error(error);
@@ -49,6 +64,8 @@ const NavbarBoardContent = (boardID) => {
         setBoardName(
           result.filter((board) => board.id == boardID.boardID)[0].name
         );
+
+        console.log(boardID.boardID);
       }
     } catch (error) {
       console.error(error);
@@ -59,28 +76,45 @@ const NavbarBoardContent = (boardID) => {
     handleGetAllBoard();
   }, []);
 
+  useEffect(() => {
+    if (isBoardNameVisible && inputReff.current) {
+      inputReff.current.focus();
+      adjustInputWidth();
+    }
+  }, [isBoardNameVisible]);
+
+  useEffect(() => {
+    adjustInputWidth();
+  }, [inputBoardNameTemp]);
+
   return (
     <React.Fragment>
       <nav className="navbar navbar__board-content">
         <div className="container-fluid d-flex justify-content-between">
           <div className="d-flex gap-3">
-            <div className="d-flex align-items-center">
+            <div className="">
               {isBoardNameVisible ? (
                 <input
-                  className="input__board-name"
-                  value={inputBoardName}
+                  ref={inputReff}
+                  type="text"
+                  className="input__board-name fw-bold fs-5"
+                  value={inputBoardNameTemp}
                   onChange={handleChangeBoardName}
-                  //onBlur={handleUpdateBoardName(boardID.boardID)}
+                  style={{ transition: "width 0.2s" }}
+                  onBlur={() => handleUpdateBoardName(boardID.boardID)}
                 ></input>
               ) : (
                 <span
                   className="fs-5 fw-bold"
                   style={{ color: "#455570" }}
-                  onClick={() => handleBoardName(boardName)}
+                  onClick={handleBoardName}
                 >
                   {boardName}
                 </span>
               )}
+              <span ref={spanReff} className="hidden-span px-2 fs-5">
+                {inputBoardNameTemp}
+              </span>
             </div>
             <div className="d-flex gap-2 block__change-visibility p-1 align-items-center">
               <span>
