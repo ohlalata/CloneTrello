@@ -245,7 +245,6 @@ const Card = (listIdProps) => {
                       <div>{modalCardDetail.description}</div>
                     )}
                   </div>
-                  <div>Rich Text</div>
                 </div>
                 <div className="d-flex justify-content-between mt-3">
                   <div className="d-flex gap-2 align-items-center">

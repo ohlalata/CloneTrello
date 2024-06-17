@@ -9,14 +9,16 @@ export default {
     },
     user: {
       getUserById: "/user/get/${id}",
-      getAllUser: "/user/get-all?PageIndex=1&PageSize=50&email=${email}&name=${name}",
+      getAllUser:
+        "/user/get-all?PageIndex=1&PageSize=50&email=${email}&name=${name}",
     },
     board: {
       getAllBoard: "/board/get-all",
       createBoard: "/board/create",
       getBoardByName:
         "/board/get-all?PageIndex=1&PageSize=50&name=${boardName}",
-      updateBoardStatus: "/Board/change-status/${id}?isActive=${isActive}",
+      updateBoardStatus: "/board/change-status/${id}?isActive=${isActive}",
+      updateBoardName: "/board/update/${id}",
     },
     list: {
       getAllList: "/list/get-all?boardId=${boardId}",

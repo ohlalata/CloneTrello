@@ -43,4 +43,31 @@ const changeBoardStatus = async (id, isActive) => {
   return response;
 };
 
-export default { getAllBoard, createBoard, getBoardByName, changeBoardStatus };
+const updateBoardName = async (id, formData) => {
+  const serviceUrl = urlConstant.endpoint.board.updateBoardName.replace(
+    "${id}",
+    id
+  );
+  const config = {
+    header: {
+      "Content-Type": "multipart/form-data",
+    },
+  };
+
+  const response = await axiosLocalHost.sendAuthorizedRequest(
+    serviceUrl,
+    "PUT",
+    formData,
+    config
+  );
+
+  return response;
+};
+
+export default {
+  getAllBoard,
+  createBoard,
+  getBoardByName,
+  changeBoardStatus,
+  updateBoardName,
+};

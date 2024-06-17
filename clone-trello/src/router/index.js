@@ -2,8 +2,11 @@ import React from "react";
 import { Route, Routes } from "react-router-dom";
 import AuthRoutes from "./authRoutes";
 import UserRoutes from "./userRoutes";
+import PrivateRoute from "../components/privateRoute";
 
 const Index = () => {
+  let isAuthenticated = true;
+
   return (
     <Routes>
       <Route>
@@ -17,30 +20,32 @@ const Index = () => {
         ))}
       </Route>
 
-      {UserRoutes.map((route, idx) => {
-        if (route?.index)
-          return (
-            <Route
-              path={route.path}
-              element={route.component}
-              key={idx}
-              index
-            />
-          );
-        if (!route?.index)
-          return (
-            <Route path={route.path} element={route.component} key={idx}>
-              (
-              {route?.children &&
-                route.children.map((r) => {
-                  return (
-                    <Route path={r.path} element={r.component} key={idx} />
-                  );
-                })}
-              )
-            </Route>
-          );
-      })}
+      <Route element={<PrivateRoute isAuthenticated={isAuthenticated} />}>
+        {UserRoutes.map((route, idx) => {
+          if (route?.index)
+            return (
+              <Route
+                path={route.path}
+                element={route.component}
+                key={idx}
+                index
+              />
+            );
+          if (!route?.index)
+            return (
+              <Route path={route.path} element={route.component} key={idx}>
+                (
+                {route?.children &&
+                  route.children.map((r) => {
+                    return (
+                      <Route path={r.path} element={r.component} key={idx} />
+                    );
+                  })}
+                )
+              </Route>
+            );
+        })}
+      </Route>
     </Routes>
   );
 };
