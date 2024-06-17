@@ -1,9 +1,9 @@
-import React, { useState, useEffect, useCallback } from "react";
-import { Link } from "react-router-dom";
+import React, { useState, useEffect, useCallback} from "react";
+import { Link, useNavigate } from "react-router-dom";
 import "./style.scss";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faTrashCan } from "@fortawesome/free-solid-svg-icons";
-import { faChevronDown } from "@fortawesome/free-solid-svg-icons";
+import { faChevronDown, faUserPlus } from "@fortawesome/free-solid-svg-icons";
 import boardService from "../../api/Services/board";
 import userService from "../../api/Services/user"; // Import userService
 import boardMemberService from "../../api/Services/boardMember";
@@ -53,6 +53,7 @@ const HomePages = () => {
   const [selectedBoardIndex, setSelectedBoardIndex] = useState(null);
 
   const [modalShowDelete, setModalShowDelete] = useState(false);
+  const navigate = useNavigate();
 
   const handleToggle = (key) => {
     setOpenItems((prevState) => ({
@@ -166,7 +167,7 @@ const HomePages = () => {
 
   const handleInviteUser = async (user) => {
     try {
-      const boardId = yourBoard[selectedBoardIndex].id; 
+      const boardId = yourBoard[selectedBoardIndex].id;
       const response = await boardMemberService.getAllBoardMember(boardId);
       if (response.data.code === 200) {
         const members = response.data.data;
@@ -190,12 +191,16 @@ const HomePages = () => {
     }
   };
 
+  const navigateToBoardMembers = (boardId) => {
+    navigate(`/board/board-member/${boardId}`);
+  };
+
   useEffect(() => {
     if (!inviteModalShow) {
       setSearchResults([]);
-      setError(""); 
-      setSearchKeyword(""); 
-      setSelectedBoardIndex(null); 
+      setError("");
+      setSearchKeyword("");
+      setSelectedBoardIndex(null);
     }
   }, [inviteModalShow]);
 
@@ -246,6 +251,20 @@ const HomePages = () => {
                           <div
                             className="d-flex justify-content-between block__board-action"
                             onClick={() => handleMemberClick(index)}
+                          >
+                            <div className="d-flex gap-2 align-items-center">
+                              <FontAwesomeIcon icon={faUserPlus} size="sm" />
+                              <span className="fw-semibold">Invite Member</span>
+                            </div>
+                            <div className="block__add-member">
+                              <FontAwesomeIcon icon={faPlus} />
+                            </div>
+                          </div>
+                        </div>
+                        <div className="mt-2 ps-2 d-flex flex-column gap-2">
+                          <div
+                            className="d-flex justify-content-between block__board-action"
+                            onClick={() => navigateToBoardMembers(listBoardSide.id)}
                           >
                             <div className="d-flex gap-2 align-items-center">
                               <FontAwesomeIcon icon={faUserGroup} size="sm" />
