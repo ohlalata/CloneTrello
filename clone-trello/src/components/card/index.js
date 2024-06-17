@@ -15,6 +15,10 @@ import { faClock } from "@fortawesome/free-regular-svg-icons";
 import { faTrashCan } from "@fortawesome/free-regular-svg-icons";
 import { toast } from "react-toastify";
 import "react-toastify/ReactToastify.css";
+// import { Editor } from "react-draft-wysiwyg";
+// import { EditorState, convertToRaw } from "draft-js";
+
+// import "../../../node_modules/react-draft-wysiwyg/dist/react-draft-wysiwyg.css";
 
 const Card = (listIdProps) => {
   const textareaRefCardTitle = useRef(null);
@@ -23,13 +27,14 @@ const Card = (listIdProps) => {
   const [EditingCardTitle, setEditingCardTitle] = useState(null);
   const [inputTitleCard, setInputTitleCard] = useState("");
   const [listCard, setListCard] = useState([]);
-
   const [addCardTitleVisible, setAddCardTitleVisible] = useState(false);
-
   const [titleCard, setTitleCard] = useState("");
-
   const [isModalCardShow, setIsModalCardShow] = useState(false);
   const [modalCardDetail, setModalCardDetail] = useState({});
+  const [richTextVisible, setRichTextVisible] = useState(false);
+  // const [editorState, setEditorState] = useState(() =>
+  //   EditorState.createEmpty()
+  // );
 
   const handleModalCard = (objCardDetail) => {
     setModalCardDetail(objCardDetail);
@@ -39,6 +44,14 @@ const Card = (listIdProps) => {
   const handleAddCardTitle = () => {
     setAddCardTitleVisible(true);
   };
+
+  const handleRichTextVisible = () => {
+    setRichTextVisible(true);
+  };
+
+  // const handleEditorChange = (state) => {
+  //   setEditorState(state);
+  // };
 
   const handleEditClickCardTitle = (cardIdVisible, e) => {
     e.stopPropagation();
@@ -64,7 +77,6 @@ const Card = (listIdProps) => {
       const response = await cardServices.getAllCard(listIdProps.listIdProps);
       if (response.data.code == 200) {
         setListCard(response.data.data);
-        console.log("get all card successfully!");
       }
     } catch (error) {
       console.log(error);
@@ -72,15 +84,11 @@ const Card = (listIdProps) => {
   };
 
   const handleUpdateCardTitle = async (cardID) => {
-    console.log("cardID", cardID);
-    console.log("text", inputTitleCard);
-
     const formData = new FormData();
     formData.append("Title", inputTitleCard);
     try {
       const response = await cardServices.updateCardTitle(cardID, formData);
       if (response.data.code == 200) {
-        console.log("update card title successfull");
         setEditingCardTitle("false");
         handleGetAllCard();
       }
@@ -96,14 +104,12 @@ const Card = (listIdProps) => {
         titleCard
       );
       if (response.data.code == 201) {
-        console.log("create card successfull!");
         setTitleCard("");
         setAddCardTitleVisible(false);
         handleGetAllCard();
       }
     } catch (error) {
       console.error(error);
-      console.log("create card fail!");
     }
   };
 
@@ -112,7 +118,7 @@ const Card = (listIdProps) => {
       const response = await cardServices.changeStatus(cardID, false);
       if (response.data.code === 200) {
         window.location.reload();
-        console.log("archive card successfully!");
+
         toast.success("Card archived successfully!");
         setIsModalCardShow(false);
         handleGetAllCard();
@@ -225,26 +231,46 @@ const Card = (listIdProps) => {
                       </div>
                     </div>
 
-                    <div>
-                      <button className="btn btn-secondary btn-sm">
-                        <span className="fw-semibold">Edit</span>
-                      </button>
-                    </div>
-                  </div>
-                  <div>
                     {modalCardDetail.description == null ? (
-                      <div className="block__input-description p-2 mt-3">
-                        <span
-                          className="fw-semibold ps-1"
-                          style={{ fontSize: "15px" }}
-                        >
-                          Add a more detailed description...{" "}
-                        </span>
-                      </div>
+                      <div></div>
                     ) : (
-                      <div>{modalCardDetail.description}</div>
+                      <div>
+                        <button className="btn btn-secondary btn-sm">
+                          <span className="fw-semibold">Edit</span>
+                        </button>
+                      </div>
                     )}
                   </div>
+
+                  {richTextVisible ? (
+                    <div className="d-flex flex-column">
+                      <div className="block__rich-text-editor">
+                        {/* <Editor
+                          editorState={editorState}
+                          toolbarClassName="toolbarClassName"
+                          wrapperClassName="wrapperClassName"
+                          editorClassName="editorClassName"
+                          onEditorStateChange={handleEditorChange}
+                        /> */}
+                      </div>
+                      <div> save cancel</div>
+                    </div>
+                  ) : (
+                    <div onClick={handleRichTextVisible}>
+                      {modalCardDetail.description == null ? (
+                        <div className="block__input-description p-2 mt-3">
+                          <span
+                            className="fw-semibold ps-1"
+                            style={{ fontSize: "15px" }}
+                          >
+                            Add a more detailed description...{" "}
+                          </span>
+                        </div>
+                      ) : (
+                        <div>{modalCardDetail.description}</div>
+                      )}
+                    </div>
+                  )}
                 </div>
                 <div className="d-flex justify-content-between mt-3">
                   <div className="d-flex gap-2 align-items-center">
@@ -289,10 +315,14 @@ const Card = (listIdProps) => {
                     <span>Members</span>
                   </div>
 
-                  <div
-                    className="d-flex align-items-center gap-2 p-2 fw-semibold block__card-action"
-                    style={{ cursor: "pointer" }}
-                  >
+                  <div className="d-flex align-items-center gap-2 p-2 fw-semibold block__card-action">
+                    <div>
+                      <FontAwesomeIcon icon={faClock} />
+                    </div>
+                    <span>Dates</span>
+                  </div>
+
+                  <div className="d-flex align-items-center gap-2 p-2 fw-semibold block__card-action">
                     <div>
                       <FontAwesomeIcon icon={faTrashCan} />
                     </div>

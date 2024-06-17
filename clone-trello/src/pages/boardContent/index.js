@@ -65,7 +65,6 @@ const BoardContentPages = () => {
       const response = await listServices.getAllList(id);
       if (response.data.code == 200) {
         setAllList(response.data.data);
-        console.log("get list list successful!");
       }
     } catch (error) {
       console.error(error);
