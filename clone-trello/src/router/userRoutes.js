@@ -9,6 +9,7 @@ import HomePages from "../pages/home";
 //Board section
 import BoardPages from "../pages/board";
 import BoardContentPages from "../pages/boardContent";
+import BoardMemberPages from "../pages/boardMember";
 
 const UserRoutes = [
   {
@@ -32,6 +33,10 @@ const UserRoutes = [
       {
         path: "board-content/:id",
         component: <BoardContentPages />,
+      },
+      {
+        path: "board-member/:id",
+        component: <BoardMemberPages />,
       },
     ],
   },
