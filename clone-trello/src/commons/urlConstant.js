@@ -19,6 +19,8 @@ export default {
         "/board/get-all?PageIndex=1&PageSize=50&name=${boardName}",
       updateBoardStatus: "/board/change-status/${id}?isActive=${isActive}",
       updateBoardName: "/board/update/${id}",
+      updateBoardVisibility:
+        "/board/change-visibility/${id}?isPublic=${isPublic}",
     },
     list: {
       getAllList: "/list/get-all?boardId=${boardId}",
