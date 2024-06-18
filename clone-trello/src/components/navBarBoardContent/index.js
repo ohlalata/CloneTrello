@@ -7,15 +7,30 @@ import { faUserGroup } from "@fortawesome/free-solid-svg-icons";
 import boardService from "../../api/Services/board";
 import { toast } from "react-toastify";
 import "react-toastify/ReactToastify.css";
+import { Popover, Overlay, Button, ButtonGroup } from "react-bootstrap";
+import { faLock } from "@fortawesome/free-solid-svg-icons";
+import { faEarthAsia } from "@fortawesome/free-solid-svg-icons";
+import { faCheck } from "@fortawesome/free-solid-svg-icons";
 
 const NavbarBoardContent = (boardID) => {
   const [isBoardNameVisible, setIsBoardNameVisible] = useState(false);
-
   const [boardName, setBoardName] = useState("");
   const [inputBoardNameTemp, setInputBoardNameTemp] = useState(boardName);
-
   const inputReff = useRef(null);
   const spanReff = useRef(null);
+
+  const [showPopover, setShowPopover] = useState(false);
+  const [target, setTarget] = useState(null);
+  const PopoverRef = useRef(null);
+
+  const handlePopoverClick = (event) => {
+    setShowPopover(!showPopover);
+    setTarget(event.target);
+  };
+
+  const handleHide = () => {
+    setShowPopover(false);
+  };
 
   const handleBoardName = () => {
     setIsBoardNameVisible(true);
@@ -114,15 +129,87 @@ const NavbarBoardContent = (boardID) => {
                 {inputBoardNameTemp}
               </span>
             </div>
-            <div className="d-flex gap-2 block__change-visibility p-1 align-items-center">
-              <span>
-                <FontAwesomeIcon
-                  icon={faUserGroup}
-                  size="xs"
-                  className="fw-semibold"
-                />
-              </span>
-              <span className="fw-semibold fs-6">Workspace visible</span>
+
+            <div ref={PopoverRef} onClick={handlePopoverClick}>
+              <div className="d-flex gap-2 block__change-visibility p-1 align-items-center">
+                <span>
+                  <FontAwesomeIcon
+                    icon={faUserGroup}
+                    size="xs"
+                    className="fw-semibold"
+                  />
+                </span>
+                <span className="fw-semibold fs-6">Workspace visible</span>
+              </div>
+
+              <Overlay
+                show={showPopover}
+                target={target}
+                placement="bottom"
+                container={PopoverRef.current}
+                containerPadding={20}
+                rootClose={true}
+                onHide={handleHide}
+              >
+                <Popover
+                  id="popover-contained"
+                  className="block__popover-visibility"
+                >
+                  <Popover.Header className="d-flex justify-content-between">
+                    <div></div>
+                    <span
+                      className="fw-bold label__change-visible"
+                      style={{ color: "#455570" }}
+                    >
+                      Change visibility
+                    </span>
+                    <div>
+                      <Button
+                        variant="close"
+                        aria-label="Close"
+                        onClick={handleHide}
+                      />
+                    </div>
+                  </Popover.Header>
+                  <Popover.Body>
+                    <ButtonGroup vertical className="gap-3">
+                      <div>
+                        <div className="d-flex gap-1 align-items-center ms-1">
+                          <FontAwesomeIcon icon={faEarthAsia} color="#455570" />
+                          <span
+                            className="fw-semibold"
+                            style={{ color: "#455570" }}
+                          >
+                            Public
+                          </span>
+                          <FontAwesomeIcon icon={faCheck} />
+                        </div>
+                        <span style={{ color: "#455570", fontSize: "11px" }}>
+                          Anyone on the Trellone can see this board. Only board
+                          members can edit.
+                        </span>
+                      </div>
+
+                      <div>
+                        <div className="d-flex gap-1 align-items-center ms-1">
+                          <FontAwesomeIcon icon={faLock} color="#455570" />
+                          <span
+                            className="fw-semibold"
+                            style={{ color: "#455570" }}
+                          >
+                            Private
+                          </span>
+                          <FontAwesomeIcon icon={faCheck} />
+                        </div>
+                        <span style={{ color: "#455570", fontSize: "11px" }}>
+                          Only board members can see this board. Board admins
+                          can close the board or remove members.
+                        </span>
+                      </div>
+                    </ButtonGroup>
+                  </Popover.Body>
+                </Popover>
+              </Overlay>
             </div>
           </div>
           <div className="d-flex gap-3">

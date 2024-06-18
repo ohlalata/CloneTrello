@@ -53,7 +53,6 @@ const updateBoardName = async (id, formData) => {
       "Content-Type": "multipart/form-data",
     },
   };
-
   const response = await axiosLocalHost.sendAuthorizedRequest(
     serviceUrl,
     "PUT",
@@ -64,10 +63,22 @@ const updateBoardName = async (id, formData) => {
   return response;
 };
 
+const updateBoardVisibility = async (id, isPublic) => {
+  const serviceUrl = urlConstant.endpoint.board.updateBoardVisibility
+    .replace("${id}", id)
+    .replace("${isPublic}", isPublic);
+  const response = await axiosLocalHost.sendAuthorizedRequest(
+    serviceUrl,
+    "PUT"
+  );
+  return response;
+};
+
 export default {
   getAllBoard,
   createBoard,
   getBoardByName,
   changeBoardStatus,
   updateBoardName,
+  updateBoardVisibility,
 };

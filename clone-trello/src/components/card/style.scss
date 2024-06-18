@@ -166,7 +166,7 @@
 }
 
 .block__user-comment {
-  width: 40px;
+  width: 32px;
   height: 100%;
 }
 
@@ -195,4 +195,21 @@
 .block__rich-text-editor {
   background-color: #ffffff;
   padding: 6px 5px 0px;
+}
+
+.label__comment-action {
+  color: #44546f;
+  font-size: 13px;
+  text-decoration: underline;
+}
+
+.block__user-activity {
+  width: 32px;
+  height: 100%;
+}
+
+.block__user-activity img {
+  height: 100%;
+  width: 100%;
+  object-fit: cover;
 }

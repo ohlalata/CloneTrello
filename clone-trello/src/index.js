@@ -9,12 +9,14 @@ import "react-toastify/ReactToastify.css";
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
-  <React.StrictMode>
+  <>
+    {/* <React.StrictMode> */}
     <BrowserRouter>
       <App />
     </BrowserRouter>
     <ToastContainer />
-  </React.StrictMode>
+    {/* </React.StrictMode> */}
+  </>
 );
 
 reportWebVitals();

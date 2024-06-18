@@ -15,10 +15,10 @@ import { faClock } from "@fortawesome/free-regular-svg-icons";
 import { faTrashCan } from "@fortawesome/free-regular-svg-icons";
 import { toast } from "react-toastify";
 import "react-toastify/ReactToastify.css";
-// import { Editor } from "react-draft-wysiwyg";
-// import { EditorState, convertToRaw } from "draft-js";
 
-// import "../../../node_modules/react-draft-wysiwyg/dist/react-draft-wysiwyg.css";
+import { Editor } from "react-draft-wysiwyg";
+import { EditorState, convertToRaw, convertFromRaw } from "draft-js";
+import "../../../node_modules/react-draft-wysiwyg/dist/react-draft-wysiwyg.css";
 
 const Card = (listIdProps) => {
   const textareaRefCardTitle = useRef(null);
@@ -32,9 +32,26 @@ const Card = (listIdProps) => {
   const [isModalCardShow, setIsModalCardShow] = useState(false);
   const [modalCardDetail, setModalCardDetail] = useState({});
   const [richTextVisible, setRichTextVisible] = useState(false);
-  // const [editorState, setEditorState] = useState(() =>
-  //   EditorState.createEmpty()
-  // );
+  const [activityVisible, setActivityVisible] = useState(true);
+
+  const [editorState, setEditorState] = useState(() =>
+    EditorState.createEmpty()
+  );
+
+  const handleActivityVisible = () => {
+    setActivityVisible(!activityVisible);
+  };
+
+  const handleEditorChange = (state) => {
+    setEditorState(state);
+  };
+
+  const saveContent = () => {
+    const contentState = editorState.getCurrentContent();
+    const rawContent = convertToRaw(contentState);
+    const contentString = JSON.stringify(rawContent);
+    console.log(contentString);
+  };
 
   const handleModalCard = (objCardDetail) => {
     setModalCardDetail(objCardDetail);
@@ -48,10 +65,6 @@ const Card = (listIdProps) => {
   const handleRichTextVisible = () => {
     setRichTextVisible(true);
   };
-
-  // const handleEditorChange = (state) => {
-  //   setEditorState(state);
-  // };
 
   const handleEditClickCardTitle = (cardIdVisible, e) => {
     e.stopPropagation();
@@ -132,6 +145,14 @@ const Card = (listIdProps) => {
   useEffect(() => {
     handleGetAllCard();
   }, []);
+
+  // useEffect(() => {
+  //   const contentString =
+  //     '{"blocks":[{"key":"8d0tr","text":"Hello World","type":"unstyled","depth":0,"inlineStyleRanges":[{"offset":0,"length":5,"style":"BOLD"}],"entityRanges":[],"data":{}}],"entityMap":{}}';
+  //   const rawContent = JSON.parse(contentString);
+  //   const contentState = convertFromRaw(rawContent);
+  //   setEditorState(EditorState.createWithContent(contentState));
+  // }, []);
 
   return (
     <React.Fragment>
@@ -235,7 +256,10 @@ const Card = (listIdProps) => {
                       <div></div>
                     ) : (
                       <div>
-                        <button className="btn btn-secondary btn-sm">
+                        <button
+                          className="btn btn-secondary btn-sm"
+                          onClick={handleRichTextVisible}
+                        >
                           <span className="fw-semibold">Edit</span>
                         </button>
                       </div>
@@ -243,17 +267,27 @@ const Card = (listIdProps) => {
                   </div>
 
                   {richTextVisible ? (
-                    <div className="d-flex flex-column">
+                    <div className="d-flex flex-column gap-2">
                       <div className="block__rich-text-editor">
-                        {/* <Editor
+                        <Editor
                           editorState={editorState}
-                          toolbarClassName="toolbarClassName"
                           wrapperClassName="wrapperClassName"
+                          toolbarClassName="toolbarClassName"
                           editorClassName="editorClassName"
                           onEditorStateChange={handleEditorChange}
-                        /> */}
+                        />
                       </div>
-                      <div> save cancel</div>
+                      <div className="d-flex justify-content-start gap-3">
+                        <button
+                          className="btn btn-primary btn-sm"
+                          onClick={saveContent}
+                        >
+                          Save
+                        </button>
+                        <button className="btn btn-secondary btn-sm">
+                          Cancel
+                        </button>
+                      </div>
                     </div>
                   ) : (
                     <div onClick={handleRichTextVisible}>
@@ -284,20 +318,75 @@ const Card = (listIdProps) => {
                     </div>
                   </div>
 
-                  <div>
-                    <button className="btn btn-secondary btn-sm">
-                      <span className="fw-semibold">Show details</span>
-                    </button>
+                  {activityVisible ? (
+                    <div>
+                      <button
+                        className="btn btn-secondary btn-sm"
+                        onClick={handleActivityVisible}
+                      >
+                        <span className="fw-semibold">Hide details</span>
+                      </button>
+                    </div>
+                  ) : (
+                    <div>
+                      <button
+                        className="btn btn-secondary btn-sm"
+                        onClick={handleActivityVisible}
+                      >
+                        <span className="fw-semibold">Show details</span>
+                      </button>
+                    </div>
+                  )}
+                </div>
+
+                <div>
+                  <div className="d-flex gap-2 mt-2 align-items-center">
+                    <div className="block__user-comment">
+                      <img src={constants.USER_UNDEFINE_URL} />
+                    </div>
+                    <div className="flex-fill p-2 block__input-comment">
+                      <span>Write a comment...</span>
+                    </div>
+                  </div>
+
+                  <div className="d-flex mt-3 gap-2">
+                    <div className="block__user-comment">
+                      <img src={constants.USER_UNDEFINE_URL} />
+                    </div>
+                    <div className="w-100 d-flex flex-column">
+                      <div>
+                        <div className="d-flex gap-2">
+                          <span>Name</span>
+                          <span>Jun 18 at 14:15 PM</span>
+                        </div>
+                        <div className="flex-fill p-2 block__input-comment">
+                          <span>...comment here...</span>
+                        </div>
+                      </div>
+                      <div className="d-flex gap-1 mt-1 ms-2">
+                        <span className="label__comment-action">Edit</span>
+                        <span>•</span>
+                        <span className="label__comment-action">Delete</span>
+                      </div>
+                    </div>
                   </div>
                 </div>
-                <div className="d-flex mt-3 gap-2 mt-3">
-                  <div className="block__user-comment">
-                    <img src={constants.USER_UNDEFINE_URL} />
+
+                {activityVisible && (
+                  <div className="d-flex gap-2 p-1">
+                    <div className="block__user-activity">
+                      <img src={constants.USER_UNDEFINE_URL} />
+                    </div>
+                    <div className="d-flex flex-column">
+                      <div className="d-flex gap-1">
+                        <span>name</span>
+                        <span>activity</span>
+                      </div>
+
+                      <span>time</span>
+                    </div>
                   </div>
-                  <div className="flex-fill p-2 block__input-comment">
-                    <span>Write a comment...</span>
-                  </div>
-                </div>
+                )}
               </div>
               <div className="col-3 px-2">
                 <div className="d-flex flex-column gap-2">

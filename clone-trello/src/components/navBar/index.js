@@ -68,16 +68,17 @@ const NavBar = () => {
             </a>
           </div>
 
-          <div className="d-flex flex-fill ms-5">
+          <div className="d-flex flex-fill ms-3 align-items-center">
             <div>
-              <button type="button" className="btn btn-primary">
+              <button type="button" className="btn btn-primary btn-sm px-4">
                 <span className="fw-semibold">Create</span>
               </button>
             </div>
           </div>
           <form
-            className={`d-flex align-items-center position-relative ${isFocused ? "focused" : ""
-              }`}
+            className={`d-flex align-items-center position-relative ${
+              isFocused ? "focused" : ""
+            }`}
             role="search"
             onSubmit={handleSearchSubmit}
           >

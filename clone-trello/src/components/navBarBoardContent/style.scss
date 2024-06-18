@@ -35,3 +35,16 @@
   font-family: Arial, sans-serif;
   color: #455570;
 }
+
+.block__popover-visibility {
+  width: 300px !important;
+  margin-left: 100px;
+}
+
+.block__popover-visibility .popover-arrow {
+  left: -75px !important;
+}
+
+// .popover-body {
+//   padding: 10px !important;
+// }
