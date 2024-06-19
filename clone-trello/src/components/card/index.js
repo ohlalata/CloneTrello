@@ -34,16 +34,27 @@ const Card = (listIdProps) => {
   const [richTextVisible, setRichTextVisible] = useState(false);
   const [activityVisible, setActivityVisible] = useState(true);
 
-  const [editorState, setEditorState] = useState(() =>
-    EditorState.createEmpty()
-  );
+  const [isCardTitleModal, setIsCardTitleModal] = useState(true);
+  const [CardTitleModal, setCardTitleModal] = useState("");
 
-  const handleActivityVisible = () => {
-    setActivityVisible(!activityVisible);
-  };
+  const initCreateState = EditorState.createEmpty();
+  const [editorState, setEditorState] = useState(initCreateState);
 
   const handleEditorChange = (state) => {
     setEditorState(state);
+  };
+
+  const handleChangeCardTitleModal = (e) => {
+    setCardTitleModal(e.target.value);
+  };
+
+  const handleCardTitleModal = (cardTitleModalRaw) => {
+    setIsCardTitleModal(false);
+    setCardTitleModal(cardTitleModalRaw);
+  };
+
+  const handleActivityVisible = () => {
+    setActivityVisible(!activityVisible);
   };
 
   const saveContent = () => {
@@ -51,6 +62,7 @@ const Card = (listIdProps) => {
     const rawContent = convertToRaw(contentState);
     const contentString = JSON.stringify(rawContent);
     console.log(contentString);
+    setRichTextVisible(false);
   };
 
   const handleModalCard = (objCardDetail) => {
@@ -90,6 +102,7 @@ const Card = (listIdProps) => {
       const response = await cardServices.getAllCard(listIdProps.listIdProps);
       if (response.data.code == 200) {
         setListCard(response.data.data);
+        console.log("list card", response.data.data);
       }
     } catch (error) {
       console.log(error);
@@ -103,6 +116,21 @@ const Card = (listIdProps) => {
       const response = await cardServices.updateCardTitle(cardID, formData);
       if (response.data.code == 200) {
         setEditingCardTitle("false");
+        handleGetAllCard();
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  const handleUpdateCardTitleModal = async (cardID) => {
+    const formData = new FormData();
+    formData.append("Title", CardTitleModal);
+    try {
+      const response = await cardServices.updateCardTitle(cardID, formData);
+      if (response.data.code == 200) {
+        setIsCardTitleModal(true);
+        setModalCardDetail(response.data.data);
         handleGetAllCard();
       }
     } catch (error) {
@@ -148,7 +176,7 @@ const Card = (listIdProps) => {
 
   // useEffect(() => {
   //   const contentString =
-  //     '{"blocks":[{"key":"8d0tr","text":"Hello World","type":"unstyled","depth":0,"inlineStyleRanges":[{"offset":0,"length":5,"style":"BOLD"}],"entityRanges":[],"data":{}}],"entityMap":{}}';
+  //     '{"blocks":[{"key":"57g0m","text":"","type":"unstyled","depth":0,"inlineStyleRanges":[{"offset":0,"length":5,"style":"BOLD"}],"entityRanges":[],"data":{}}],"entityMap":{}}';
   //   const rawContent = JSON.parse(contentString);
   //   const contentState = convertFromRaw(rawContent);
   //   setEditorState(EditorState.createWithContent(contentState));
@@ -226,12 +254,28 @@ const Card = (listIdProps) => {
           size="lg"
         >
           <ModalHeader closeButton className="block__modal-header ">
-            <div className="d-flex flex-column">
-              <div className="d-flex gap-2 justify-content-start align-items-center ">
+            <div className="d-flex flex-column w-100">
+              <div className="d-flex gap-2 justify-content-start align-items-center w-100">
                 <FontAwesomeIcon icon={faTable} size="lg" />
-                <span className="fs-4 fw-semibold">
-                  {modalCardDetail.title}
-                </span>
+                {isCardTitleModal ? (
+                  <span
+                    className="fs-4 fw-semibold w-100"
+                    onClick={() => handleCardTitleModal(modalCardDetail.title)}
+                  >
+                    {modalCardDetail.title}
+                  </span>
+                ) : (
+                  <input
+                    className="w-100  fw-semibold fs-4"
+                    type="text"
+                    value={CardTitleModal}
+                    onChange={handleChangeCardTitleModal}
+                    onBlur={() =>
+                      handleUpdateCardTitleModal(modalCardDetail.id)
+                    }
+                    autoFocus
+                  ></input>
+                )}
               </div>
               <span>in list {listIdProps.listNameProps}</span>
             </div>
@@ -284,7 +328,10 @@ const Card = (listIdProps) => {
                         >
                           Save
                         </button>
-                        <button className="btn btn-secondary btn-sm">
+                        <button
+                          className="btn btn-secondary btn-sm"
+                          onClick={() => setRichTextVisible(false)}
+                        >
                           Cancel
                         </button>
                       </div>
