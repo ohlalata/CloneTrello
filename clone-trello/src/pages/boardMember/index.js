@@ -10,7 +10,10 @@ import userService from "../../api/Services/user";
 import roleService from "../../api/Services/role";
 import {
   Modal,
-  Button
+  Button,
+  Form,
+  OverlayTrigger,
+  Popover,
 } from "react-bootstrap";
 
 const BoardMemberPages = () => {
@@ -22,6 +25,32 @@ const BoardMemberPages = () => {
   const [selectedMember, setSelectedMember] = useState(null);
   const [showConfirmation, setShowConfirmation] = useState(false);
   const [currentUserRole, setCurrentUserRole] = useState("");
+  const [selectedRole, setSelectedRole] = useState("");
+  const [popoverOpen, setPopoverOpen] = useState(false);
+  const [popoverOpenMap, setPopoverOpenMap] = useState({});
+  const [adminRoleId, setAdminRoleId] = useState(null);
+  const [memberRoleId, setMemberRoleId] = useState(null);
+
+  const handleGetAllRoles = async () => {
+    try {
+      const response = await roleService.getAllRole();
+      if (response.data.code === 200) {
+        const adminRole = response.data.data.find((role) => role.name === "Admin");
+        const memberRole = response.data.data.find((role) => role.name === "Member");
+        if (adminRole) {
+          setAdminRoleId(adminRole.id);
+        }
+        if (memberRole) {
+          setMemberRoleId(memberRole.id);
+        }
+        console.log("Admin Role ID:", adminRole?.id);
+        console.log("Member Role ID:", memberRole?.id);
+      }
+    } catch (error) {
+      console.error("Error fetching roles:", error);
+      toast.error("Failed to fetch roles");
+    }
+  };
 
   const handleGetAllBoardMember = async () => {
     try {
@@ -80,6 +109,7 @@ const BoardMemberPages = () => {
   };
 
   useEffect(() => {
+    handleGetAllRoles();
     handleGetAllBoardMember();
     handleGetCurrentUserRole();
   }, [id]);
@@ -119,6 +149,39 @@ const BoardMemberPages = () => {
     }
   };
 
+  const handleUpdateBoardMember = async () => {
+    if (selectedMember && selectedRole !== "") {
+      try {
+        const response = await boardMemberService.updateBoardMember(selectedMember.id, selectedRole);
+        if (response.data.code === 200) {
+          toast.success("Member role updated successfully");
+          setShowConfirmation(false);
+          handleGetAllBoardMember();
+        } else {
+          toast.error(response.data.message || "Failed to update member role");
+        }
+      } catch (error) {
+        console.error("Error updating member role:", error);
+        toast.error("Failed to update member role");
+      }
+    }
+  };
+
+  const togglePopover = (memberId) => {
+    setPopoverOpenMap(prevState => ({
+      ...prevState,
+      [memberId]: !prevState[memberId]
+    }));
+  };
+
+  const handleOptionClick = (roleId) => {
+    if (selectedMember) {
+      setSelectedRole(roleId);
+      setShowConfirmation(true);
+      setPopoverOpenMap({});
+    }
+  };
+
   return (
     <div className="board-member-container">
       <div className="header">
@@ -153,8 +216,43 @@ const BoardMemberPages = () => {
                     </div>
                   </div>
                 </td>
-                <td className="member-role">
-                  {roleDetails[member.roleId]?.name || "Loading..."}
+                <td className="member-role"
+                  style={{ cursor: 'pointer', textDecoration: 'none' }}>
+                  <OverlayTrigger
+                    trigger="click"
+                    placement="bottom"
+                    show={popoverOpenMap[member.id] || false}
+                    onToggle={() => togglePopover(member.id)}
+                    overlay={
+                      <Popover id={`popover-${member.id}`}>
+                        <Popover.Header as="h3" className="text-center">Update Role</Popover.Header>
+                        <Popover.Body>
+                          <div className="popover-options">
+                            {adminRoleId && (
+                              <div
+                                className="popover-option"
+                                onClick={() => handleOptionClick(adminRoleId)}
+                              >
+                                Admin
+                              </div>
+                            )}
+                            {memberRoleId && (
+                              <div
+                                className="popover-option"
+                                onClick={() => handleOptionClick(memberRoleId)}
+                              >
+                                Member
+                              </div>
+                            )}
+                          </div>
+                        </Popover.Body>
+                      </Popover>
+                    }
+                  >
+                    <div>
+                      {roleDetails[member.roleId]?.name || "Loading..."}
+                    </div>
+                  </OverlayTrigger>
                 </td>
                 <td style={{ textAlign: 'center', verticalAlign: 'middle' }}>
                   <button
@@ -171,7 +269,6 @@ const BoardMemberPages = () => {
                     <FontAwesomeIcon icon={faUserXmark} />
                   </button>
                 </td>
-
               </tr>
             ))}
           </tbody>
@@ -185,7 +282,7 @@ const BoardMemberPages = () => {
           centered
         >
           <Modal.Header closeButton>
-            <Modal.Title>Confirm Inactive member</Modal.Title>
+            <Modal.Title>Confirm Inactive Member</Modal.Title>
           </Modal.Header>
           <Modal.Body>
             <p>Are you sure you want to inactive this member?</p>
