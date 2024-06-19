@@ -20,7 +20,7 @@ import {
 
 import { Nav, Button, Collapse } from "react-bootstrap";
 import NavBar from "../../components/navBar";
-import { faUserGroup } from "@fortawesome/free-solid-svg-icons";
+import { faUserGroup, faAngleRight } from "@fortawesome/free-solid-svg-icons";
 import { faPlus } from "@fortawesome/free-solid-svg-icons";
 import { faTable } from "@fortawesome/free-solid-svg-icons";
 import { faTableList } from "@fortawesome/free-solid-svg-icons";
@@ -286,6 +286,7 @@ const HomePages = () => {
                           <div
                             className="d-flex justify-content-between block__board-action"
                             onClick={() => handleMemberClick(index)}
+                            style={{ cursor: "pointer" }}
                           >
                             <div className="d-flex gap-2 align-items-center">
                               <FontAwesomeIcon icon={faUserPlus} size="sm" />
@@ -302,13 +303,14 @@ const HomePages = () => {
                             onClick={() =>
                               navigateToBoardMembers(listBoardSide.id)
                             }
+                            style={{ cursor: "pointer" }}
                           >
                             <div className="d-flex gap-2 align-items-center">
                               <FontAwesomeIcon icon={faUserGroup} size="sm" />
                               <span className="fw-semibold">Members</span>
                             </div>
                             <div className="block__add-member">
-                              <FontAwesomeIcon icon={faPlus} />
+                              <FontAwesomeIcon icon={faAngleRight} />
                             </div>
                           </div>
                         </div>
