@@ -34,4 +34,16 @@ const changeStatus = async (id, isActive) => {
   return response;
 };
 
-export default { createBoardMember, getAllBoardMember, changeStatus };
+const getCurrentBoardMemberRole = async (boardId) => {
+  const serviceUrl = urlConstant.endpoint.boardMember.getCurrentBoardMemberRole.replace(
+    "${boardId}",
+    boardId
+  );
+  const response = await axiosLocalHost.sendAuthorizedRequest(
+    serviceUrl,
+    "GET"
+  );
+  return response;
+};
+
+export default { createBoardMember, getAllBoardMember, changeStatus, getCurrentBoardMemberRole };
