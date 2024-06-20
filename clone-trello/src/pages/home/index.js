@@ -46,8 +46,6 @@ const HomePages = () => {
 
   const [result, setResult] = useState([]);
 
-  //const [boardMember, setBoardMember] = useState([]);
-
   const [deleteBoardId, setDeleteBoardId] = useState("");
 
   const [deleteBoardName, setDeleteBoardName] = useState("");
@@ -86,6 +84,7 @@ const HomePages = () => {
   const submitCreateBoard = () => {
     handleCreateBoard();
     setModalShow(false);
+    handleGetAllBoard();
   };
 
   const handleSelect = (selectedKey) => {
@@ -113,6 +112,8 @@ const HomePages = () => {
       }
     }
     setResult(yourBoardJoined);
+    //console.log("your board", yourBoard);
+    console.log("concat", yourBoard.concat(yourBoardJoined));
   };
 
   const handleGetAllBoard = async () => {
@@ -151,20 +152,6 @@ const HomePages = () => {
       console.log("create board fail!");
     }
   };
-
-  useEffect(() => {
-    deCrypAccessToken();
-    handleGetAllBoard();
-  }, []);
-
-  useEffect(() => {
-    if (createUser) {
-      setYourBoard(
-        listBoard.filter((board) => board.createdUser === createUser)
-      );
-    }
-    filterBoardMember();
-  }, [createUser, listBoard]);
 
   const handleMemberClick = (index) => {
     handleToggle(index);
@@ -231,6 +218,11 @@ const HomePages = () => {
   };
 
   useEffect(() => {
+    deCrypAccessToken();
+    handleGetAllBoard();
+  }, []);
+
+  useEffect(() => {
     if (!inviteModalShow) {
       setSearchResults([]);
       setError("");
@@ -238,6 +230,15 @@ const HomePages = () => {
       setSelectedBoardIndex(null);
     }
   }, [inviteModalShow]);
+
+  useEffect(() => {
+    if (createUser) {
+      setYourBoard(
+        listBoard.filter((board) => board.createdUser === createUser)
+      );
+    }
+    filterBoardMember();
+  }, [createUser, listBoard]);
 
   return (
     <React.Fragment>
@@ -265,7 +266,7 @@ const HomePages = () => {
             ></div>
 
             <div>
-              <p className="mb-1 ps-1 fw-semibold fs-5">workspaces</p>
+              <p className="mb-1 ps-1 fw-semibold fs-5">Workspaces</p>
               <div className="d-flex flex-column gap-2">
                 {yourBoard.concat(result).map((listBoardSide, index) => (
                   <div key={index}>
@@ -327,7 +328,7 @@ const HomePages = () => {
                 <div className="d-flex justify-content-between">
                   <div className="d-flex gap-2 align-items-center">
                     <FontAwesomeIcon icon={faTable} size="xl" />
-                    <h6 className="fw-bold my-1 fs-5">YOUR BOARDS</h6>
+                    <h6 className="fw-bold my-1 fs-5">Your Boards</h6>
                   </div>
                 </div>
                 <div>
@@ -430,11 +431,6 @@ const HomePages = () => {
                     </div>
                   </div>
                 </div>
-                <div className="mt-3">
-                  <button className="btn btn__action-board">
-                    View all your board
-                  </button>
-                </div>
               </div>
             </div>
             <div className="block__your-workspaces">
@@ -442,7 +438,7 @@ const HomePages = () => {
                 <div className="d-flex justify-content-between">
                   <div className="d-flex gap-2 align-items-center">
                     <FontAwesomeIcon icon={faTableList} size="xl" />
-                    <h6 className="fw-bold my-1 fs-5">PUBLIC BOARDS</h6>
+                    <h6 className="fw-bold my-1 fs-5">Public Boards</h6>
                   </div>
                 </div>
                 <div>
@@ -469,11 +465,6 @@ const HomePages = () => {
                         </div>
                       ))}
                   </div>
-                </div>
-                <div className="mt-3">
-                  <button className="btn btn__action-board">
-                    View all closed board
-                  </button>
                 </div>
               </div>
             </div>
