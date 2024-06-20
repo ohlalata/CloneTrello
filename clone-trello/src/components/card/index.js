@@ -15,12 +15,11 @@ import { faClock } from "@fortawesome/free-regular-svg-icons";
 import { faTrashCan } from "@fortawesome/free-regular-svg-icons";
 import { toast } from "react-toastify";
 import "react-toastify/ReactToastify.css";
-
 import { Editor } from "react-draft-wysiwyg";
 import { EditorState, convertToRaw, convertFromRaw } from "draft-js";
 import "../../../node_modules/react-draft-wysiwyg/dist/react-draft-wysiwyg.css";
-// import draftToHtml from "draftjs-to-html";
 import { Popover, Overlay, Button, ButtonGroup } from "react-bootstrap";
+import draftToHtml from "draftjs-to-html";
 
 const Card = (listIdProps) => {
   const textareaRefCardTitle = useRef(null);
@@ -70,7 +69,10 @@ const Card = (listIdProps) => {
     const contentState = editorState.getCurrentContent();
     const rawContent = convertToRaw(contentState);
     const contentString = JSON.stringify(rawContent);
-    console.log(rawContent);
+    console.log(draftToHtml(convertToRaw(editorState.getCurrentContent())));
+    setDescriptionTemp(
+      draftToHtml(convertToRaw(editorState.getCurrentContent()))
+    );
     handleUpdateDescription(id, contentString, title);
   };
 
@@ -386,7 +388,10 @@ const Card = (listIdProps) => {
                           </span>
                         </div>
                       ) : (
-                        <div>{DescriptionTemp}</div>
+                        // <div>{DescriptionTemp}</div>
+                        <div
+                          dangerouslySetInnerHTML={{ __html: DescriptionTemp }}
+                        />
                       )}
                     </div>
                   )}

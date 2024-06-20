@@ -247,14 +247,14 @@ const NavbarBoardContent = (boardID) => {
             </div>
           </div>
           <div className="d-flex gap-3">
-            <div>
+            {/* <div>
               <button className="btn btn-secondary btn-sm d-flex gap-1">
                 <span>
                   <FontAwesomeIcon icon={faUserPlus} />
                 </span>
                 <span className="fw-semibold fs-6">Share</span>
               </button>
-            </div>
+            </div> */}
             <div className="block__option-wrapper d-flex align-items-center">
               <span className="d-flex align-items-center justify-content-center block__option-board-content ">
                 <FontAwesomeIcon icon={faEllipsis} size="lg" />
