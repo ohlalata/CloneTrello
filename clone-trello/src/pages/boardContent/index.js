@@ -78,12 +78,12 @@ const BoardContentPages = () => {
     try {
       const response = await listServices.updateListName(listID, formData);
       if (response.data.code == 200) {
-        console.log("update list name successful!");
+        //console.log("update list name successful!");
         handleGetAllList();
       }
     } catch (error) {
       console.error(error);
-      console.log("handle update list name fail!");
+      //console.log("handle update list name fail!");
     }
   };
 
@@ -91,7 +91,7 @@ const BoardContentPages = () => {
     try {
       const response = await listServices.createList(id, titleList);
       if (response.data.code == 201) {
-        console.log("create list successful!");
+        //console.log("create list successful!");
         setTitleList("");
         setIsAddListInputVisible(false);
         handleGetAllList();
@@ -106,7 +106,7 @@ const BoardContentPages = () => {
       const response = await listServices.changeStatus(listID, false);
       if (response.data.code == 200) {
         window.location.reload();
-        console.log("archive list successful!");
+        //console.log("archive list successful!");
         toast.success("List archived successfully!");
         handleGetAllList();
       }
@@ -117,7 +117,7 @@ const BoardContentPages = () => {
   };
 
   const handleDropdownClick = (listID) => {
-    console.log("Dropdown clicked for list ID:", listID);
+    //console.log("Dropdown clicked for list ID:", listID);
     setDropdownVisible(dropdownVisible === listID ? null : listID);
   };
 
