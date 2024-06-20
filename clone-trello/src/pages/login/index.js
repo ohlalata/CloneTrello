@@ -113,7 +113,7 @@ const LoginPages = () => {
                 )}
               </form>
             </div>
-            <div className="mt-4 d-flex flex-column justify-content-center">
+            {/* <div className="mt-4 d-flex flex-column justify-content-center">
               <p className="text-center text-secondary fw-semibold">
                 Or continue with:
               </p>
@@ -131,10 +131,12 @@ const LoginPages = () => {
                   </button>
                 </div>
               </div>
-            </div>
+            </div> */}
             <div className="mt-4 d-flex justify-content-center gap-2">
               <p>
-                <a className="link__cant-login">Can't login?</a>
+                <a className="link__cant-login" href="/register">
+                  Can't login?
+                </a>
               </p>
               <p>•</p>
               <p>

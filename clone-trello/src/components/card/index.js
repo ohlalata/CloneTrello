@@ -378,7 +378,7 @@ const Card = (listIdProps) => {
                     </div>
                   ) : (
                     <div onClick={handleRichTextVisible}>
-                      {modalCardDetail.description == null ? (
+                      {!modalCardDetail.description ? (
                         <div className="block__input-description p-2 mt-3">
                           <span
                             className="fw-semibold ps-1"
@@ -388,7 +388,6 @@ const Card = (listIdProps) => {
                           </span>
                         </div>
                       ) : (
-                        // <div>{DescriptionTemp}</div>
                         <div
                           dangerouslySetInnerHTML={{ __html: DescriptionTemp }}
                         />
@@ -396,7 +395,7 @@ const Card = (listIdProps) => {
                     </div>
                   )}
                 </div>
-                <div className="d-flex justify-content-between mt-3">
+                {/* <div className="d-flex justify-content-between mt-3">
                   <div className="d-flex gap-2 align-items-center">
                     <div>
                       <FontAwesomeIcon icon={faListUl} />
@@ -427,9 +426,9 @@ const Card = (listIdProps) => {
                       </button>
                     </div>
                   )}
-                </div>
+                </div> */}
 
-                <div>
+                {/* <div>
                   <div className="d-flex gap-2 mt-2 align-items-center">
                     <div className="block__user-comment">
                       <img src={constants.USER_UNDEFINE_URL} />
@@ -460,9 +459,9 @@ const Card = (listIdProps) => {
                       </div>
                     </div>
                   </div>
-                </div>
+                </div> */}
 
-                {activityVisible && (
+                {/* {activityVisible && (
                   <div className="d-flex gap-2 p-1">
                     <div className="block__user-activity">
                       <img src={constants.USER_UNDEFINE_URL} />
@@ -476,7 +475,7 @@ const Card = (listIdProps) => {
                       <span>time</span>
                     </div>
                   </div>
-                )}
+                )} */}
               </div>
               <div className="col-3 px-2">
                 <div className="d-flex flex-column gap-2">

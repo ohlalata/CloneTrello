@@ -128,14 +128,14 @@ const RegisterPages = () => {
                   </div>
                 )}
 
-                <p className="form__description">
+                {/* <p className="form__description">
                   By signing up, I accept the Atlassian{" "}
                   <span style={{ color: "#0052cc" }}>
                     Cloud Terms of Service
                   </span>{" "}
                   and acknowledge the{" "}
                   <span style={{ color: "#0052cc" }}>Privacy Policy.</span>
-                </p>
+                </p> */}
 
                 {formVisible ? (
                   <button
@@ -156,7 +156,7 @@ const RegisterPages = () => {
                 )}
               </form>
             </div>
-            <div className="mt-4 d-flex flex-column justify-content-center">
+            {/* <div className="mt-4 d-flex flex-column justify-content-center">
               <p className="text-center text-secondary fw-semibold">
                 Or continue with:
               </p>
@@ -174,11 +174,11 @@ const RegisterPages = () => {
                   </button>
                 </div>
               </div>
-            </div>
+            </div> */}
             <div className="mt-4 d-flex justify-content-center">
               <p>
                 <a className="link__login" href="/">
-                  Already have an Atlassian account? Log in
+                  Already have an account? Log in
                 </a>
               </p>
             </div>
