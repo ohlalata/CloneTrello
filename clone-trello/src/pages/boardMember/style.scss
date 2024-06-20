@@ -6,7 +6,6 @@
   max-width: 1200px;
   margin: 20px auto;
   position: relative;
-  /* Add this */
 }
 
 .header {
@@ -52,6 +51,11 @@
   color: #333;
 }
 
+.board-member-table th:nth-child(2),
+.board-member-table th:nth-child(3) {
+  text-align: center;
+}
+
 .board-member-row {
   transition: background-color 0.3s;
 }
@@ -76,9 +80,64 @@
   font-size: 14px;
 }
 
+.board-member-table .member-role {
+  text-align: center;
+}
+
 .member-role {
   font-size: 16px;
   color: #333;
+  position: relative;
+
+  .role-dropdown-container {
+    position: relative;
+    width: 100%;
+
+    .role-current {
+      cursor: pointer;
+      padding: 8px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      background-color: #fff;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+      transition: background-color 0.3s ease;
+
+      &:hover {
+        background-color: #f0f0f0;
+      }
+    }
+
+    .role-dropdown {
+      position: absolute;
+      top: calc(100% + 5px);
+      left: 0;
+      width: 100%;
+      background-color: #fff;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+      z-index: 100;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.3s ease;
+
+      &.show-dropdown {
+        opacity: 1;
+        pointer-events: auto;
+      }
+
+      .role-option {
+        padding: 8px;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+
+        &:hover {
+          background-color: #f0f0f0;
+        }
+      }
+    }
+
+  }
 }
 
 .ellipsis-icon {
@@ -86,13 +145,18 @@
   border: none;
   color: #888;
   cursor: pointer;
+
+  &:hover {
+    color: #333;
+  }
+
+  &.disabled {
+    cursor: not-allowed;
+    opacity: 0.5;
+  }
 }
 
-.ellipsis-icon:hover {
-  color: #333;
-}
-
-/* Add the following styles */
+/* Modal and Overlay */
 
 .modal-overlay {
   position: fixed;
@@ -126,11 +190,11 @@
   display: flex;
   justify-content: flex-end;
   margin-top: 20px;
-}
 
-.buttons button {
-  margin-left: 10px;
-  padding: 10px 20px;
+  button {
+    margin-left: 10px;
+    padding: 10px 20px;
+  }
 }
 
 .ellipsis-icon:disabled {
@@ -170,4 +234,23 @@
   overflow: hidden;
   white-space: nowrap;
   text-overflow: ellipsis;
+}
+.popover-option {
+  display: flex;
+  align-items: center;
+  padding: 10px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+
+  &:hover {
+    background-color: #f0f0f0;
+  }
+
+  .option-icon {
+    margin-right: 8px; 
+  }
+
+  .option-text {
+    flex-grow: 1;
+  }
 }
