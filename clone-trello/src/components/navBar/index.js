@@ -76,9 +76,8 @@ const NavBar = () => {
             </div>
           </div> */}
           <form
-            className={`d-flex align-items-center position-relative ${
-              isFocused ? "focused" : ""
-            }`}
+            className={`d-flex align-items-center position-relative ${isFocused ? "focused" : ""
+              }`}
             role="search"
             onSubmit={handleSearchSubmit}
           >
@@ -122,13 +121,23 @@ const NavBar = () => {
               />
             </div>
             <div>
-              <div>
-                <img
-                  src={constants.USER_UNDEFINE_URL}
-                  alt="a"
-                  className="image-user"
-                />
-              </div>
+              <Dropdown>
+                <Dropdown.Toggle
+                  as="div"
+                  id="dropdown-custom-components"
+                  className="image-user-wrapper no-caret"
+                >
+                  <img
+                    src={constants.USER_UNDEFINE_URL}
+                    alt="user"
+                    className="image-user"
+                  />
+                </Dropdown.Toggle>
+                <Dropdown.Menu align="end" className="custom-dropdown-menu">
+                  <Dropdown.Header>Account</Dropdown.Header>
+                  <Dropdown.Item as={Link} to="/">Logout</Dropdown.Item>
+                </Dropdown.Menu>
+              </Dropdown>
             </div>
           </div>
         </div>

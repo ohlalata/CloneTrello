@@ -35,3 +35,19 @@
     overflow-y: auto;
   }
 }
+.no-caret::after {
+  display: none !important;
+}
+
+.image-user-wrapper {
+  display: flex;
+  align-items: center;
+}
+
+.image-user {
+  cursor: pointer;
+}
+.custom-dropdown-menu {
+  margin-top: 1rem !important; 
+  transform: translateY(1rem) !important; 
+}

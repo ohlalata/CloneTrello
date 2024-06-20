@@ -4,7 +4,7 @@ import { useParams } from "react-router-dom";
 import { toast } from "react-toastify";
 import "react-toastify/ReactToastify.css";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faEllipsis, faUserXmark, faUserShield, faUser } from "@fortawesome/free-solid-svg-icons";
+import { faEllipsis, faUserXmark, faUserShield, faUser, faPenToSquare } from "@fortawesome/free-solid-svg-icons";
 import boardMemberService from "../../api/Services/boardMember";
 import userService from "../../api/Services/user";
 import roleService from "../../api/Services/role";
@@ -44,8 +44,8 @@ const BoardMemberPages = () => {
         if (memberRole) {
           setMemberRoleId(memberRole.id);
         }
-        console.log("Admin Role ID:", adminRole?.id);
-        console.log("Member Role ID:", memberRole?.id);
+        //console.log("Admin Role ID:", adminRole?.id);
+        //console.log("Member Role ID:", memberRole?.id);
       }
     } catch (error) {
       console.error("Error fetching roles:", error);
@@ -58,7 +58,7 @@ const BoardMemberPages = () => {
       const response = await boardMemberService.getAllBoardMember(id);
       if (response.data.code === 200) {
         setBoardMembers(response.data.data);
-        console.log("Get board members successful!");
+        //console.log("Get board members successful!");
       }
     } catch (error) {
       console.error(error);
@@ -74,7 +74,7 @@ const BoardMemberPages = () => {
           ...prevDetails,
           [userId]: response.data.data,
         }));
-        console.log("Fetched user details:", response.data.data);
+        //console.log("Fetched user details:", response.data.data);
       }
     } catch (error) {
       console.error(`Error fetching user details for userId ${userId}:`, error);
@@ -90,7 +90,7 @@ const BoardMemberPages = () => {
           ...prevDetails,
           [roleId]: role,
         }));
-        console.log("Fetched role details:", role);
+        //console.log("Fetched role details:", role);
       }
     } catch (error) {
       console.error(`Error fetching role details for roleId ${roleId}:`, error);
@@ -102,7 +102,7 @@ const BoardMemberPages = () => {
       const response = await boardMemberService.getCurrentBoardMemberRole(id);
       if (response.data.code === 200) {
         setCurrentUserRole(response.data.data);
-        console.log("Current user role:", response.data.data);
+        //console.log("Current user role:", response.data.data);
       }
     } catch (error) {
       console.error("Error fetching current user role:", error);
@@ -177,16 +177,13 @@ const BoardMemberPages = () => {
   };
 
   const handleOptionClick = (roleId, member) => {
-    // Check if the current user has Admin role
     if (currentUserRole === "Admin") {
       setSelectedMember(member);
       setSelectedRole(roleId);
       setShowRoleUpdateModal(true);
-      setPopoverOpenMap({}); // Close all other popovers if open
+      setPopoverOpenMap({}); 
     } else {
-      // Optionally, you can provide feedback to the user that they don't have permission
-      // For example, show a toast message or disable the option
-      console.log("You do not have permission to edit roles.");
+      //console.log("You do not have permission to edit roles.");
     }
   };
 
@@ -275,6 +272,7 @@ const BoardMemberPages = () => {
                     >
                       <div>
                         {roleDetails[member.roleId]?.name || "Loading..."}
+                        <FontAwesomeIcon icon={faPenToSquare} className="role-icon"/>
                       </div>
                     </OverlayTrigger>
                   ) : (
