@@ -15,6 +15,8 @@ import { faCheck } from "@fortawesome/free-solid-svg-icons";
 const NavbarBoardContent = (boardID) => {
   const [isBoardNameVisible, setIsBoardNameVisible] = useState(false);
   const [boardName, setBoardName] = useState("");
+  const [boardIsPublic, setBoardIsPublic] = useState("");
+
   const [inputBoardNameTemp, setInputBoardNameTemp] = useState(boardName);
   const inputReff = useRef(null);
   const spanReff = useRef(null);
@@ -51,6 +53,19 @@ const NavbarBoardContent = (boardID) => {
     }
   };
 
+  const handleUpdateBoardVisibility = async (id, isPublic) => {
+    try {
+      const response = await boardService.updateBoardVisibility(id, isPublic);
+      if (response.data.code == 200) {
+        handleGetAllBoard();
+        toast.success("Change board visibility successful");
+      }
+    } catch (error) {
+      console.error(error);
+      toast.error("Change board visibility fail!");
+    }
+  };
+
   const handleUpdateBoardName = async (id) => {
     const formData = new FormData();
     if (inputBoardNameTemp == "") {
@@ -78,6 +93,9 @@ const NavbarBoardContent = (boardID) => {
         const result = response.data.data;
         setBoardName(
           result.filter((board) => board.id == boardID.boardID)[0].name
+        );
+        setBoardIsPublic(
+          result.filter((board) => board.id == boardID.boardID)[0].isPublic
         );
       }
     } catch (error) {
@@ -155,7 +173,10 @@ const NavbarBoardContent = (boardID) => {
                   id="popover-contained"
                   className="block__popover-visibility"
                 >
-                  <Popover.Header className="d-flex justify-content-between">
+                  <Popover.Header
+                    className="d-flex justify-content-between"
+                    style={{ backgroundColor: "#ffffff" }}
+                  >
                     <div></div>
                     <span
                       className="fw-bold label__change-visible"
@@ -179,10 +200,15 @@ const NavbarBoardContent = (boardID) => {
                           <span
                             className="fw-semibold"
                             style={{ color: "#455570" }}
+                            onClick={() =>
+                              handleUpdateBoardVisibility(boardID.boardID, true)
+                            }
                           >
                             Public
                           </span>
-                          <FontAwesomeIcon icon={faCheck} />
+                          {boardIsPublic == true && (
+                            <FontAwesomeIcon icon={faCheck} />
+                          )}
                         </div>
                         <span style={{ color: "#455570", fontSize: "11px" }}>
                           Anyone on the Trellone can see this board. Only board
@@ -196,10 +222,18 @@ const NavbarBoardContent = (boardID) => {
                           <span
                             className="fw-semibold"
                             style={{ color: "#455570" }}
+                            onClick={() =>
+                              handleUpdateBoardVisibility(
+                                boardID.boardID,
+                                false
+                              )
+                            }
                           >
                             Private
                           </span>
-                          <FontAwesomeIcon icon={faCheck} />
+                          {boardIsPublic == false && (
+                            <FontAwesomeIcon icon={faCheck} />
+                          )}
                         </div>
                         <span style={{ color: "#455570", fontSize: "11px" }}>
                           Only board members can see this board. Board admins

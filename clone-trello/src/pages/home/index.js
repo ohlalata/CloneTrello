@@ -5,7 +5,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faTrashCan } from "@fortawesome/free-solid-svg-icons";
 import { faChevronDown, faUserPlus } from "@fortawesome/free-solid-svg-icons";
 import boardService from "../../api/Services/board";
-import userService from "../../api/Services/user"; // Import userService
+import userService from "../../api/Services/user";
 import boardMemberService from "../../api/Services/boardMember";
 import * as constants from "../../shared/constants";
 import {
@@ -43,6 +43,10 @@ const HomePages = () => {
   const [createUser, setCreateUser] = useState("");
 
   const [yourBoard, setYourBoard] = useState([]);
+
+  const [result, setResult] = useState([]);
+
+  //const [boardMember, setBoardMember] = useState([]);
 
   const [deleteBoardId, setDeleteBoardId] = useState("");
 
@@ -94,6 +98,23 @@ const HomePages = () => {
     setCreateUser(deCrypAccessToken.sub);
   };
 
+  const filterBoardMember = async () => {
+    let yourBoardJoined = [];
+    for (let boardElement of listBoard) {
+      const members = await boardMemberService.getAllBoardMember(
+        boardElement.id
+      );
+
+      const hasMyId = members.data.data.some(
+        (member) => member.userId == createUser
+      );
+      if (hasMyId) {
+        yourBoardJoined.push(boardElement);
+      }
+    }
+    setResult(yourBoardJoined);
+  };
+
   const handleGetAllBoard = async () => {
     try {
       const response = await boardService.getAllBoard();
@@ -142,6 +163,7 @@ const HomePages = () => {
         listBoard.filter((board) => board.createdUser === createUser)
       );
     }
+    filterBoardMember();
   }, [createUser, listBoard]);
 
   const handleMemberClick = (index) => {
@@ -245,7 +267,7 @@ const HomePages = () => {
             <div>
               <p className="mb-1 ps-1 fw-semibold fs-5">workspaces</p>
               <div className="d-flex flex-column gap-2">
-                {yourBoard.map((listBoardSide, index) => (
+                {yourBoard.concat(result).map((listBoardSide, index) => (
                   <div key={index}>
                     <Button
                       className="d-flex btn__collapse-board justify-content-between"
@@ -264,7 +286,7 @@ const HomePages = () => {
                           <div
                             className="d-flex justify-content-between block__board-action"
                             onClick={() => handleMemberClick(index)}
-                            style={{ cursor: 'pointer' }} 
+                            style={{ cursor: "pointer" }}
                           >
                             <div className="d-flex gap-2 align-items-center">
                               <FontAwesomeIcon icon={faUserPlus} size="sm" />
@@ -278,8 +300,10 @@ const HomePages = () => {
                         <div className="mt-2 ps-2 d-flex flex-column gap-2">
                           <div
                             className="d-flex justify-content-between block__board-action"
-                            onClick={() => navigateToBoardMembers(listBoardSide.id)}
-                            style={{ cursor: 'pointer' }} 
+                            onClick={() =>
+                              navigateToBoardMembers(listBoardSide.id)
+                            }
+                            style={{ cursor: "pointer" }}
                           >
                             <div className="d-flex gap-2 align-items-center">
                               <FontAwesomeIcon icon={faUserGroup} size="sm" />
@@ -308,7 +332,7 @@ const HomePages = () => {
                 </div>
                 <div>
                   <div className="d-flex gap-3 flex-wrap">
-                    {yourBoard.map((yourBoards, index) => (
+                    {yourBoard.concat(result).map((yourBoards, index) => (
                       <div
                         key={index}
                         className="block__your-board rounded d-flex flex-column justify-content-between"
@@ -423,25 +447,27 @@ const HomePages = () => {
                 </div>
                 <div>
                   <div className="d-flex gap-3 flex-wrap">
-                    {listBoard.map((listBoards, index) => (
-                      <div
-                        key={index}
-                        className="block__your-board rounded d-flex flex-column justify-content-between"
-                      >
-                        <Link
-                          to={`/board/board-content/${listBoards.id}`}
-                          style={{ textDecoration: "none" }}
+                    {listBoard
+                      .filter((board) => board.isPublic == true)
+                      .map((listBoards, index) => (
+                        <div
+                          key={index}
+                          className="block__your-board rounded d-flex flex-column justify-content-between"
                         >
-                          <div className="p-2 ">
-                            <div className="d-flex">
-                              <p className="text-white fw-bold mb-0">
-                                {listBoards.name}
-                              </p>
+                          <Link
+                            to={`/board/board-content/${listBoards.id}`}
+                            style={{ textDecoration: "none" }}
+                          >
+                            <div className="p-2 ">
+                              <div className="d-flex">
+                                <p className="text-white fw-bold mb-0">
+                                  {listBoards.name}
+                                </p>
+                              </div>
                             </div>
-                          </div>
-                        </Link>
-                      </div>
-                    ))}
+                          </Link>
+                        </div>
+                      ))}
                   </div>
                 </div>
                 <div className="mt-3">

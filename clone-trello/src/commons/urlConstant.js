@@ -47,5 +47,8 @@ export default {
     role: {
       getAllRole: "/role/get-all?PageIndex=1&PageSize=50&Id=${Id}&name=${name}",
     },
+    comment: {
+      getAllComment: "/comment/get-all?cardId=${cardId}",
+    },
   },
 };
