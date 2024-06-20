@@ -51,7 +51,8 @@
   color: #333;
 }
 
-.board-member-table th:nth-child(2) {
+.board-member-table th:nth-child(2),
+.board-member-table th:nth-child(3) {
   text-align: center;
 }
 
@@ -233,4 +234,23 @@
   overflow: hidden;
   white-space: nowrap;
   text-overflow: ellipsis;
+}
+.popover-option {
+  display: flex;
+  align-items: center;
+  padding: 10px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+
+  &:hover {
+    background-color: #f0f0f0;
+  }
+
+  .option-icon {
+    margin-right: 8px; 
+  }
+
+  .option-text {
+    flex-grow: 1;
+  }
 }
