@@ -38,6 +38,23 @@ const updateCardTitle = async (id, formData) => {
   );
   return response;
 };
+
+const updateCardDescription = async (id, formData) => {
+  const serviceUrl = urlConstant.endpoint.card.updateCard.replace("${id}", id);
+  const config = {
+    header: {
+      "Content-Type": "multipart/form-data",
+    },
+  };
+  const response = await axiosLocalHost.sendAuthorizedRequest(
+    serviceUrl,
+    "PUT",
+    formData,
+    config
+  );
+  return response;
+};
+
 const changeStatus = async (id, isActive) => {
   const serviceUrl = urlConstant.endpoint.card.archiveCard
     .replace("${id}", id)
@@ -50,4 +67,10 @@ const changeStatus = async (id, isActive) => {
 
   return response;
 };
-export default { getAllCard, createCard, updateCardTitle, changeStatus };
+export default {
+  getAllCard,
+  createCard,
+  updateCardTitle,
+  changeStatus,
+  updateCardDescription,
+};

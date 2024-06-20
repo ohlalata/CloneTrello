@@ -19,10 +19,13 @@ import "react-toastify/ReactToastify.css";
 import { Editor } from "react-draft-wysiwyg";
 import { EditorState, convertToRaw, convertFromRaw } from "draft-js";
 import "../../../node_modules/react-draft-wysiwyg/dist/react-draft-wysiwyg.css";
+// import draftToHtml from "draftjs-to-html";
+import { Popover, Overlay, Button, ButtonGroup } from "react-bootstrap";
 
 const Card = (listIdProps) => {
   const textareaRefCardTitle = useRef(null);
   const textAreaRefCreateCardTitle = useRef(null);
+  const datePopoverRef = useRef(null);
 
   const [EditingCardTitle, setEditingCardTitle] = useState(null);
   const [inputTitleCard, setInputTitleCard] = useState("");
@@ -33,12 +36,18 @@ const Card = (listIdProps) => {
   const [modalCardDetail, setModalCardDetail] = useState({});
   const [richTextVisible, setRichTextVisible] = useState(false);
   const [activityVisible, setActivityVisible] = useState(true);
-
   const [isCardTitleModal, setIsCardTitleModal] = useState(true);
   const [CardTitleModal, setCardTitleModal] = useState("");
+  const [DescriptionTemp, setDescriptionTemp] = useState("");
+  const [editorState, setEditorState] = useState(() =>
+    EditorState.createEmpty()
+  );
+  const [datePopover, setDatePopover] = useState(false);
+  const [datePopoverTarget, setDatePopoverTarget] = useState(null);
 
-  const initCreateState = EditorState.createEmpty();
-  const [editorState, setEditorState] = useState(initCreateState);
+  const handleDatePopoverClick = () => {
+    setDatePopover(true);
+  };
 
   const handleEditorChange = (state) => {
     setEditorState(state);
@@ -57,12 +66,12 @@ const Card = (listIdProps) => {
     setActivityVisible(!activityVisible);
   };
 
-  const saveContent = () => {
+  const saveContent = (id, title) => {
     const contentState = editorState.getCurrentContent();
     const rawContent = convertToRaw(contentState);
     const contentString = JSON.stringify(rawContent);
-    console.log(contentString);
-    setRichTextVisible(false);
+    console.log(rawContent);
+    handleUpdateDescription(id, contentString, title);
   };
 
   const handleModalCard = (objCardDetail) => {
@@ -106,6 +115,27 @@ const Card = (listIdProps) => {
       }
     } catch (error) {
       console.log(error);
+    }
+  };
+
+  const handleUpdateDescription = async (cardID, description, tite) => {
+    const formData = new FormData();
+    formData.append("Description", description);
+    formData.append("Title", tite);
+
+    try {
+      const response = await cardServices.updateCardDescription(
+        cardID,
+        formData
+      );
+      if (response.data.code == 200) {
+        setRichTextVisible(false);
+
+        handleGetAllCard();
+        console.log("update descript ok");
+      }
+    } catch (error) {
+      console.error(error);
     }
   };
 
@@ -174,13 +204,16 @@ const Card = (listIdProps) => {
     handleGetAllCard();
   }, []);
 
-  // useEffect(() => {
-  //   const contentString =
-  //     '{"blocks":[{"key":"57g0m","text":"","type":"unstyled","depth":0,"inlineStyleRanges":[{"offset":0,"length":5,"style":"BOLD"}],"entityRanges":[],"data":{}}],"entityMap":{}}';
-  //   const rawContent = JSON.parse(contentString);
-  //   const contentState = convertFromRaw(rawContent);
-  //   setEditorState(EditorState.createWithContent(contentState));
-  // }, []);
+  useEffect(() => {
+    const contentString = modalCardDetail?.description;
+    if (modalCardDetail?.description) {
+      const rawContent = JSON.parse(contentString);
+      setDescriptionTemp(rawContent.blocks[0]?.text);
+      const contentState = convertFromRaw(rawContent);
+
+      setEditorState(EditorState.createWithContent(contentState));
+    }
+  }, [isModalCardShow]);
 
   return (
     <React.Fragment>
@@ -324,7 +357,12 @@ const Card = (listIdProps) => {
                       <div className="d-flex justify-content-start gap-3">
                         <button
                           className="btn btn-primary btn-sm"
-                          onClick={saveContent}
+                          onClick={() =>
+                            saveContent(
+                              modalCardDetail.id,
+                              modalCardDetail.title
+                            )
+                          }
                         >
                           Save
                         </button>
@@ -348,7 +386,7 @@ const Card = (listIdProps) => {
                           </span>
                         </div>
                       ) : (
-                        <div>{modalCardDetail.description}</div>
+                        <div>{DescriptionTemp}</div>
                       )}
                     </div>
                   )}
@@ -450,12 +488,20 @@ const Card = (listIdProps) => {
                     </div>
                     <span>Members</span>
                   </div>
-
-                  <div className="d-flex align-items-center gap-2 p-2 fw-semibold block__card-action">
-                    <div>
-                      <FontAwesomeIcon icon={faClock} />
+                  <div>
+                    <div className="d-flex align-items-center gap-2 p-2 fw-semibold block__card-action">
+                      <div>
+                        <FontAwesomeIcon icon={faClock} />
+                      </div>
+                      <span>Dates</span>
                     </div>
-                    <span>Dates</span>
+
+                    <Overlay>
+                      <Popover>
+                        <Popover.Header></Popover.Header>
+                        <Popover.Body></Popover.Body>
+                      </Popover>
+                    </Overlay>
                   </div>
 
                   <div className="d-flex align-items-center gap-2 p-2 fw-semibold block__card-action">

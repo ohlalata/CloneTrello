@@ -77,10 +77,12 @@ const LoginPages = () => {
                   <div>
                     <div className="d-flex justify-content-between px-1">
                       <span>{email}</span>
+
                       <FontAwesomeIcon icon={faPen} />
                     </div>
                     <div className="d-flex justify-content-center my-2 ">
                       <input
+                        name="password"
                         type="password"
                         value={password}
                         onChange={(e) => setPassword(e.target.value)}
