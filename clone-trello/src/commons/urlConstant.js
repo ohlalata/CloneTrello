@@ -42,6 +42,7 @@ export default {
       getAllBoardMember: "/boardMember/get-all?boardId=${boardId}",
       inactiveBoardMember: "/boardMember/change-status/${id}?isActive=${isActive}",
       getCurrentBoardMemberRole: "/boardMember/get-current-role?boardId=${boardId}",
+      updateBoardMember: "/boardMember/update/${id}?roleId=${roleId}",
     },
     role: {
       getAllRole: "/role/get-all?PageIndex=1&PageSize=50&Id=${Id}&name=${name}",
