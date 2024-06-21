@@ -68,16 +68,18 @@ const NavBar = () => {
             </a>
           </div>
 
-          {/* <div className="d-flex flex-fill ms-3 align-items-center">
-            <div>
+          <div className="d-flex flex-fill ms-3 align-items-center">
+            {/* <div>
               <button type="button" className="btn btn-primary btn-sm px-4">
                 <span className="fw-semibold">Create</span>
               </button>
-            </div>
-          </div> */}
+            </div> */}
+          </div>
+
           <form
-            className={`d-flex align-items-center position-relative ${isFocused ? "focused" : ""
-              }`}
+            className={`d-flex align-items-center position-relative ${
+              isFocused ? "focused" : ""
+            }`}
             role="search"
             onSubmit={handleSearchSubmit}
           >
@@ -110,7 +112,7 @@ const NavBar = () => {
             )}
           </form>
           <div className="ms-2 d-flex gap-3">
-            <div>
+            {/* <div>
               <FontAwesomeIcon icon={faBell} size="lg" color="#909191" />
             </div>
             <div>
@@ -119,7 +121,7 @@ const NavBar = () => {
                 size="lg"
                 color="#909191"
               />
-            </div>
+            </div> */}
             <div>
               <Dropdown>
                 <Dropdown.Toggle
@@ -135,7 +137,9 @@ const NavBar = () => {
                 </Dropdown.Toggle>
                 <Dropdown.Menu align="end" className="custom-dropdown-menu">
                   <Dropdown.Header>Account</Dropdown.Header>
-                  <Dropdown.Item as={Link} to="/">Logout</Dropdown.Item>
+                  <Dropdown.Item as={Link} to="/">
+                    Logout
+                  </Dropdown.Item>
                 </Dropdown.Menu>
               </Dropdown>
             </div>

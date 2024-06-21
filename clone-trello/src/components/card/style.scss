@@ -117,7 +117,14 @@
 }
 
 .btn__close-input-add-list {
+  border: none;
+
+  background-color: #ddcfc924;
+}
+
+.btn__close-input-add-list:hover {
   border: 0px;
+
   background-color: #f1f2f4a9;
 }
 

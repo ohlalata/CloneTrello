@@ -78,12 +78,11 @@ const BoardContentPages = () => {
     try {
       const response = await listServices.updateListName(listID, formData);
       if (response.data.code == 200) {
-        //console.log("update list name successful!");
+        setInputTitleList("");
         handleGetAllList();
       }
     } catch (error) {
       console.error(error);
-      //console.log("handle update list name fail!");
     }
   };
 
