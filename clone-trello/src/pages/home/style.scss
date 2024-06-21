@@ -14,15 +14,15 @@
   width: 256px;
 }
 
-.block__recenly-board {
-  background-image: url("https://firebasestorage.googleapis.com/v0/b/clonetrello-103ad.appspot.com/o/Background-1.png?alt=media&token=a347d2cc-b5b8-4cc7-b9a5-c6eb8bff3e34");
-  width: 193px;
-  height: 96px;
-  background-size: cover;
-}
+// .block__recenly-board {
+//   background-image: url("https://firebasestorage.googleapis.com/v0/b/clonetrello-103ad.appspot.com/o/Background-1.png?alt=media&token=a347d2cc-b5b8-4cc7-b9a5-c6eb8bff3e34");
+//   width: 193px;
+//   height: 96px;
+//   background-size: cover;
+// }
 
 .block__your-board {
-  background-image: url("https://firebasestorage.googleapis.com/v0/b/clonetrello-103ad.appspot.com/o/pexels-rpnickson-2647990.jpg?alt=media&token=39e55b27-deec-44ef-b22f-1c966d1f069d");
+  //background-image: url("https://firebasestorage.googleapis.com/v0/b/clonetrello-103ad.appspot.com/o/pexels-rpnickson-2647990.jpg?alt=media&token=39e55b27-deec-44ef-b22f-1c966d1f069d");
   width: 193px;
   height: 96px;
   background-size: cover;
@@ -100,21 +100,21 @@
   margin-top: 0.5rem;
 }
 .scrollable-container {
-  max-height: 300px; 
+  max-height: 300px;
   overflow-y: auto;
   position: relative;
 
   &::-webkit-scrollbar {
-    width: 8px; 
+    width: 8px;
   }
 
   &::-webkit-scrollbar-thumb {
-    background-color: rgba(0, 0, 0, 0.3); 
-    border-radius: 4px; 
+    background-color: rgba(0, 0, 0, 0.3);
+    border-radius: 4px;
   }
 
   &::-webkit-scrollbar-track {
-    background: transparent; 
+    background: transparent;
   }
 
   &::after {
@@ -123,9 +123,9 @@
     top: 0;
     bottom: 0;
     right: 0;
-    width: 8px; 
-    background: rgba(255, 255, 255, 0.5); 
-    backdrop-filter: blur(5px); 
-    pointer-events: none; 
+    width: 8px;
+    background: rgba(255, 255, 255, 0.5);
+    backdrop-filter: blur(5px);
+    pointer-events: none;
   }
 }

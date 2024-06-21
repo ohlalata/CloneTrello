@@ -112,8 +112,6 @@ const HomePages = () => {
       }
     }
     setResult(yourBoardJoined);
-
-    console.log("concat", yourBoardJoined);
   };
 
   const handleGetAllBoard = async () => {
@@ -242,6 +240,42 @@ const HomePages = () => {
     filterBoardMember();
   }, [createUser, listBoard]);
 
+  const boardTheme = [
+    constants.BOARD_THEME_01,
+    constants.BOARD_THEME_02,
+    constants.BOARD_THEME_03,
+    constants.BOARD_THEME_04,
+    constants.BOARD_THEME_05,
+    constants.BOARD_THEME_06,
+    constants.BOARD_THEME_07,
+    constants.BOARD_THEME_08,
+    constants.BOARD_THEME_09,
+    constants.BOARD_THEME_10,
+    constants.BOARD_THEME_11,
+    constants.BOARD_THEME_12,
+    constants.BOARD_THEME_13,
+    constants.BOARD_THEME_14,
+    constants.BOARD_THEME_15,
+  ];
+
+  const boardThemePublic = [
+    constants.BOARD_THEME_16,
+    constants.BOARD_THEME_17,
+    constants.BOARD_THEME_18,
+    constants.BOARD_THEME_19,
+    constants.BOARD_THEME_20,
+    constants.BOARD_THEME_21,
+    constants.BOARD_THEME_22,
+    constants.BOARD_THEME_23,
+    constants.BOARD_THEME_24,
+    constants.BOARD_THEME_25,
+    constants.BOARD_THEME_26,
+    constants.BOARD_THEME_27,
+    constants.BOARD_THEME_28,
+    constants.BOARD_THEME_29,
+    constants.BOARD_THEME_30,
+  ];
+
   return (
     <React.Fragment>
       <NavBar />
@@ -272,7 +306,7 @@ const HomePages = () => {
               <div className="d-flex flex-column gap-2">
                 {result
                   .sort(
-                    (a, b) => new Date(a.createdDate) - new Date(b.createdDate)
+                    (a, b) => new Date(b.createdDate) - new Date(a.createdDate)
                   )
                   .map((listBoardSide, index) => (
                     <div key={index}>
@@ -346,12 +380,17 @@ const HomePages = () => {
                     {result
                       .sort(
                         (a, b) =>
-                          new Date(a.createdDate) - new Date(b.createdDate)
+                          new Date(b.createdDate) - new Date(a.createdDate)
                       )
                       .map((yourBoards, index) => (
                         <div
                           key={index}
                           className="block__your-board rounded d-flex flex-column justify-content-between"
+                          style={{
+                            backgroundImage: `url(${
+                              boardTheme[index % boardTheme.length]
+                            })`,
+                          }}
                         >
                           <Link
                             to={`/board/board-content/${yourBoards.id}`}
@@ -390,13 +429,13 @@ const HomePages = () => {
                       <ModalHeader closeButton>
                         <ModalTitle>Confirm</ModalTitle>
                       </ModalHeader>
-                      <ModalBody className="d-flex justify-content-center">
+                      <ModalBody className="d-flex justify-content-start">
                         <span className="fs-5 fw-bold">
                           Are you sure delete {deleteBoardName} board?{" "}
                         </span>
                       </ModalBody>
                       <ModalFooter>
-                        <div className="d-flex justify-content-around gap-3 w-100">
+                        <div className="d-flex justify-content-end gap-3 w-100">
                           <button
                             className="btn btn-secondary"
                             onClick={() => setModalShowDelete(false)}
@@ -404,7 +443,7 @@ const HomePages = () => {
                             Cancel
                           </button>
                           <button
-                            className="btn btn-primary"
+                            className="btn btn-danger"
                             onClick={() =>
                               handleUpdateBoardStatus(deleteBoardId)
                             }
@@ -463,10 +502,20 @@ const HomePages = () => {
                   <div className="d-flex gap-3 flex-wrap">
                     {listBoard
                       .filter((board) => board.isPublic == true)
+                      .filter((board) => !result.includes(board))
+                      .sort(
+                        (a, b) =>
+                          new Date(b.createdDate) - new Date(a.createdDate)
+                      )
                       .map((listBoards, index) => (
                         <div
                           key={index}
                           className="block__your-board rounded d-flex flex-column justify-content-between"
+                          style={{
+                            backgroundImage: `url(${
+                              boardThemePublic[index % boardThemePublic.length]
+                            })`,
+                          }}
                         >
                           <Link
                             to={`/board/board-content/${listBoards.id}`}

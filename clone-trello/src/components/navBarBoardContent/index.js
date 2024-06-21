@@ -137,7 +137,7 @@ const NavbarBoardContent = (boardID) => {
               ) : (
                 <span
                   className="fs-5 fw-bold"
-                  style={{ color: "#455570" }}
+                  style={{ color: "#455570", cursor: "pointer" }}
                   onClick={handleBoardName}
                 >
                   {boardName}
@@ -199,7 +199,7 @@ const NavbarBoardContent = (boardID) => {
                           <FontAwesomeIcon icon={faEarthAsia} color="#455570" />
                           <span
                             className="fw-semibold"
-                            style={{ color: "#455570" }}
+                            style={{ color: "#455570", cursor: "pointer" }}
                             onClick={() =>
                               handleUpdateBoardVisibility(boardID.boardID, true)
                             }
@@ -221,7 +221,7 @@ const NavbarBoardContent = (boardID) => {
                           <FontAwesomeIcon icon={faLock} color="#455570" />
                           <span
                             className="fw-semibold"
-                            style={{ color: "#455570" }}
+                            style={{ color: "#455570", cursor: "pointer" }}
                             onClick={() =>
                               handleUpdateBoardVisibility(
                                 boardID.boardID,
