@@ -50,5 +50,8 @@ export default {
     comment: {
       getAllComment: "/comment/get-all?cardId=${cardId}",
     },
+    CardMember: {
+      createCardMember: "cardMember/create",
+    },
   },
 };

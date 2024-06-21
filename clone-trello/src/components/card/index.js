@@ -20,6 +20,9 @@ import { EditorState, convertToRaw, convertFromRaw } from "draft-js";
 import "../../../node_modules/react-draft-wysiwyg/dist/react-draft-wysiwyg.css";
 import { Popover, Overlay, Button, ButtonGroup } from "react-bootstrap";
 import draftToHtml from "draftjs-to-html";
+import cardMemberService from "../../api/Services/cardMember";
+import userService from "../../api/Services/user";
+import jwtDecode from "jwt-decode";
 
 const Card = (listIdProps) => {
   const textareaRefCardTitle = useRef(null);
@@ -43,6 +46,7 @@ const Card = (listIdProps) => {
   );
   const [datePopover, setDatePopover] = useState(false);
   const [datePopoverTarget, setDatePopoverTarget] = useState(null);
+  const [currentUserId, setCurrentUserId] = useState(null);
 
   const handleDatePopoverClick = () => {
     setDatePopover(true);
@@ -202,7 +206,43 @@ const Card = (listIdProps) => {
     }
   };
 
+  const fetchCurrentUserId = async () => {
+    try {
+      const token = localStorage.getItem("accessToken");
+      if (token) {
+        const decoded = jwtDecode(token);
+        setCurrentUserId(decoded.userId); // Assuming your token payload has userId
+      } else {
+        console.error("Access token not found in local storage.");
+      }
+    } catch (error) {
+      console.error("Error fetching current user ID:", error);
+    }
+  };
+
+  const handleJoinCard = async (cardId) => {
+    if (currentUserId) {
+      try {
+        const response = await cardMemberService.createCardMember(
+          currentUserId,
+          cardId
+        );
+        if (response.data.code === 201) {
+          toast.success("Joined card successfully!");
+        } else {
+          toast.error("Failed to join card!");
+        }
+      } catch (error) {
+        toast.error("Error joining card!");
+        console.error(error);
+      }
+    } else {
+      console.error("Current user ID is null.");
+    }
+  };
+
   useEffect(() => {
+    fetchCurrentUserId();
     handleGetAllCard();
   }, []);
 
@@ -483,7 +523,9 @@ const Card = (listIdProps) => {
                     <div>
                       <FontAwesomeIcon icon={faUser} />
                     </div>
-                    <span>Join</span>
+                    <span onClick={() => handleJoinCard(modalCardDetail.id)}>
+                      Join
+                    </span>
                   </div>
 
                   <div className="d-flex align-items-center gap-2 p-2 fw-semibold block__card-action">
