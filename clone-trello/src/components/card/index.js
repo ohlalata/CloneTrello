@@ -5,7 +5,7 @@ import { faPen } from "@fortawesome/free-solid-svg-icons";
 import cardServices from "../../api/Services/card";
 import { faPlus } from "@fortawesome/free-solid-svg-icons";
 import { faXmark } from "@fortawesome/free-solid-svg-icons";
-import { Modal, ModalBody, ModalHeader } from "react-bootstrap";
+import { Modal, ModalBody, ModalHeader, FormControl } from "react-bootstrap";
 import { faTable } from "@fortawesome/free-solid-svg-icons";
 import { faAlignLeft } from "@fortawesome/free-solid-svg-icons";
 import { faListUl } from "@fortawesome/free-solid-svg-icons";
@@ -22,12 +22,14 @@ import { Popover, Overlay, Button, ButtonGroup } from "react-bootstrap";
 import draftToHtml from "draftjs-to-html";
 import cardMemberService from "../../api/Services/cardMember";
 import userService from "../../api/Services/user";
-import jwtDecode from "jwt-decode";
+import boardMemberService from "../../api/Services/boardMember";
+import { jwtDecode } from 'jwt-decode';
 
-const Card = (listIdProps) => {
+const Card = (listIdProps, listBoardIdProps) => {
   const textareaRefCardTitle = useRef(null);
   const textAreaRefCreateCardTitle = useRef(null);
   const datePopoverRef = useRef(null);
+  const memberPopoverRef = useRef(null);
 
   const [EditingCardTitle, setEditingCardTitle] = useState(null);
   const [inputTitleCard, setInputTitleCard] = useState("");
@@ -47,6 +49,11 @@ const Card = (listIdProps) => {
   const [datePopover, setDatePopover] = useState(false);
   const [datePopoverTarget, setDatePopoverTarget] = useState(null);
   const [currentUserId, setCurrentUserId] = useState(null);
+  const [cardMembers, setCardMembers] = useState([]);
+  const [isMemberPopoverOpen, setIsMemberPopoverOpen] = useState(false);
+  const [selectedCardId, setSelectedCardId] = useState(null);
+  const [userDetails, setUserDetails] = useState({});
+  const [boardMembers, setBoardMembers] = useState([]);
 
   const handleDatePopoverClick = () => {
     setDatePopover(true);
@@ -83,6 +90,7 @@ const Card = (listIdProps) => {
   const handleModalCard = (objCardDetail) => {
     setModalCardDetail(objCardDetail);
     setIsModalCardShow(!isModalCardShow);
+    setIsMemberPopoverOpen(false);
   };
 
   const handleAddCardTitle = () => {
@@ -211,7 +219,7 @@ const Card = (listIdProps) => {
       const token = localStorage.getItem("accessToken");
       if (token) {
         const decoded = jwtDecode(token);
-        setCurrentUserId(decoded.userId); // Assuming your token payload has userId
+        setCurrentUserId(decoded.sub);
       } else {
         console.error("Access token not found in local storage.");
       }
@@ -240,6 +248,77 @@ const Card = (listIdProps) => {
       console.error("Current user ID is null.");
     }
   };
+
+  const handleGetUserDetails = async (userId) => {
+    try {
+      const response = await userService.getUserById(userId);
+      if (response.data.code === 200) {
+        setUserDetails((prevDetails) => ({
+          ...prevDetails,
+          [userId]: response.data.data,
+        }));
+      }
+    } catch (error) {
+      console.error(`Error fetching user details for userId ${userId}:`, error);
+    }
+  };
+
+  const handleGetAllBoardMember = async () => {
+    try {
+      const response = await boardMemberService.getAllBoardMember(listIdProps.listBoardIdProps);
+      if (response.data.code === 200) {
+        setBoardMembers(response.data.data); // Assuming response.data.data contains board members
+        
+        // Fetch user details for each board member
+        response.data.data.forEach(member => {
+          handleGetUserDetails(member.userId);
+        });
+      } else {
+        console.error("Failed to fetch board members");
+        toast.error("Failed to fetch board members");
+      }
+    } catch (error) {
+      console.error(error);
+      toast.error("Failed to fetch board members");
+    }
+  };
+  
+
+  const handleCardMember = async (cardId) => {
+    try {
+      const response = await cardMemberService.getAllCardMember(cardId);
+      if (response.data.code === 200) {
+        const membersData = response.data.data;
+        setCardMembers(membersData);
+        setSelectedCardId(cardId);
+
+        membersData.forEach((member) => {
+          handleGetUserDetails(member.userId);
+        });
+
+      } else {
+        console.error("Failed to fetch card members!");
+      }
+    } catch (error) {
+      console.error("Error fetching card members:", error);
+    }
+  };
+
+
+  const handleMemberClick = async (cardId) => {
+    if (!isMemberPopoverOpen) {
+      await handleCardMember(cardId);
+      setIsMemberPopoverOpen(true);
+    }
+  };
+
+  const closePopover = () => {
+    setIsMemberPopoverOpen(false);
+  };
+
+  useEffect(() => {
+    handleGetAllBoardMember();
+  }, [listIdProps.listBoardIdProps]);
 
   useEffect(() => {
     fetchCurrentUserId();
@@ -519,20 +598,63 @@ const Card = (listIdProps) => {
               </div>
               <div className="col-3 px-2">
                 <div className="d-flex flex-column gap-2">
-                  <div className="d-flex align-items-center gap-2 p-2 fw-semibold block__card-action">
-                    <div>
-                      <FontAwesomeIcon icon={faUser} />
-                    </div>
-                    <span onClick={() => handleJoinCard(modalCardDetail.id)}>
-                      Join
-                    </span>
-                  </div>
-
-                  <div className="d-flex align-items-center gap-2 p-2 fw-semibold block__card-action">
+                  <div
+                    className="d-flex align-items-center gap-2 p-2 fw-semibold block__card-action"
+                    onClick={() => handleMemberClick(modalCardDetail.id)}
+                    ref={memberPopoverRef}
+                  >
                     <div>
                       <FontAwesomeIcon icon={faUser} />
                     </div>
                     <span>Members</span>
+                    <Overlay
+                      target={memberPopoverRef.current}
+                      show={isMemberPopoverOpen}
+                      placement="bottom"
+                    >
+                      <Popover id="popover-basic">
+                        <Popover.Header as="h3"> Members
+                          <Button onClick={closePopover} className="btn btn-close">
+                          </Button>
+                        </Popover.Header>
+                        <Popover.Body>
+                          <FormControl
+                            type="text"
+                            placeholder="Search members"
+                            //value={searchTerm}
+                            //onChange={handleSearchChange}
+                            className="mb-3"
+                          />
+                          <div>Card Members</div>
+                          {cardMembers.length > 0 ? (
+                            <div>
+                              {cardMembers.map((member, index) => (
+                                <div key={index} className="member-item">
+                                  <FontAwesomeIcon icon={faUser} className="user-icon" />
+                                  {userDetails[member.userId] ? userDetails[member.userId].name : `User ${member.userId}`}
+                                </div>
+                              ))}
+                            </div>
+                          ) : (
+                            <div>No card members found</div>
+                          )}
+                          <div>Board Members</div>
+                          {boardMembers.length > 0 ? (
+                            <div>
+                              {boardMembers.map((member, index) => (
+                                <div key={index} className="member-item">
+                                  <FontAwesomeIcon icon={faUser} className="user-icon" />
+                                  {userDetails[member.userId] ? userDetails[member.userId].name : `User ${member.userId}`}
+                                </div>
+                              ))}
+                            </div>
+                          ) : (
+                            <div>No board members found</div>
+                          )}
+                        </Popover.Body>
+
+                      </Popover>
+                    </Overlay>
                   </div>
                   <div>
                     <div className="d-flex align-items-center gap-2 p-2 fw-semibold block__card-action">

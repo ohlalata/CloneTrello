@@ -10,6 +10,17 @@ const createCardMember = async (userId, cardId) => {
   );
   return response;
 };
+const getAllCardMember = async (cardId) => {
+  const serviceUrl = urlConstant.endpoint.CardMember.getAllCardMember.replace(
+    "${cardId}",
+    cardId
+  );
+  const response = await axiosLocalHost.sendAuthorizedRequest(
+    serviceUrl,
+    "GET"
+  );
+  return response;
+};
 
 
-export default { createCardMember};
+export default { createCardMember, getAllCardMember };
