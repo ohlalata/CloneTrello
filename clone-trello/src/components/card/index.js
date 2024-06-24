@@ -20,12 +20,13 @@ import { EditorState, convertToRaw, convertFromRaw } from "draft-js";
 import "../../../node_modules/react-draft-wysiwyg/dist/react-draft-wysiwyg.css";
 import { Popover, Overlay, Button, ButtonGroup } from "react-bootstrap";
 import draftToHtml from "draftjs-to-html";
+import { faArrowRight } from "@fortawesome/free-solid-svg-icons";
+import { DayPicker } from "react-day-picker";
+import "react-day-picker/dist/style.css";
 
 const Card = (listIdProps) => {
   const textareaRefCardTitle = useRef(null);
   const textAreaRefCreateCardTitle = useRef(null);
-  const datePopoverRef = useRef(null);
-
   const [EditingCardTitle, setEditingCardTitle] = useState(null);
   const [inputTitleCard, setInputTitleCard] = useState("");
   const [listCard, setListCard] = useState([]);
@@ -37,18 +38,39 @@ const Card = (listIdProps) => {
   const [activityVisible, setActivityVisible] = useState(true);
   const [isCardTitleModal, setIsCardTitleModal] = useState(true);
   const [CardTitleModal, setCardTitleModal] = useState("");
-
   const [DescriptionTemp, setDescriptionTemp] = useState("");
 
   const [editorState, setEditorState] = useState(() =>
     EditorState.createEmpty()
   );
+  //------------------------------------------------------------
+  const datePopoverRef = useRef(null);
   const [datePopover, setDatePopover] = useState(false);
   const [datePopoverTarget, setDatePopoverTarget] = useState(null);
 
-  const handleDatePopoverClick = () => {
+  const [daySelected, setDaySelected] = useState();
+
+  const handleDatePopoverClick = (event) => {
+    //if (datePopover) return;
+    // event.preventDefault();
+    // event.stopPropagation();
     setDatePopover(true);
+    setDatePopoverTarget(event.target);
+    console.log(event);
   };
+
+  const handleHideDatePopover = () => {
+    setDatePopover(false);
+  };
+
+  // const dayChange = (value, e) => {
+  //   e.preventDefault();
+  //   e.stopPropagation();
+  //   console.log(value, e);
+  //   setDaySelected(value);
+  // };
+
+  //----------------------------------------------------------------
 
   const handleEditorChange = (state) => {
     setEditorState(state);
@@ -72,10 +94,10 @@ const Card = (listIdProps) => {
     const rawContent = convertToRaw(contentState);
     const contentString = draftToHtml(rawContent);
 
-    console.log(
-      typeof draftToHtml(convertToRaw(editorState.getCurrentContent()))
-    );
-    console.log("contentString", contentString);
+    // console.log(
+    //   typeof draftToHtml(convertToRaw(editorState.getCurrentContent()))
+    // );
+    // console.log("contentString", contentString);
 
     setDescriptionTemp(contentString);
     handleUpdateDescription(id, contentString, title);
@@ -84,6 +106,7 @@ const Card = (listIdProps) => {
   const handleModalCard = (objCardDetail) => {
     setModalCardDetail(objCardDetail);
     setIsModalCardShow(!isModalCardShow);
+    setDatePopover(false);
     handleGetAllCard();
   };
 
@@ -137,7 +160,8 @@ const Card = (listIdProps) => {
       );
       if (response.data.code == 200) {
         setModalCardDetail(response.data.data);
-        //setRichTextVisible(false);
+        setRichTextVisible(false);
+        console.log("update description ok!");
         handleGetAllCard();
       }
     } catch (error) {
@@ -210,19 +234,16 @@ const Card = (listIdProps) => {
     handleGetAllCard();
   }, []);
 
-  // useEffect(() => {
-  //   const contentString = modalCardDetail?.description;
+  useEffect(() => {
+    const contentString = modalCardDetail?.description;
 
-  //   console.log("contentString", modalCardDetail?.description);
+    // console.log(typeof modalCardDetail?.description);
 
-  //   if (modalCardDetail?.description) {
-  //     const rawContent = JSON.parse(contentString);
-  //     setDescriptionTemp(rawContent.blocks[0]?.text);
-  //     const contentState = convertFromRaw(rawContent);
-
-  //     setEditorState(EditorState.createWithContent(contentState));
-  //   }
-  // }, [isModalCardShow, richTextVisible]);
+    if (modalCardDetail?.description) {
+      setDescriptionTemp(contentString);
+      // console.log(contentString);
+    }
+  }, [isModalCardShow, richTextVisible]);
 
   return (
     <React.Fragment>
@@ -499,7 +520,11 @@ const Card = (listIdProps) => {
                     </div>
                     <span>Members</span>
                   </div>
-                  <div>
+
+                  <div
+                    ref={datePopoverRef}
+                    onClick={(e) => handleDatePopoverClick(e)}
+                  >
                     <div className="d-flex align-items-center gap-2 p-2 fw-semibold block__card-action">
                       <div>
                         <FontAwesomeIcon icon={faClock} />
@@ -507,12 +532,64 @@ const Card = (listIdProps) => {
                       <span>Dates</span>
                     </div>
 
-                    <Overlay>
-                      <Popover>
-                        <Popover.Header></Popover.Header>
-                        <Popover.Body></Popover.Body>
+                    <Overlay
+                      show={datePopover}
+                      target={datePopoverTarget}
+                      placement="right"
+                      container={datePopoverRef.current}
+                      containerPadding={12}
+                      rootClose={true}
+                      onHide={handleHideDatePopover}
+                    >
+                      <Popover
+                        id="datePopover-contained"
+                        className="block__datePopover-visibility"
+                      >
+                        <Popover.Header
+                          className="d-flex justify-content-between"
+                          style={{ backgroundColor: "#ffffff" }}
+                        >
+                          <div></div>
+                          <span className="fw-semibold label__dates">
+                            Dates
+                          </span>
+                          <div>
+                            <Button
+                              size="sm"
+                              variant="close"
+                              aria-label="close"
+                              onClick={handleHideDatePopover}
+                            />
+                          </div>
+                        </Popover.Header>
+                        <Popover.Body>
+                          <div className="d-flex justify-content-center">
+                            <DayPicker
+                              mode="single"
+                              selected={daySelected}
+                              // onSelect={(day, a, b, e) => {
+                              //   dayChange(day, e);
+                              // }}
+                              onSelect={setDaySelected}
+                            />
+                          </div>
+
+                          <div className="d-flex flex-column">
+                            <span className="fw-semibold">Start date</span>
+                            <div className="d-flex">
+                              <input type="checkbox" />
+                            </div>
+                          </div>
+                        </Popover.Body>
                       </Popover>
                     </Overlay>
+                  </div>
+
+                  <div className="d-flex align-items-center gap-2 p-2 fw-semibold block__card-action">
+                    <div>
+                      <FontAwesomeIcon icon={faArrowRight} />
+                    </div>
+                    <span>Move</span>
                   </div>
 
                   <div className="d-flex align-items-center gap-2 p-2 fw-semibold block__card-action">
