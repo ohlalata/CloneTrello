@@ -1,7 +1,7 @@
 import React, { useRef, useState, useEffect } from "react";
 import "./style.scss";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faPen } from "@fortawesome/free-solid-svg-icons";
+import { faPen, faX } from "@fortawesome/free-solid-svg-icons";
 import cardServices from "../../api/Services/card";
 import { faPlus } from "@fortawesome/free-solid-svg-icons";
 import { faXmark } from "@fortawesome/free-solid-svg-icons";
@@ -23,7 +23,6 @@ import draftToHtml from "draftjs-to-html";
 import cardMemberService from "../../api/Services/cardMember";
 import userService from "../../api/Services/user";
 import boardMemberService from "../../api/Services/boardMember";
-import { jwtDecode } from 'jwt-decode';
 
 const Card = (listIdProps, listBoardIdProps) => {
   const textareaRefCardTitle = useRef(null);
@@ -48,12 +47,13 @@ const Card = (listIdProps, listBoardIdProps) => {
   );
   const [datePopover, setDatePopover] = useState(false);
   const [datePopoverTarget, setDatePopoverTarget] = useState(null);
-  const [currentUserId, setCurrentUserId] = useState(null);
   const [cardMembers, setCardMembers] = useState([]);
   const [isMemberPopoverOpen, setIsMemberPopoverOpen] = useState(false);
   const [selectedCardId, setSelectedCardId] = useState(null);
   const [userDetails, setUserDetails] = useState({});
   const [boardMembers, setBoardMembers] = useState([]);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [selectedBoardMember, setSelectedBoardMember] = useState(null);
 
   const handleDatePopoverClick = () => {
     setDatePopover(true);
@@ -214,41 +214,6 @@ const Card = (listIdProps, listBoardIdProps) => {
     }
   };
 
-  const fetchCurrentUserId = async () => {
-    try {
-      const token = localStorage.getItem("accessToken");
-      if (token) {
-        const decoded = jwtDecode(token);
-        setCurrentUserId(decoded.sub);
-      } else {
-        console.error("Access token not found in local storage.");
-      }
-    } catch (error) {
-      console.error("Error fetching current user ID:", error);
-    }
-  };
-
-  const handleJoinCard = async (cardId) => {
-    if (currentUserId) {
-      try {
-        const response = await cardMemberService.createCardMember(
-          currentUserId,
-          cardId
-        );
-        if (response.data.code === 201) {
-          toast.success("Joined card successfully!");
-        } else {
-          toast.error("Failed to join card!");
-        }
-      } catch (error) {
-        toast.error("Error joining card!");
-        console.error(error);
-      }
-    } else {
-      console.error("Current user ID is null.");
-    }
-  };
-
   const handleGetUserDetails = async (userId) => {
     try {
       const response = await userService.getUserById(userId);
@@ -267,9 +232,8 @@ const Card = (listIdProps, listBoardIdProps) => {
     try {
       const response = await boardMemberService.getAllBoardMember(listIdProps.listBoardIdProps);
       if (response.data.code === 200) {
-        setBoardMembers(response.data.data); // Assuming response.data.data contains board members
-        
-        // Fetch user details for each board member
+        setBoardMembers(response.data.data);
+
         response.data.data.forEach(member => {
           handleGetUserDetails(member.userId);
         });
@@ -282,9 +246,9 @@ const Card = (listIdProps, listBoardIdProps) => {
       toast.error("Failed to fetch board members");
     }
   };
-  
 
-  const handleCardMember = async (cardId) => {
+
+  const handleGetCardMember = async (cardId) => {
     try {
       const response = await cardMemberService.getAllCardMember(cardId);
       if (response.data.code === 200) {
@@ -304,10 +268,9 @@ const Card = (listIdProps, listBoardIdProps) => {
     }
   };
 
-
   const handleMemberClick = async (cardId) => {
     if (!isMemberPopoverOpen) {
-      await handleCardMember(cardId);
+      await handleGetCardMember(cardId);
       setIsMemberPopoverOpen(true);
     }
   };
@@ -321,13 +284,13 @@ const Card = (listIdProps, listBoardIdProps) => {
   }, [listIdProps.listBoardIdProps]);
 
   useEffect(() => {
-    fetchCurrentUserId();
     handleGetAllCard();
+    handleGetAllBoardMember();
   }, []);
 
   useEffect(() => {
     const contentString = modalCardDetail?.description;
-    if (modalCardDetail?.description) {
+    if (modalCardDetail?.description && isModalCardShow) {
       const rawContent = JSON.parse(contentString);
       setDescriptionTemp(rawContent.blocks[0]?.text);
       const contentState = convertFromRaw(rawContent);
@@ -335,6 +298,51 @@ const Card = (listIdProps, listBoardIdProps) => {
       setEditorState(EditorState.createWithContent(contentState));
     }
   }, [isModalCardShow]);
+
+  const handleSearchChange = (event) => {
+    setSearchTerm(event.target.value);
+  };
+
+  const filteredBoardMembers = boardMembers.filter(member => {
+    const userDetail = userDetails[member.userId];
+    const userName = userDetail ? userDetail.name.toLowerCase() : '';
+
+    return userName.includes(searchTerm.toLowerCase());
+  });
+
+  const handleCreateMemberClick = async (member) => {
+    try {
+      const response = await cardMemberService.createCardMember(member.userId, selectedCardId);
+      if (response.data.code === 201) {
+        toast.success(`Member ${member.name} added successfully!`);
+        handleGetCardMember(selectedCardId);
+      } else {
+        toast.error(`Failed to add member ${member.name}`);
+      }
+    } catch (error) {
+      toast.error(`Failed to add member ${member.name}`);
+      console.error(error);
+    }
+  };
+
+  const availableBoardMembers = filteredBoardMembers.filter(boardMember =>
+    !cardMembers.some(cardMember => cardMember.userId === boardMember.userId)
+  );
+
+  const handleInactiveCardMember = async (id) => {
+    try {
+      const response = await cardMemberService.changeStatus(id, false);
+      if (response.data.code === 200) {
+        toast.success('Inactive member successfully!');
+        handleGetCardMember(selectedCardId);
+      } else {
+        toast.error('Inactive member Failed!');
+      }
+    } catch (error) {
+      toast.error('Inactive member Failed!');
+      console.error(error);
+    }
+  };
 
   return (
     <React.Fragment>
@@ -609,8 +617,10 @@ const Card = (listIdProps, listBoardIdProps) => {
                     <span>Members</span>
                     <Overlay
                       target={memberPopoverRef.current}
+                      container={memberPopoverRef}
                       show={isMemberPopoverOpen}
                       placement="bottom"
+
                     >
                       <Popover id="popover-basic">
                         <Popover.Header as="h3"> Members
@@ -620,39 +630,52 @@ const Card = (listIdProps, listBoardIdProps) => {
                         <Popover.Body>
                           <FormControl
                             type="text"
-                            placeholder="Search members"
-                            //value={searchTerm}
-                            //onChange={handleSearchChange}
+                            placeholder="Search members.."
+                            autoFocus
+                            value={searchTerm}
+                            onChange={handleSearchChange}
                             className="mb-3"
                           />
                           <div>Card Members</div>
-                          {cardMembers.length > 0 ? (
-                            <div>
-                              {cardMembers.map((member, index) => (
-                                <div key={index} className="member-item">
-                                  <FontAwesomeIcon icon={faUser} className="user-icon" />
-                                  {userDetails[member.userId] ? userDetails[member.userId].name : `User ${member.userId}`}
-                                </div>
-                              ))}
-                            </div>
-                          ) : (
-                            <div>No card members found</div>
-                          )}
+                          <div className="scrollable-container">
+                            {cardMembers.length > 0 ? (
+                              <div className="member-list">
+                                {cardMembers.map((member, index) => (
+                                  <div key={index} className="member-item">
+                                    <div className="member-details">
+                                      <FontAwesomeIcon icon={faUser} className="user-icon" />
+                                      {userDetails[member.userId] ? userDetails[member.userId].name : `User ${member.userId}`}
+                                    </div>
+                                    <FontAwesomeIcon
+                                      icon={faXmark}
+                                      className="remove-icon"
+                                      onClick={() => handleInactiveCardMember(member.id)}
+                                    />
+                                  </div>
+                                ))}
+                              </div>
+                            ) : (
+                              <div className="no-members">No card members found</div>
+                            )}
+                          </div>
                           <div>Board Members</div>
-                          {boardMembers.length > 0 ? (
-                            <div>
-                              {boardMembers.map((member, index) => (
-                                <div key={index} className="member-item">
-                                  <FontAwesomeIcon icon={faUser} className="user-icon" />
-                                  {userDetails[member.userId] ? userDetails[member.userId].name : `User ${member.userId}`}
-                                </div>
-                              ))}
-                            </div>
-                          ) : (
-                            <div>No board members found</div>
-                          )}
+                          <div className="scrollable-container">
+                            {availableBoardMembers.length > 0 ? (
+                              <div>
+                                {availableBoardMembers.map((member, index) => (
+                                  <div key={index} className="member-item">
+                                    <div className="member-details" onClick={() => handleCreateMemberClick(member)}>
+                                      <FontAwesomeIcon icon={faUser} className="user-icon" />
+                                      {userDetails[member.userId] ? userDetails[member.userId].name : `User ${member.userId}`}
+                                    </div>
+                                  </div>
+                                ))}
+                              </div>
+                            ) : (
+                              <div className="no-members">No board members found</div>
+                            )}
+                          </div>
                         </Popover.Body>
-
                       </Popover>
                     </Overlay>
                   </div>

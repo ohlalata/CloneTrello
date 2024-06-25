@@ -53,6 +53,7 @@ export default {
     CardMember: {
       createCardMember: "cardMember/create",
       getAllCardMember: "/cardMember/get-all?cardId=${cardId}",
+      inactiveCardMember: "/cardMember/change-status/${id}?isActive=${isActive}",
     },
   },
 };

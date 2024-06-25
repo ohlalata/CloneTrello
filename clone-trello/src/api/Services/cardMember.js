@@ -21,6 +21,17 @@ const getAllCardMember = async (cardId) => {
   );
   return response;
 };
+const changeStatus = async (id, isActive) => {
+  const serviceUrl = urlConstant.endpoint.CardMember.inactiveCardMember
+    .replace("${id}", id)
+    .replace("${isActive}", isActive);
 
+  const response = await axiosLocalHost.sendAuthorizedRequest(
+    serviceUrl,
+    "PUT"
+  );
 
-export default { createCardMember, getAllCardMember };
+  return response;
+};
+
+export default { createCardMember, getAllCardMember, changeStatus };
