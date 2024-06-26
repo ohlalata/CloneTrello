@@ -294,24 +294,24 @@ const Card = (listIdProps, listBoardIdProps) => {
   }, []);
 
 
-  useEffect(() => {
-    const contentString = modalCardDetail?.description;
-    if (modalCardDetail?.description && isModalCardShow) {
-      const rawContent = JSON.parse(contentString);
-      setDescriptionTemp(rawContent.blocks[0]?.text);
-      const contentState = convertFromRaw(rawContent);
   // useEffect(() => {
   //   const contentString = modalCardDetail?.description;
-  //   console.log("contentString", modalCardDetail?.description);
-
-  //   if (modalCardDetail?.description) {
+  //   if (modalCardDetail?.description && isModalCardShow) {
   //     const rawContent = JSON.parse(contentString);
   //     setDescriptionTemp(rawContent.blocks[0]?.text);
   //     const contentState = convertFromRaw(rawContent);
+  // // useEffect(() => {
+  // //   const contentString = modalCardDetail?.description;
+  // //   console.log("contentString", modalCardDetail?.description);
 
-  //     setEditorState(EditorState.createWithContent(contentState));
-  //   }
-  // }, [isModalCardShow, richTextVisible]);
+  // //   if (modalCardDetail?.description) {
+  // //     const rawContent = JSON.parse(contentString);
+  // //     setDescriptionTemp(rawContent.blocks[0]?.text);
+  // //     const contentState = convertFromRaw(rawContent);
+
+  // //     setEditorState(EditorState.createWithContent(contentState));
+  // //   }
+  // // }, [isModalCardShow, richTextVisible]);
 
   const handleSearchChange = (event) => {
     setSearchTerm(event.target.value);
