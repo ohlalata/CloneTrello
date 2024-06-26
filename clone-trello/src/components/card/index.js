@@ -41,7 +41,9 @@ const Card = (listIdProps, listBoardIdProps) => {
   const [activityVisible, setActivityVisible] = useState(true);
   const [isCardTitleModal, setIsCardTitleModal] = useState(true);
   const [CardTitleModal, setCardTitleModal] = useState("");
+
   const [DescriptionTemp, setDescriptionTemp] = useState("");
+
   const [editorState, setEditorState] = useState(() =>
     EditorState.createEmpty()
   );
@@ -79,18 +81,23 @@ const Card = (listIdProps, listBoardIdProps) => {
   const saveContent = (id, title) => {
     const contentState = editorState.getCurrentContent();
     const rawContent = convertToRaw(contentState);
-    const contentString = JSON.stringify(rawContent);
-    console.log(draftToHtml(convertToRaw(editorState.getCurrentContent())));
-    setDescriptionTemp(
-      draftToHtml(convertToRaw(editorState.getCurrentContent()))
+    const contentString = draftToHtml(rawContent);
+
+    console.log(
+      typeof draftToHtml(convertToRaw(editorState.getCurrentContent()))
     );
+    console.log("contentString", contentString);
+
+    setDescriptionTemp(contentString);
     handleUpdateDescription(id, contentString, title);
   };
 
   const handleModalCard = (objCardDetail) => {
     setModalCardDetail(objCardDetail);
     setIsModalCardShow(!isModalCardShow);
+
     setIsMemberPopoverOpen(false);
+    handleGetAllCard();
   };
 
   const handleAddCardTitle = () => {
@@ -125,7 +132,6 @@ const Card = (listIdProps, listBoardIdProps) => {
       const response = await cardServices.getAllCard(listIdProps.listIdProps);
       if (response.data.code == 200) {
         setListCard(response.data.data);
-        console.log("list card", response.data.data);
       }
     } catch (error) {
       console.log(error);
@@ -143,10 +149,9 @@ const Card = (listIdProps, listBoardIdProps) => {
         formData
       );
       if (response.data.code == 200) {
-        setRichTextVisible(false);
-
+        setModalCardDetail(response.data.data);
+        //setRichTextVisible(false);
         handleGetAllCard();
-        console.log("update descript ok");
       }
     } catch (error) {
       console.error(error);
@@ -288,16 +293,25 @@ const Card = (listIdProps, listBoardIdProps) => {
     handleGetAllBoardMember();
   }, []);
 
+
   useEffect(() => {
     const contentString = modalCardDetail?.description;
     if (modalCardDetail?.description && isModalCardShow) {
       const rawContent = JSON.parse(contentString);
       setDescriptionTemp(rawContent.blocks[0]?.text);
       const contentState = convertFromRaw(rawContent);
+  // useEffect(() => {
+  //   const contentString = modalCardDetail?.description;
+  //   console.log("contentString", modalCardDetail?.description);
 
-      setEditorState(EditorState.createWithContent(contentState));
-    }
-  }, [isModalCardShow]);
+  //   if (modalCardDetail?.description) {
+  //     const rawContent = JSON.parse(contentString);
+  //     setDescriptionTemp(rawContent.blocks[0]?.text);
+  //     const contentState = convertFromRaw(rawContent);
+
+  //     setEditorState(EditorState.createWithContent(contentState));
+  //   }
+  // }, [isModalCardShow, richTextVisible]);
 
   const handleSearchChange = (event) => {
     setSearchTerm(event.target.value);

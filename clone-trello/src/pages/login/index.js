@@ -48,11 +48,9 @@ const LoginPages = () => {
           <section className="login__section">
             <div className="d-flex flex-column">
               <div className="text-center">
-                <img
-                  className="logo"
-                  alt="Logo"
-                  src={constants.LOGO_TRELLO_URL}
-                />
+                <span class="fs-4 fw-bolder" style={{ color: "#455570" }}>
+                  TRELLONE
+                </span>
               </div>
 
               <div className="d-flex justify-content-center mt-4 mb-1">
