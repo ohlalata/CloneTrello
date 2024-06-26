@@ -329,17 +329,17 @@ const Card = (listIdProps, listBoardIdProps) => {
     !cardMembers.some(cardMember => cardMember.userId === boardMember.userId)
   );
 
-  const handleInactiveCardMember = async (id) => {
+  const handleRemoveCardMember = async (id) => {
     try {
       const response = await cardMemberService.changeStatus(id, false);
       if (response.data.code === 200) {
-        toast.success('Inactive member successfully!');
+        toast.success('Remove member successfully!');
         handleGetCardMember(selectedCardId);
       } else {
-        toast.error('Inactive member Failed!');
+        toast.error('Remove member Failed!');
       }
     } catch (error) {
-      toast.error('Inactive member Failed!');
+      toast.error('Remove member Failed!');
       console.error(error);
     }
   };
@@ -649,7 +649,7 @@ const Card = (listIdProps, listBoardIdProps) => {
                                     <FontAwesomeIcon
                                       icon={faXmark}
                                       className="remove-icon"
-                                      onClick={() => handleInactiveCardMember(member.id)}
+                                      onClick={() => handleRemoveCardMember(member.id)}
                                     />
                                   </div>
                                 ))}
