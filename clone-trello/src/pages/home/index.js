@@ -92,13 +92,14 @@ const HomePages = () => {
   };
 
   const deCrypAccessToken = () => {
-    const toKen = localStorage.getItem("accessToken");
+    const toKen = localStorage.getItem("token");
     const deCrypAccessToken = jwtDecode(toKen);
     setCreateUser(deCrypAccessToken.sub);
   };
 
   const filterBoardMember = async () => {
     let yourBoardJoined = [];
+
     for (let boardElement of listBoard) {
       const members = await boardMemberService.getAllBoardMember(
         boardElement.id
@@ -127,8 +128,12 @@ const HomePages = () => {
   };
 
   const handleUpdateBoardStatus = async (id) => {
+    let query = {
+      id: id,
+      isActive: false,
+    };
     try {
-      const response = await boardService.changeBoardStatus(id, false);
+      const response = await boardService.changeBoardStatus(query);
       if (response.data.code == 200) {
         setModalShowDelete(false);
         toast.success("delete board successful");
@@ -136,13 +141,17 @@ const HomePages = () => {
       }
     } catch (error) {
       console.error(error);
-      toast.success("delete board  fail!");
+      setModalShowDelete(false);
+      toast.error("delete board  fail!");
     }
   };
 
   const handleCreateBoard = async () => {
+    let requestBody = {
+      name: boardName,
+    };
     try {
-      const response = await boardService.createBoard(boardName);
+      const response = await boardService.createBoard(requestBody);
       if (response.data.code == 201) {
         console.log("create board successful!");
         handleGetAllBoard();
@@ -342,6 +351,7 @@ const HomePages = () => {
                               </div>
                             </div>
                           </div>
+
                           <div className="mt-2 ps-2 d-flex flex-column gap-2">
                             <div
                               className="d-flex justify-content-between block__board-action"

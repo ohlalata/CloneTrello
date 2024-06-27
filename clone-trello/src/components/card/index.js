@@ -23,6 +23,7 @@ import draftToHtml from "draftjs-to-html";
 import { faArrowRight } from "@fortawesome/free-solid-svg-icons";
 import { DayPicker } from "react-day-picker";
 import "react-day-picker/dist/style.css";
+import { format } from "date-fns";
 
 const Card = (listIdProps) => {
   const textareaRefCardTitle = useRef(null);
@@ -48,10 +49,29 @@ const Card = (listIdProps) => {
   const [datePopover, setDatePopover] = useState(false);
   const [datePopoverTarget, setDatePopoverTarget] = useState(null);
 
-  const [daySelected, setDaySelected] = useState();
+  const initiallySelectedDate = new Date();
+  const [daySelected, setDaySelected] = useState(initiallySelectedDate);
+
+  const [isStartDay, setIsStartDay] = useState(true);
+  const [isDueDay, setIsDueDay] = useState(false);
+
+  const formatAMPM = (date) => {
+    let hours = date.getHours();
+    let minutes = date.getMinutes();
+    const ampm = hours >= 12 ? "PM" : "AM";
+    hours = hours % 12;
+    hours = hours ? hours : 12;
+    minutes = minutes < 10 ? "0" + minutes : minutes;
+    const strTime = hours + ":" + minutes + " " + ampm;
+    return strTime;
+  };
+
+  const [startDay, setStartDay] = useState("M/D/YYYY");
+  const [dueDay, setDueDay] = useState(format(daySelected, "MM/dd/yyyy"));
+  const [dueTime, setDueTime] = useState(formatAMPM(initiallySelectedDate));
 
   const handleDatePopoverClick = (event) => {
-    //if (datePopover) return;
+    if (datePopover) return;
     // event.preventDefault();
     // event.stopPropagation();
     setDatePopover(true);
@@ -63,14 +83,41 @@ const Card = (listIdProps) => {
     setDatePopover(false);
   };
 
-  // const dayChange = (value, e) => {
-  //   e.preventDefault();
-  //   e.stopPropagation();
-  //   console.log(value, e);
-  //   setDaySelected(value);
-  // };
+  const dayChange = (day, selectedDay, activeModifiers, e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    console.log("day: ", day);
+    console.log("selectedDay: ", selectedDay);
+    console.log("activeModifiers: ", activeModifiers);
+    console.log("event: ", e);
+    setDaySelected(selectedDay);
+  };
 
   //----------------------------------------------------------------
+
+  const handleStartDayDisable = () => {
+    setIsStartDay(!isStartDay);
+  };
+
+  const handleDueDayDisable = () => {
+    setIsDueDay(!isDueDay);
+  };
+
+  const handleChangeStartDay = (e) => {
+    setStartDay(e.target.value);
+  };
+
+  const handleChangeDueDay = (e) => {
+    setDueDay(e.target.value);
+  };
+
+  const handleChangeDueTime = (e) => {
+    setDueTime(e.target.value);
+  };
+
+  useEffect(() => {}, []);
+
+  //-----------------------------------------------------------------
 
   const handleEditorChange = (state) => {
     setEditorState(state);
@@ -329,6 +376,7 @@ const Card = (listIdProps) => {
                   </span>
                 ) : (
                   <input
+                    name="input-card-title-modal"
                     className="w-100  fw-semibold fs-4"
                     type="text"
                     value={CardTitleModal}
@@ -567,18 +615,116 @@ const Card = (listIdProps) => {
                             <DayPicker
                               mode="single"
                               selected={daySelected}
-                              // onSelect={(day, a, b, e) => {
-                              //   dayChange(day, e);
-                              // }}
-                              onSelect={setDaySelected}
+                              //onSelect={setDaySelected}
+                              onSelect={(
+                                day,
+                                selectedDay,
+                                activeModifiers,
+                                e
+                              ) => {
+                                dayChange(day, selectedDay, activeModifiers, e);
+                              }}
                             />
                           </div>
 
-                          <div className="d-flex flex-column">
-                            <span className="fw-semibold">Start date</span>
-                            <div className="d-flex">
-                              <input type="checkbox" />
+                          <div className="d-flex flex-column ">
+                            <span
+                              className="fw-semibold label__dates"
+                              style={{ fontSize: "13px" }}
+                            >
+                              Start date
+                            </span>
+                            <div className="d-flex gap-1">
+                              <input
+                                name="checkbox-startdate"
+                                type="checkbox"
+                                onChange={handleStartDayDisable}
+                              />
+                              <input
+                                name="input-startday"
+                                disabled={isStartDay}
+                                className="input__start-date"
+                                type="text"
+                                value={startDay}
+                                onChange={handleChangeStartDay}
+                              />
                             </div>
+                          </div>
+                          <div className="d-flex flex-column mt-2">
+                            <span
+                              className="fw-semibold label__dates"
+                              style={{ fontSize: "13px" }}
+                            >
+                              Due date
+                            </span>
+                            <div className="d-flex gap-1">
+                              <input
+                                type="checkbox"
+                                name="checkbox-dueday"
+                                onChange={handleDueDayDisable}
+                              />
+                              <input
+                                disabled={isDueDay}
+                                name="input-dueday"
+                                className="input__due-date"
+                                type="text"
+                                style={{ width: "90px" }}
+                                value={dueDay}
+                                onChange={handleChangeDueDay}
+                              />
+                              <input
+                                disabled={isDueDay}
+                                name="input-duetime"
+                                className="input__due-date"
+                                type="text"
+                                style={{ width: "90px" }}
+                                value={dueTime}
+                                onChange={handleChangeDueTime}
+                              />
+                            </div>
+                          </div>
+
+                          <div className="d-flex flex-column mt-3">
+                            <span
+                              className="fw-semibold label__dates"
+                              style={{ fontSize: "12px" }}
+                            >
+                              Set due date reminder
+                            </span>
+                            <div className="w-100">
+                              <select
+                                className="w-100 select__reminder"
+                                name="select-remind"
+                                defaultValue={"None"}
+                              >
+                                <option value={"None"}>None</option>
+                                <option value={"At time"}>
+                                  At time of due date
+                                </option>
+                                <option value={"5 Minutes"}>
+                                  5 Minutes before
+                                </option>
+                                <option value={"10 Minutes"}>
+                                  10 Minutes before
+                                </option>
+                                <option value={"15 Minutes"}>
+                                  15 Minutes before
+                                </option>
+                                <option value={"1 Hour"}>1 Hour before</option>
+                                <option value={"2 Hour"}>2 Hour before</option>
+                                <option value={"1 Day"}>1 Day before</option>
+                                <option value={"2 Day"}>2 Day before</option>
+                              </select>
+                            </div>
+                          </div>
+
+                          <div className="mt-3 d-flex flex-column w-100 gap-2">
+                            <button className="btn btn-primary fw-semibold">
+                              Save
+                            </button>
+                            <button className="btn btn-light fw-semibold">
+                              Remove
+                            </button>
                           </div>
                         </Popover.Body>
                       </Popover>

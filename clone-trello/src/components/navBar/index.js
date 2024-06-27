@@ -20,8 +20,11 @@ const NavBar = () => {
   const navigate = useNavigate();
 
   const handleGetBoardByName = async (searchTerm) => {
+    let query = {
+      name: searchTerm,
+    };
     try {
-      const response = await boardService.getBoardByName(searchTerm);
+      const response = await boardService.getBoardByName(query);
       if (response.data.code === 200) {
         setBoardByName(response.data.data);
       } else {

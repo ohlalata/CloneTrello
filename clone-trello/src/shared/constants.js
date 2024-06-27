@@ -19,7 +19,6 @@ export const BOARD_DETAIL_BACKGROUND_URL =
   "https://firebasestorage.googleapis.com/v0/b/clonetrello-103ad.appspot.com/o/pexels-rpnickson-2559941.jpg?alt=media&token=6fa791ce-433e-481d-afc8-79b745d3af7c";
 
 // ===== Board Theme ======
-
 export const BOARD_THEME_01 =
   "https://firebasestorage.googleapis.com/v0/b/clonetrello-103ad.appspot.com/o/no01.jpg?alt=media&token=7a53900c-9e8b-445d-b6fe-2220e116ca75";
 export const BOARD_THEME_02 =

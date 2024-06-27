@@ -227,5 +227,25 @@
 }
 
 .label__dates {
-  color: #44546f;
+  color: #4e6b9c;
+}
+
+.input__start-date {
+  border: solid 2px #388bff;
+  width: 92px;
+  height: 30px;
+}
+
+.input__start-date:disabled {
+  border: none;
+}
+
+.input__due-date {
+  border: solid 2px #388bff;
+  height: 30px;
+}
+
+.select__reminder {
+  height: 33px;
+  border: solid 2px #388bff;
 }

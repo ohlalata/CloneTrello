@@ -17,7 +17,7 @@ export default {
       createBoard: "/board/create",
       getBoardByName:
         "/board/get-all?PageIndex=1&PageSize=50&name=${boardName}",
-      updateBoardStatus: "/board/change-status/${id}?isActive=${isActive}",
+      updateBoardStatus: "/board/change-status/",
       updateBoardName: "/board/update/${id}",
       updateBoardVisibility:
         "/board/change-visibility/${id}?isPublic=${isPublic}",
@@ -40,8 +40,10 @@ export default {
     boardMember: {
       createBoardMember: "boardMember/create",
       getAllBoardMember: "/boardMember/get-all?boardId=${boardId}",
-      inactiveBoardMember: "/boardMember/change-status/${id}?isActive=${isActive}",
-      getCurrentBoardMemberRole: "/boardMember/get-current-role?boardId=${boardId}",
+      inactiveBoardMember:
+        "/boardMember/change-status/${id}?isActive=${isActive}",
+      getCurrentBoardMemberRole:
+        "/boardMember/get-current-role?boardId=${boardId}",
       updateBoardMember: "/boardMember/update/${id}?roleId=${roleId}",
     },
     role: {

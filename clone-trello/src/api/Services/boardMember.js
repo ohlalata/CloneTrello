@@ -15,10 +15,13 @@ const getAllBoardMember = async (boardId) => {
     "${boardId}",
     boardId
   );
-  const response = await axiosLocalHost.sendAuthorizedRequest(
-    serviceUrl,
-    "GET"
-  );
+  // const response = await axiosLocalHost.sendAuthorizedRequest(
+  //   serviceUrl,
+  //   "GET"
+  // );
+  // return response;
+
+  const response = await axiosLocalHost.normalRequest.get(serviceUrl);
   return response;
 };
 const changeStatus = async (id, isActive) => {
@@ -35,10 +38,11 @@ const changeStatus = async (id, isActive) => {
 };
 
 const getCurrentBoardMemberRole = async (boardId) => {
-  const serviceUrl = urlConstant.endpoint.boardMember.getCurrentBoardMemberRole.replace(
-    "${boardId}",
-    boardId
-  );
+  const serviceUrl =
+    urlConstant.endpoint.boardMember.getCurrentBoardMemberRole.replace(
+      "${boardId}",
+      boardId
+    );
   const response = await axiosLocalHost.sendAuthorizedRequest(
     serviceUrl,
     "GET"
@@ -59,4 +63,10 @@ const updateBoardMember = async (id, roleId) => {
   return response;
 };
 
-export default { createBoardMember, getAllBoardMember, changeStatus, getCurrentBoardMemberRole, updateBoardMember };
+export default {
+  createBoardMember,
+  getAllBoardMember,
+  changeStatus,
+  getCurrentBoardMemberRole,
+  updateBoardMember,
+};
