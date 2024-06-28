@@ -1,15 +1,28 @@
 import urlConstant from "../../commons/urlConstant";
 import axiosLocalHost from "../../utils/customAxios";
 
-const getAllCard = async (listId) => {
-  const serviceUrl = urlConstant.endpoint.card.getAllCard.replace(
-    "${listId}",
-    listId
-  );
-  const response = await axiosLocalHost.sendAuthorizedRequest(
-    serviceUrl,
-    "GET"
-  );
+const getAllCard = async (query) => {
+  // const serviceUrl = urlConstant.endpoint.card.getAllCard.replace(
+  //   "${listId}",
+  //   listId
+  // );
+  // const response = await axiosLocalHost.sendAuthorizedRequest(
+  //   serviceUrl,
+  //   "GET"
+  // );
+
+  let { listId } = query;
+  let params;
+  const serviceUrl = urlConstant.endpoint.card.getAllCard;
+  if (listId) {
+    params = {
+      params: {
+        listId: listId,
+      },
+    };
+  }
+
+  const response = await axiosLocalHost.normalRequest.get(serviceUrl, params);
   return response;
 };
 

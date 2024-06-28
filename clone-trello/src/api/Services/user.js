@@ -10,13 +10,14 @@ const getUserById = async (id) => {
   return response;
 };
 const getAllUser = async (email, name) => {
-  const serviceUrl = urlConstant.endpoint.user.getAllUser
-    .replace("${email}", email)
-    .replace("${name}", name);
-  const response = await axiosLocalHost.sendAuthorizedRequest(
-    serviceUrl,
-    "GET"
-  );
+  const serviceUrl = urlConstant.endpoint.user.getAllUser;
+  // .replace("${email}", email)
+  // .replace("${name}", name);
+  // const response = await axiosLocalHost.sendAuthorizedRequest(
+  //   serviceUrl,
+  //   "GET"
+  // );
+  const response = await axiosLocalHost.normalRequest.get(serviceUrl);
   return response;
 };
 
@@ -33,14 +34,14 @@ const searchUsers = async (query) => {
   let { keyword } = query;
   let params;
   const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-  const serviceUrl = urlConstant.endpoint.user.getAllUser;
+  const serviceUrl = urlConstant.endpoint.user.getUserByFilter;
   if (emailPattern.test(keyword)) {
     params = {
-      email: keyword,
+      params: { email: keyword },
     };
   } else {
     params = {
-      name: keyword,
+      params: { name: keyword },
     };
   }
 

@@ -55,8 +55,10 @@ const NavbarBoardContent = (boardID) => {
   };
 
   const handleUpdateBoardVisibility = async (id, isPublic) => {
+    let query = { id: id, isPublic: isPublic };
+
     try {
-      const response = await boardService.updateBoardVisibility(id, isPublic);
+      const response = await boardService.updateBoardVisibility(query);
       if (response.data.code == 200) {
         handleGetAllBoard();
         toast.success("Change board visibility successful");
@@ -68,10 +70,14 @@ const NavbarBoardContent = (boardID) => {
   };
 
   const handleUpdateBoardName = async (id) => {
-    const formData = new FormData();
-    formData.append("Name", inputBoardNameTemp);
+    // const formData = new FormData();
+    // formData.append("Name", inputBoardNameTemp);
+    let query = {
+      id: id,
+      Name: inputBoardNameTemp,
+    };
     try {
-      const response = await boardService.updateBoardName(id, formData);
+      const response = await boardService.updateBoardName(query);
       if (response.data.code == 200) {
         setIsBoardNameVisible(false);
         setInputBoardNameTemp("");

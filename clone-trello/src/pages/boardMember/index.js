@@ -4,17 +4,17 @@ import { useParams } from "react-router-dom";
 import { toast } from "react-toastify";
 import "react-toastify/ReactToastify.css";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faEllipsis, faUserXmark, faUserShield, faUser, faPenToSquare } from "@fortawesome/free-solid-svg-icons";
+import {
+  faEllipsis,
+  faUserXmark,
+  faUserShield,
+  faUser,
+  faPenToSquare,
+} from "@fortawesome/free-solid-svg-icons";
 import boardMemberService from "../../api/Services/boardMember";
 import userService from "../../api/Services/user";
 import roleService from "../../api/Services/role";
-import {
-  Modal,
-  Button,
-  Form,
-  OverlayTrigger,
-  Popover,
-} from "react-bootstrap";
+import { Modal, Button, Form, OverlayTrigger, Popover } from "react-bootstrap";
 
 const BoardMemberPages = () => {
   const { id } = useParams();
@@ -36,8 +36,12 @@ const BoardMemberPages = () => {
     try {
       const response = await roleService.getAllRole();
       if (response.data.code === 200) {
-        const adminRole = response.data.data.find((role) => role.name === "Admin");
-        const memberRole = response.data.data.find((role) => role.name === "Member");
+        const adminRole = response.data.data.find(
+          (role) => role.name === "Admin"
+        );
+        const memberRole = response.data.data.find(
+          (role) => role.name === "Member"
+        );
         if (adminRole) {
           setAdminRoleId(adminRole.id);
         }
@@ -98,8 +102,13 @@ const BoardMemberPages = () => {
   };
 
   const handleGetCurrentUserRole = async () => {
+    let query = {
+      boardId: id,
+    };
     try {
-      const response = await boardMemberService.getCurrentBoardMemberRole(id);
+      const response = await boardMemberService.getCurrentBoardMemberRole(
+        query
+      );
       if (response.data.code === 200) {
         setCurrentUserRole(response.data.data);
         //console.log("Current user role:", response.data.data);
@@ -139,13 +148,18 @@ const BoardMemberPages = () => {
   const handleInactiveMember = async () => {
     if (selectedMember) {
       try {
-        await boardMemberService.changeStatus(selectedMember.id, false);
+        let query = {
+          id: selectedMember.id,
+          isActive: false,
+        };
+        await boardMemberService.changeStatus(query);
         toast.success("Member inactivated successfully");
         setShowConfirmation(false);
         handleGetAllBoardMember();
       } catch (error) {
         console.error("Error inactivating member:", error);
-        const errorMessage = error.response?.data?.message || "Failed to inactive member";
+        const errorMessage =
+          error.response?.data?.message || "Failed to inactive member";
         toast.error(errorMessage);
       }
     }
@@ -154,7 +168,8 @@ const BoardMemberPages = () => {
   const handleUpdateBoardMember = async () => {
     if (selectedMember && selectedRole !== "") {
       try {
-        const response = await boardMemberService.updateBoardMember(selectedMember.id, selectedRole);
+        let query = { id: selectedMember.id, roleId: selectedRole };
+        const response = await boardMemberService.updateBoardMember(query);
         if (response.data.code === 200) {
           toast.success("Member role updated successfully");
           setShowRoleUpdateModal(false);
@@ -170,9 +185,9 @@ const BoardMemberPages = () => {
   };
 
   const togglePopover = (memberId) => {
-    setPopoverOpenMap(prevState => ({
+    setPopoverOpenMap((prevState) => ({
       ...prevState,
-      [memberId]: !prevState[memberId]
+      [memberId]: !prevState[memberId],
     }));
   };
 
@@ -181,12 +196,11 @@ const BoardMemberPages = () => {
       setSelectedMember(member);
       setSelectedRole(roleId);
       setShowRoleUpdateModal(true);
-      setPopoverOpenMap({}); 
+      setPopoverOpenMap({});
     } else {
       //console.log("You do not have permission to edit roles.");
     }
   };
-
 
   const handleDocumentClick = (event) => {
     if (popoverRef.current && !popoverRef.current.contains(event.target)) {
@@ -235,7 +249,10 @@ const BoardMemberPages = () => {
                     </div>
                   </div>
                 </td>
-                <td className="member-role" style={{ cursor: 'pointer', textDecoration: 'none' }}>
+                <td
+                  className="member-role"
+                  style={{ cursor: "pointer", textDecoration: "none" }}
+                >
                   {currentUserRole === "Admin" ? (
                     <OverlayTrigger
                       trigger="click"
@@ -244,24 +261,36 @@ const BoardMemberPages = () => {
                       onToggle={() => togglePopover(member.id)}
                       overlay={
                         <Popover id={`popover-${member.id}`}>
-                          <Popover.Header as="h3" className="text-center">Update Role</Popover.Header>
+                          <Popover.Header as="h3" className="text-center">
+                            Update Role
+                          </Popover.Header>
                           <Popover.Body>
                             <div className="popover-options">
                               {adminRoleId && (
                                 <div
                                   className="popover-option"
-                                  onClick={() => handleOptionClick(adminRoleId, member)}
+                                  onClick={() =>
+                                    handleOptionClick(adminRoleId, member)
+                                  }
                                 >
-                                  <FontAwesomeIcon icon={faUserShield} className="option-icon" />
+                                  <FontAwesomeIcon
+                                    icon={faUserShield}
+                                    className="option-icon"
+                                  />
                                   <span className="option-text">Admin</span>
                                 </div>
                               )}
                               {memberRoleId && (
                                 <div
                                   className="popover-option"
-                                  onClick={() => handleOptionClick(memberRoleId, member)}
+                                  onClick={() =>
+                                    handleOptionClick(memberRoleId, member)
+                                  }
                                 >
-                                  <FontAwesomeIcon icon={faUser} className="option-icon" />
+                                  <FontAwesomeIcon
+                                    icon={faUser}
+                                    className="option-icon"
+                                  />
                                   <span className="option-text">Member</span>
                                 </div>
                               )}
@@ -272,7 +301,10 @@ const BoardMemberPages = () => {
                     >
                       <div>
                         {roleDetails[member.roleId]?.name || "Loading..."}
-                        <FontAwesomeIcon icon={faPenToSquare} className="role-icon"/>
+                        <FontAwesomeIcon
+                          icon={faPenToSquare}
+                          className="role-icon"
+                        />
                       </div>
                     </OverlayTrigger>
                   ) : (
@@ -282,7 +314,7 @@ const BoardMemberPages = () => {
                   )}
                 </td>
 
-                <td style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+                <td style={{ textAlign: "center", verticalAlign: "middle" }}>
                   <button
                     className="ellipsis-icon"
                     onClick={() => {
@@ -341,10 +373,14 @@ const BoardMemberPages = () => {
             <Modal.Title>Confirm Update Role</Modal.Title>
           </Modal.Header>
           <Modal.Body>
-            Are you sure you want to update the role for {userDetails[selectedMember.userId]?.name}?
+            Are you sure you want to update the role for{" "}
+            {userDetails[selectedMember.userId]?.name}?
           </Modal.Body>
           <Modal.Footer>
-            <Button variant="secondary" onClick={() => setShowRoleUpdateModal(false)}>
+            <Button
+              variant="secondary"
+              onClick={() => setShowRoleUpdateModal(false)}
+            >
               Cancel
             </Button>
             <Button variant="primary" onClick={handleUpdateBoardMember}>

@@ -99,11 +99,10 @@ const HomePages = () => {
 
   const filterBoardMember = async () => {
     let yourBoardJoined = [];
-
+    let query;
     for (let boardElement of listBoard) {
-      const members = await boardMemberService.getAllBoardMember(
-        boardElement.id
-      );
+      query = { boardId: boardElement.id };
+      const members = await boardMemberService.getAllBoardMember(query);
 
       const hasMyId = members.data.data.some(
         (member) => member.userId == createUser
@@ -178,8 +177,11 @@ const HomePages = () => {
   };
 
   const fetchSearchResults = async (keyword) => {
+    let query = {
+      keyword: keyword,
+    };
     try {
-      const response = await userService.searchUsers(keyword);
+      const response = await userService.searchUsers(query);
       if (response.data.code === 200) {
         setSearchResults(response.data.data);
       }
@@ -194,9 +196,11 @@ const HomePages = () => {
   );
 
   const handleInviteUser = async (user) => {
+    let query, requestBody;
     try {
       const boardId = result[selectedBoardIndex].id;
-      const response = await boardMemberService.getAllBoardMember(boardId);
+      query = { boardId: boardId };
+      const response = await boardMemberService.getAllBoardMember(query);
       if (response.data.code === 200) {
         const members = response.data.data;
         const isMember = members.some((member) => member.userId === user.id);
@@ -205,10 +209,12 @@ const HomePages = () => {
           return;
         }
       }
-
+      requestBody = {
+        userId: user.id,
+        boardId: boardId,
+      };
       const inviteResponse = await boardMemberService.createBoardMember(
-        user.id,
-        boardId
+        requestBody
       );
       if (inviteResponse.data.code === 201) {
         toast.success("Board member invited successfully!");

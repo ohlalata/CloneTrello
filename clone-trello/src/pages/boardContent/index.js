@@ -61,8 +61,9 @@ const BoardContentPages = () => {
   }, [isAddListInputVisible]);
 
   const handleGetAllList = async () => {
+    let query = { boardId: id };
     try {
-      const response = await listServices.getAllList(id);
+      const response = await listServices.getAllList(query);
       if (response.data.code == 200) {
         setAllList(response.data.data);
       }
@@ -72,11 +73,16 @@ const BoardContentPages = () => {
   };
 
   const handleUpdateListName = async (listID) => {
-    const formData = new FormData();
-    formData.append("BoardId", id);
-    formData.append("Name", inputTitleList);
+    // const formData = new FormData();
+    // formData.append("BoardId", id);
+    // formData.append("Name", inputTitleList);
+    let query = {
+      id: listID,
+      BoardId: id,
+      Name: inputTitleList,
+    };
     try {
-      const response = await listServices.updateListName(listID, formData);
+      const response = await listServices.updateListName(query);
       if (response.data.code == 200) {
         setInputTitleList("");
         handleGetAllList();
@@ -87,10 +93,13 @@ const BoardContentPages = () => {
   };
 
   const handleCreateList = async () => {
+    let requestBody = {
+      boardId: id,
+      name: titleList,
+    };
     try {
-      const response = await listServices.createList(id, titleList);
+      const response = await listServices.createList(requestBody);
       if (response.data.code == 201) {
-        //console.log("create list successful!");
         setTitleList("");
         setIsAddListInputVisible(false);
         handleGetAllList();
@@ -101,8 +110,12 @@ const BoardContentPages = () => {
   };
 
   const handleArchiveList = async (listID) => {
+    let query = {
+      id: listID,
+      isActive: false,
+    };
     try {
-      const response = await listServices.changeStatus(listID, false);
+      const response = await listServices.changeStatus(query);
       if (response.data.code == 200) {
         window.location.reload();
         //console.log("archive list successful!");

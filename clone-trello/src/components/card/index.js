@@ -185,8 +185,9 @@ const Card = (listIdProps) => {
   };
 
   const handleGetAllCard = async () => {
+    let query = { listId: listIdProps.listIdProps };
     try {
-      const response = await cardServices.getAllCard(listIdProps.listIdProps);
+      const response = await cardServices.getAllCard(query);
       if (response.data.code == 200) {
         setListCard(response.data.data);
       }
