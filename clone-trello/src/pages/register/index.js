@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
 import "./style.scss";
 import registerServices from "../../api/Services/register";
 import { toast } from "react-toastify";
@@ -6,10 +6,11 @@ import "react-toastify/ReactToastify.css";
 import { useNavigate } from "react-router-dom";
 import * as constant from "../../shared/constants";
 import loginServices from "../../api/Services/login";
+import { AuthContext } from "../../components/authContext";
 
 const RegisterPages = () => {
+  const { loginContext } = useContext(AuthContext);
   const navigate = useNavigate();
-
   const [formVisible, setFormVisible] = useState(true);
   const [emailRegister, setEmailRegister] = useState("");
   const [passwordRegister, setPasswordRegister] = useState("");
@@ -23,27 +24,20 @@ const RegisterPages = () => {
   const handleRegister = async (e) => {
     e.preventDefault();
     try {
-      const response = await registerServices.Register(
-        emailRegister,
-        passwordRegister,
-        nameRegister
-      );
+      let query = {
+        name: nameRegister,
+        email: emailRegister,
+        password: passwordRegister,
+      };
+      const response = await registerServices.Register(query);
       if (response.data.code == 201) {
         toast.success("Register Successfully!");
-        let accessToken;
         try {
-          const response = await loginServices.login(
-            emailRegister,
-            passwordRegister
-          );
+          let queryLogin = { email: emailRegister, password: passwordRegister };
+          const response = await loginServices.login(queryLogin);
           if (response.data.code == 200) {
-            console.log("Bearer: " + response.data.bearer);
-            accessToken = response.data.bearer;
-            if (accessToken) {
-              localStorage.setItem("accessToken", accessToken);
-              toast.success("Login Successfully!");
-              navigate("/home");
-            }
+            loginContext(response.data.bearer);
+            toast.success("Login Successfully!");
           }
         } catch (error) {
           console.error(error);

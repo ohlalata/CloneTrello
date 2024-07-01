@@ -196,16 +196,10 @@ const Card = (listIdProps) => {
     }
   };
 
-  const handleUpdateDescription = async (cardID, description, tite) => {
-    const formData = new FormData();
-    formData.append("Description", description);
-    formData.append("Title", tite);
-
+  const handleUpdateDescription = async (cardID, description) => {
+    let query = { id: cardID, description: description };
     try {
-      const response = await cardServices.updateCardDescription(
-        cardID,
-        formData
-      );
+      const response = await cardServices.updateCardDescription(query);
       if (response.data.code == 200) {
         setModalCardDetail(response.data.data);
         setRichTextVisible(false);
@@ -218,10 +212,9 @@ const Card = (listIdProps) => {
   };
 
   const handleUpdateCardTitle = async (cardID) => {
-    const formData = new FormData();
-    formData.append("Title", inputTitleCard);
+    let query = { id: cardID, title: inputTitleCard };
     try {
-      const response = await cardServices.updateCardTitle(cardID, formData);
+      const response = await cardServices.updateCardTitle(query);
       if (response.data.code == 200) {
         setEditingCardTitle("false");
         handleGetAllCard();
@@ -232,10 +225,9 @@ const Card = (listIdProps) => {
   };
 
   const handleUpdateCardTitleModal = async (cardID) => {
-    const formData = new FormData();
-    formData.append("Title", CardTitleModal);
+    let query = { id: cardID, title: CardTitleModal };
     try {
-      const response = await cardServices.updateCardTitle(cardID, formData);
+      const response = await cardServices.updateCardTitle(query);
       if (response.data.code == 200) {
         setIsCardTitleModal(true);
         setModalCardDetail(response.data.data);
@@ -248,10 +240,8 @@ const Card = (listIdProps) => {
 
   const handleCreateCard = async () => {
     try {
-      const response = await cardServices.createCard(
-        listIdProps.listIdProps,
-        titleCard
-      );
+      let query = { listId: listIdProps.listIdProps, title: titleCard };
+      const response = await cardServices.createCard(query);
       if (response.data.code == 201) {
         setTitleCard("");
         setAddCardTitleVisible(false);
@@ -263,8 +253,9 @@ const Card = (listIdProps) => {
   };
 
   const handleArchiveCard = async (cardID) => {
+    let query = { id: cardID, isActive: false };
     try {
-      const response = await cardServices.changeStatus(cardID, false);
+      const response = await cardServices.changeStatus(query);
       if (response.data.code === 200) {
         window.location.reload();
 

@@ -2,15 +2,6 @@ import urlConstant from "../../commons/urlConstant";
 import axiosLocalHost from "../../utils/customAxios";
 
 const getAllCard = async (query) => {
-  // const serviceUrl = urlConstant.endpoint.card.getAllCard.replace(
-  //   "${listId}",
-  //   listId
-  // );
-  // const response = await axiosLocalHost.sendAuthorizedRequest(
-  //   serviceUrl,
-  //   "GET"
-  // );
-
   let { listId } = query;
   let params;
   const serviceUrl = urlConstant.endpoint.card.getAllCard;
@@ -21,65 +12,63 @@ const getAllCard = async (query) => {
       },
     };
   }
-
   const response = await axiosLocalHost.normalRequest.get(serviceUrl, params);
   return response;
 };
 
-const createCard = async (listId, title) => {
+const createCard = async (query) => {
+  let { listId, title } = query;
+  let data;
   const serviceUrl = urlConstant.endpoint.card.createCard;
-  const response = await axiosLocalHost.sendAuthorizedRequest(
-    serviceUrl,
-    "POST",
-    { listId, title }
-  );
+  if (listId && title) {
+    data = {
+      listId: listId,
+      title: title,
+    };
+  }
+  const response = await axiosLocalHost.normalRequest.post(serviceUrl, data);
   return response;
 };
 
-const updateCardTitle = async (id, formData) => {
-  const serviceUrl = urlConstant.endpoint.card.updateCard.replace("${id}", id);
-  const config = {
-    header: {
-      "Content-Type": "multipart/form-data",
-    },
-  };
-  const response = await axiosLocalHost.sendAuthorizedRequest(
-    serviceUrl,
-    "PUT",
-    formData,
-    config
-  );
+const updateCardTitle = async (query) => {
+  let { id, title } = query;
+  let data;
+  let serviceUrl = urlConstant.endpoint.card.updateCard + id;
+  if (id && title) {
+    data = {
+      title: title,
+    };
+  }
+  const response = await axiosLocalHost.normalRequest.put(serviceUrl, data);
   return response;
 };
 
-const updateCardDescription = async (id, formData) => {
-  const serviceUrl = urlConstant.endpoint.card.updateCard.replace("${id}", id);
-  const config = {
-    header: {
-      "Content-Type": "multipart/form-data",
-    },
-  };
-  const response = await axiosLocalHost.sendAuthorizedRequest(
-    serviceUrl,
-    "PUT",
-    formData,
-    config
-  );
+const updateCardDescription = async (query) => {
+  let { id, description } = query;
+  let data;
+  let serviceUrl = urlConstant.endpoint.card.updateCard + id;
+  if (id && description) {
+    data = {
+      description: description,
+    };
+  }
+  const response = await axiosLocalHost.normalRequest.put(serviceUrl, data);
   return response;
 };
 
-const changeStatus = async (id, isActive) => {
-  const serviceUrl = urlConstant.endpoint.card.archiveCard
-    .replace("${id}", id)
-    .replace("${isActive}", isActive);
-
-  const response = await axiosLocalHost.sendAuthorizedRequest(
-    serviceUrl,
-    "PUT"
-  );
-
+const changeStatus = async (query) => {
+  let { id, isActive } = query;
+  let data;
+  let serviceUrl = urlConstant.endpoint.card.archiveCard + id;
+  if (id) {
+    data = {
+      isActive: isActive,
+    };
+  }
+  const response = axiosLocalHost.normalRequest.put(serviceUrl, data);
   return response;
 };
+
 export default {
   getAllCard,
   createCard,

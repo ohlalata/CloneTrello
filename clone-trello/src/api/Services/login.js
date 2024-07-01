@@ -1,13 +1,18 @@
 import urlConstant from "../../commons/urlConstant";
 import axiosLocalHost from "../../utils/customAxios";
 
-const login = async (email, password) => {
+const login = async (query) => {
+  let { email, password } = query;
+  let data;
   const serviceUrl = urlConstant.endpoint.auth.login;
   try {
-    const response = await axiosLocalHost.normalRequest.post(serviceUrl, {
-      email,
-      password,
-    });
+    if (email && password) {
+      data = {
+        email: email,
+        password: password,
+      };
+    }
+    const response = await axiosLocalHost.normalRequest.post(serviceUrl, data);
     const accessToken = response.data.bearer;
     axiosLocalHost.setAuthToken(accessToken);
     return response;

@@ -74,7 +74,7 @@ const NavbarBoardContent = (boardID) => {
     // formData.append("Name", inputBoardNameTemp);
     let query = {
       id: id,
-      Name: inputBoardNameTemp,
+      name: inputBoardNameTemp,
     };
     try {
       const response = await boardService.updateBoardName(query);
@@ -82,6 +82,7 @@ const NavbarBoardContent = (boardID) => {
         setIsBoardNameVisible(false);
         setInputBoardNameTemp("");
         handleGetAllBoard();
+        console.log("update board name ok");
       }
     } catch (error) {
       console.error(error);

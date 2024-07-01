@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useContext } from "react";
 import "./style.scss";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPen } from "@fortawesome/free-solid-svg-icons";
@@ -7,13 +7,13 @@ import { toast } from "react-toastify";
 import "react-toastify/ReactToastify.css";
 import { useNavigate } from "react-router-dom";
 import * as constants from "../../shared/constants";
+import { AuthContext } from "../../components/authContext";
 
 const LoginPages = () => {
+  const { loginContext } = useContext(AuthContext);
   const navigate = useNavigate();
-
   const [enterEmail, setEnterEmail] = useState(true);
   const [enterConinue, setEnterConinue] = useState(true);
-
   const [enterPassword, setEnterPassword] = useState(false);
   const [enterSubmit, setEnterSubmit] = useState(false);
   const [email, setEmail] = useState("");
@@ -30,10 +30,12 @@ const LoginPages = () => {
   const handleLogin = async (e) => {
     e.preventDefault();
     try {
-      const response = await loginService.login(email, password);
+      let query = { email: email, password: password };
+      const response = await loginService.login(query);
       if (response.data.code == 200) {
+        loginContext(response.data.bearer);
         toast.success("Login Successfully!");
-        navigate("/home");
+        //navigate("/home");
       }
     } catch (error) {
       toast.error("Login Failed!");

@@ -31,29 +31,15 @@ const createList = async (requestBody) => {
 };
 
 const updateListName = async (query) => {
-  // const serviceUrl = urlConstant.endpoint.list.updateList.replace("${id}", id);
-  // const config = {
-  //   header: {
-  //     "Content-Type": "multipart/form-data",
-  //   },
-  // };
-  // const response = await axiosLocalHost.sendAuthorizedRequest(
-  //   serviceUrl,
-  //   "PUT",
-  //   formData,
-  //   config
-  // );
-  let { id, BoardId, Name } = query;
-  let data = new FormData();
-  const config = {
-    header: {
-      "Content-Type": "multipart/form-data",
-    },
-  };
+  let { id, boardId, name } = query;
+  let data;
+
   let serviceUrl = urlConstant.endpoint.list.updateList + id;
-  if (BoardId && Name) {
-    data.append("BoardId", id);
-    data.append("Name", Name);
+  if (boardId && name) {
+    data = {
+      boardId: boardId,
+      name: name,
+    };
   }
   const response = await axiosLocalHost.normalRequest.put(serviceUrl, data);
   return response;

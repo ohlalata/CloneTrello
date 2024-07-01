@@ -78,8 +78,8 @@ const BoardContentPages = () => {
     // formData.append("Name", inputTitleList);
     let query = {
       id: listID,
-      BoardId: id,
-      Name: inputTitleList,
+      boardId: id,
+      name: inputTitleList,
     };
     try {
       const response = await listServices.updateListName(query);

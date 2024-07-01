@@ -49,6 +49,7 @@ export default {
     },
     role: {
       getAllRole: "/role/get-all",
+      getAllRoleByFilter: "/role/get-by-filter",
     },
     comment: {
       getAllComment: "/comment/get-all",

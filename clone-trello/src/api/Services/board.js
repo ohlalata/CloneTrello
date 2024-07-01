@@ -94,23 +94,17 @@ const updateBoardName = async (query) => {
   //   config
   // );
 
-  let { id, Name } = query;
+  let { id, name } = query;
 
-  let data = new FormData();
-  const config = {
-    header: {
-      "Content-Type": "multipart/form-data",
-    },
-  };
+  let data;
+
   const serviceUrl = urlConstant.endpoint.board.updateBoardName + id;
-  if (id && Name) {
-    data.append("Name", Name);
+  if (id && name) {
+    data = {
+      name: name,
+    };
   }
-  const response = await axiosLocalHost.normalRequest.put(
-    serviceUrl,
-    data,
-    config
-  );
+  const response = await axiosLocalHost.normalRequest.put(serviceUrl, data);
   return response;
 };
 
