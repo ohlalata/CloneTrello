@@ -50,4 +50,10 @@ const searchUsers = async (query) => {
   return response;
 };
 
-export default { getUserById, getAllUser, searchUsers };
+const getUserProfile = async () => {
+  const serviceUrl = urlConstant.endpoint.user.getUserProfileByToken;
+  const response = await axiosLocalHost.normalRequest.get(serviceUrl);
+  return response;
+};
+
+export default { getUserById, getAllUser, searchUsers, getUserProfile };

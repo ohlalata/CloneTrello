@@ -91,10 +91,10 @@ const HomePages = () => {
     setActiveKey(selectedKey);
   };
 
-  const deCrypAccessToken = () => {
-    const toKen = localStorage.getItem("token");
-    const deCrypAccessToken = jwtDecode(toKen);
-    setCreateUser(deCrypAccessToken.sub);
+  const decryptAccessToken = () => {
+    const userProfile = localStorage.getItem("userProfile");
+    const userId = userProfile?.userId
+    setCreateUser(userId);
   };
 
   const filterBoardMember = async () => {
@@ -233,7 +233,7 @@ const HomePages = () => {
   };
 
   useEffect(() => {
-    deCrypAccessToken();
+    decryptAccessToken();
     handleGetAllBoard();
   }, []);
 

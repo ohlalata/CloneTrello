@@ -11,6 +11,7 @@ export default {
       getUserById: "/user/get/", // noi duoi id
       getAllUser: "/user/get-all",
       getUserByFilter: "/user/get-by-filter",
+      getUserProfileByToken: "/user/get-user-profile",
     },
     board: {
       getAllBoard: "/board/gets",
