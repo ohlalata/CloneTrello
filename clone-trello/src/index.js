@@ -6,7 +6,7 @@ import reportWebVitals from "./reportWebVitals";
 import { BrowserRouter } from "react-router-dom";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/ReactToastify.css";
-import { AuthProvider } from "./components/AuthContext";
+import { AuthProvider } from "./components/authContext";
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(

@@ -6,9 +6,7 @@ const AuthContext = createContext();
 
 const AuthProvider = ({ children }) => {
   const navigate = useNavigate();
-  const [isAuthenticated, setIsAuthenticated] = useState(
-    localStorage.getItem("checkAuth")
-  );
+  const [isAuthenticated, setIsAuthenticated] = useState("");
 
   const loginContext = (Token) => {
     if (Token) {
