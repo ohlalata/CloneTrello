@@ -24,6 +24,7 @@ import { faArrowRight } from "@fortawesome/free-solid-svg-icons";
 import { DayPicker } from "react-day-picker";
 import "react-day-picker/dist/style.css";
 import { format } from "date-fns";
+import { faTags } from "@fortawesome/free-solid-svg-icons";
 
 const Card = (listIdProps) => {
   const textareaRefCardTitle = useRef(null);
@@ -721,6 +722,13 @@ const Card = (listIdProps) => {
                         </Popover.Body>
                       </Popover>
                     </Overlay>
+                  </div>
+
+                  <div className="d-flex align-items-center gap-2 p-2 fw-semibold block__card-action">
+                    <div>
+                      <FontAwesomeIcon icon={faTags} />
+                    </div>
+                    <span>Label</span>
                   </div>
 
                   <div className="d-flex align-items-center gap-2 p-2 fw-semibold block__card-action">

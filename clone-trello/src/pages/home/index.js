@@ -247,11 +247,6 @@ const HomePages = () => {
   }, [inviteModalShow]);
 
   useEffect(() => {
-    // if (createUser) {
-    //   setYourBoard(
-    //     listBoard.filter((board) => board.createdUser === createUser)
-    //   );
-    // }
     filterBoardMember();
   }, [createUser, listBoard]);
 
