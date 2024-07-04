@@ -1,14 +1,13 @@
 import urlConstant from "../../commons/urlConstant";
 import axiosLocalHost from "../../utils/customAxios";
 
-const getUserById = async (id) => {
-  const serviceUrl = urlConstant.endpoint.user.getUserById.replace("${id}", id);
-  const response = await axiosLocalHost.sendAuthorizedRequest(
-    serviceUrl,
-    "GET"
-  );
+const getUserById = async (query) => {
+  let { id } = query;
+  let serviceUrl = urlConstant.endpoint.user.getUserById + id;
+  const response = await axiosLocalHost.normalRequest.get(serviceUrl);
   return response;
 };
+
 const getAllUser = async (email, name) => {
   const serviceUrl = urlConstant.endpoint.user.getAllUser;
   // .replace("${email}", email)
