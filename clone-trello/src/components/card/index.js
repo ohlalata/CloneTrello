@@ -290,12 +290,11 @@ const Card = (listIdProps, listBoardIdProps) => {
     try {
       const response = await cardServices.changeStatus(query);
       if (response.data.code === 200) {
-        window.location.reload();
+       // window.location.reload();
 
         toast.success("Card archived successfully!");
         setIsModalCardShow(false);
-        //handleGetAllCard();
-        handleGetCardByFilter();
+        handleGetAllCard();
       }
     } catch (error) {
       toast.error("Card archived failed!");
@@ -304,8 +303,9 @@ const Card = (listIdProps, listBoardIdProps) => {
   };
 
   const handleGetUserDetails = async (userId) => {
+    let query = { id: userId };
     try {
-      const response = await userService.getUserById(userId);
+      const response = await userService.getUserById(query);
       if (response.data.code === 200) {
         setUserDetails((prevDetails) => ({
           ...prevDetails,
@@ -318,13 +318,12 @@ const Card = (listIdProps, listBoardIdProps) => {
   };
 
   const handleGetAllBoardMember = async () => {
+    let query = { boardId: listIdProps.listBoardIdProps };
     try {
-      const response = await boardMemberService.getAllBoardMember(
-        listIdProps.listBoardIdProps
-      );
+      const response = await boardMemberService.getAllBoardMember(query);
       if (response.data.code === 200) {
         setBoardMembers(response.data.data);
-
+  
         response.data.data.forEach((member) => {
           handleGetUserDetails(member.userId);
         });
@@ -339,23 +338,24 @@ const Card = (listIdProps, listBoardIdProps) => {
   };
 
   const handleGetCardMember = async (cardId) => {
-    try {
-      const response = await cardMemberService.getAllCardMember(cardId);
-      if (response.data.code === 200) {
-        const membersData = response.data.data;
-        setCardMembers(membersData);
-        setSelectedCardId(cardId);
+  let query = { cardId: cardId };
+  try {
+    const response = await cardMemberService.getAllCardMember(query);
+    if (response.data.code === 200) {
+      const membersData = response.data.data;
+      setCardMembers(membersData);
+      setSelectedCardId(cardId);
 
-        membersData.forEach((member) => {
-          handleGetUserDetails(member.userId);
-        });
-      } else {
-        console.error("Failed to fetch card members!");
-      }
-    } catch (error) {
-      console.error("Error fetching card members:", error);
+      membersData.forEach((member) => {
+        handleGetUserDetails(member.userId);
+      });
+    } else {
+      console.error("Failed to fetch card members!");
     }
-  };
+  } catch (error) {
+    console.error("Error fetching card members:", error);
+  }
+};
 
   const handleMemberClick = async (cardId) => {
     if (!isMemberPopoverOpen) {
@@ -373,8 +373,7 @@ const Card = (listIdProps, listBoardIdProps) => {
   }, [listIdProps.listBoardIdProps]);
 
   useEffect(() => {
-    //handleGetAllCard();
-    handleGetCardByFilter();
+    handleGetAllCard();
     handleGetAllBoardMember();
   }, []);
 
@@ -420,11 +419,9 @@ const Card = (listIdProps, listBoardIdProps) => {
   });
 
   const handleCreateMemberClick = async (member) => {
+    let query = { userId: member.userId, cardId: selectedCardId };
     try {
-      const response = await cardMemberService.createCardMember(
-        member.userId,
-        selectedCardId
-      );
+      const response = await cardMemberService.createCardMember(query);
       if (response.data.code === 201) {
         toast.success(`Member ${member.name} added successfully!`);
         handleGetCardMember(selectedCardId);
@@ -445,8 +442,9 @@ const Card = (listIdProps, listBoardIdProps) => {
   );
 
   const handleRemoveCardMember = async (id) => {
+    let query = { id: id, isActive: false };
     try {
-      const response = await cardMemberService.changeStatus(id, false);
+      const response = await cardMemberService.changeStatus(query);
       if (response.data.code === 200) {
         toast.success("Remove member successfully!");
         handleGetCardMember(selectedCardId);

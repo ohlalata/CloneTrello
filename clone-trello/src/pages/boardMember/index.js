@@ -34,22 +34,17 @@ const BoardMemberPages = () => {
 
   const handleGetAllRoles = async () => {
     try {
-      const response = await roleService.getAllRole();
+      const response = await roleService.getAllRole({});
       if (response.data.code === 200) {
-        const adminRole = response.data.data.find(
-          (role) => role.name === "Admin"
-        );
-        const memberRole = response.data.data.find(
-          (role) => role.name === "Member"
-        );
+        const roles = response.data.data;
+        const adminRole = roles.find((role) => role.name === "Admin");
+        const memberRole = roles.find((role) => role.name === "Member");
         if (adminRole) {
           setAdminRoleId(adminRole.id);
         }
         if (memberRole) {
           setMemberRoleId(memberRole.id);
         }
-        //console.log("Admin Role ID:", adminRole?.id);
-        //console.log("Member Role ID:", memberRole?.id);
       }
     } catch (error) {
       console.error("Error fetching roles:", error);
@@ -59,42 +54,39 @@ const BoardMemberPages = () => {
 
   const handleGetAllBoardMember = async () => {
     try {
-      const response = await boardMemberService.getAllBoardMember(id);
+      const response = await boardMemberService.getAllBoardMember({ boardId: id });
       if (response.data.code === 200) {
         setBoardMembers(response.data.data);
-        //console.log("Get board members successful!");
       }
     } catch (error) {
-      console.error(error);
+      console.error("Failed to fetch board members:", error);
       toast.error("Failed to fetch board members");
     }
   };
-
+  
   const handleGetUserDetails = async (userId) => {
     try {
-      const response = await userService.getUserById(userId);
+      const response = await userService.getUserById({ id: userId });
       if (response.data.code === 200) {
         setUserDetails((prevDetails) => ({
           ...prevDetails,
           [userId]: response.data.data,
         }));
-        //console.log("Fetched user details:", response.data.data);
       }
     } catch (error) {
       console.error(`Error fetching user details for userId ${userId}:`, error);
     }
-  };
+  };  
 
   const handleGetRoleDetails = async (roleId) => {
     try {
-      const response = await roleService.getAllRole(roleId);
+      const response = await roleService.getAllRole({ id: roleId });
       if (response.data.code === 200) {
         const role = response.data.data.find((r) => r.id === roleId);
         setRoleDetails((prevDetails) => ({
           ...prevDetails,
           [roleId]: role,
         }));
-        //console.log("Fetched role details:", role);
       }
     } catch (error) {
       console.error(`Error fetching role details for roleId ${roleId}:`, error);
@@ -106,12 +98,9 @@ const BoardMemberPages = () => {
       boardId: id,
     };
     try {
-      const response = await boardMemberService.getCurrentBoardMemberRole(
-        query
-      );
+      const response = await boardMemberService.getCurrentBoardMemberRole(query);
       if (response.data.code === 200) {
         setCurrentUserRole(response.data.data);
-        //console.log("Current user role:", response.data.data);
       }
     } catch (error) {
       console.error("Error fetching current user role:", error);
@@ -181,9 +170,11 @@ const BoardMemberPages = () => {
         console.error("Error updating member role:", error);
         toast.error("Failed to update member role");
       }
+    } else {
+      toast.error("Selected member or role is invalid");
     }
   };
-
+  
   const togglePopover = (memberId) => {
     setPopoverOpenMap((prevState) => ({
       ...prevState,
@@ -219,16 +210,16 @@ const BoardMemberPages = () => {
     <div className="board-member-container">
       <div className="header">
         <h2 className="title">Board Members</h2>
-        {/* <input
+        <input
           type="text"
           placeholder="Search..."
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
           className="search-box"
-        /> */}
+        />
       </div>
-      <table className="board-member-table">
-        <div className="table-wrapper">
+      <div className="table-wrapper">
+        <table className="board-member-table">
           <thead>
             <tr>
               <th>Name</th>
@@ -332,8 +323,8 @@ const BoardMemberPages = () => {
               </tr>
             ))}
           </tbody>
-        </div>
-      </table>
+        </table>
+      </div>
 
       {showConfirmation && (
         <Modal
