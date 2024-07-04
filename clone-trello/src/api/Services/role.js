@@ -1,22 +1,21 @@
 import urlConstant from "../../commons/urlConstant";
 import axiosLocalHost from "../../utils/customAxios";
 
-const getAllRole = async (id, name) => {
-  let serviceUrl = urlConstant.endpoint.role.getAllRole;
+const getAllRole = async (query) => {
+  let { id, name } = query;
+  let params = {};
+  
   if (id) {
-    serviceUrl = serviceUrl.replace("${Id}", id);
-  } else {
-    serviceUrl = serviceUrl.replace("${Id}", "");
+    params.id = id;
   }
+
   if (name) {
-    serviceUrl = serviceUrl.replace("${name}", name);
-  } else {
-    serviceUrl = serviceUrl.replace("${name}", "");
+    params.name = name;
   }
-  const response = await axiosLocalHost.sendAuthorizedRequest(
-    serviceUrl,
-    "GET"
-  );
+
+  const serviceUrl = urlConstant.endpoint.role.getAllRole;
+  
+  const response = await axiosLocalHost.normalRequest.get(serviceUrl, { params });
   return response;
 };
 
