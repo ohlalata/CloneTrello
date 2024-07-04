@@ -150,127 +150,122 @@ const BoardContentPages = () => {
   return (
     <React.Fragment>
       <div className="d-flex block__board-content-container">
-        <div className="d-flex w-100">
-          <ol className="block__catalog-list d-flex gap-1 flex-column p-1">
+        <ol className="block__catalog-list d-flex gap-1 flex-column p-1">
+          <div className="d-flex w-100 qwer">
             <NavbarBoardContent boardID={id} />
-            <div className="d-flex">
-              {allList
-                .sort((a, b) => a.position - b.position)
-                .map((catalogList, key) => (
-                  <li
-                    key={key}
-                    className="block__list-element"
-                    data-testid="list-wrapper"
-                  >
-                    <div className="block__list-element-wraper ">
-                      <div className="block__list-title-wraper">
-                        <div className="block__list-title">
-                          {isEditingTitleList == catalogList.id ? (
-                            <div>
-                              <textarea
-                                rows={1}
-                                ref={textareaRef}
-                                placeholder={catalogList.name}
-                                value={inputTitleList}
-                                onChange={handleChangeListTitle}
-                                autoFocus
-                                onBlur={() =>
-                                  handleBlurListTitle(catalogList.id)
-                                }
-                              ></textarea>
-                            </div>
-                          ) : (
-                            <h6
-                              className="mb-0 label-list-title"
-                              onClick={() =>
-                                handleClickTitleList(catalogList.id)
-                              }
-                            >
-                              {catalogList.name}
-                            </h6>
-                          )}
-                        </div>
+          </div>
 
-                        <div className="position-relative">
-                          <button
-                            className="btn__list-option"
-                            onClick={() => handleDropdownClick(catalogList.id)}
+          <div className="d-flex" style={{ marginTop: "55px" }}>
+            {allList
+              .sort((a, b) => a.position - b.position)
+              .map((catalogList, key) => (
+                <li
+                  key={key}
+                  className="block__list-element"
+                  data-testid="list-wrapper"
+                >
+                  <div className="block__list-element-wraper">
+                    <div className="block__list-title-wraper">
+                      <div className="block__list-title">
+                        {isEditingTitleList == catalogList.id ? (
+                          <div>
+                            <textarea
+                              rows={1}
+                              ref={textareaRef}
+                              placeholder={catalogList.name}
+                              value={inputTitleList}
+                              onChange={handleChangeListTitle}
+                              autoFocus
+                              onBlur={() => handleBlurListTitle(catalogList.id)}
+                            ></textarea>
+                          </div>
+                        ) : (
+                          <h6
+                            className="mb-0 label-list-title"
+                            onClick={() => handleClickTitleList(catalogList.id)}
                           >
-                            <FontAwesomeIcon icon={faEllipsis} />
-                          </button>
-                          {dropdownVisible === catalogList.id && (
-                            <div className="dropdown-menu dropdown-menu-right show">
-                              <div className="dropdown-header d-flex justify-content-between align-items-center">
-                                <div className="flex-grow-1 text-center">
-                                  <span>List actions</span>
-                                </div>
-                              </div>
-                              <button
-                                className="dropdown-item"
-                                onClick={() =>
-                                  handleArchiveList(catalogList.id)
-                                }
-                              >
-                                Archive this list
-                              </button>
-                            </div>
-                          )}
-                        </div>
+                            {catalogList.name}
+                          </h6>
+                        )}
                       </div>
-                      <Card
-                        listIdProps={catalogList.id}
-                        listNameProps={catalogList.name}
-                        listBoardIdProps={catalogList.boardId}
-                      />
-                    </div>
-                  </li>
-                ))}
 
-              <li>
-                <div>
-                  <div className="block__add-list">
-                    {isAddListInputVisible ? (
-                      <div className="d-flex p-2" ref={inputAddList}>
-                        <div className="w-100 d-flex flex-column gap-2 ">
-                          <input
-                            className="w-100 border border-1 border-primary rounded-1"
-                            placeholder="Enter list title..."
-                            value={titleList}
-                            onChange={(e) => setTitleList(e.target.value)}
-                            autoFocus
-                          ></input>
-                          <div className="d-flex justify-content-start gap-3">
+                      <div className="position-relative">
+                        <button
+                          className="btn__list-option"
+                          onClick={() => handleDropdownClick(catalogList.id)}
+                        >
+                          <FontAwesomeIcon icon={faEllipsis} />
+                        </button>
+                        {dropdownVisible === catalogList.id && (
+                          <div className="dropdown-menu dropdown-menu-right show">
+                            <div className="dropdown-header d-flex justify-content-between align-items-center">
+                              <div className="flex-grow-1 text-center">
+                                <span>List actions</span>
+                              </div>
+                            </div>
                             <button
-                              className="btn btn-primary"
-                              onClick={() => handleCreateList()}
+                              className="dropdown-item"
+                              onClick={() => handleArchiveList(catalogList.id)}
                             >
-                              Add list
-                            </button>
-                            <button
-                              className="btn__close-input-add-list"
-                              onClick={() => setIsAddListInputVisible(false)}
-                            >
-                              <FontAwesomeIcon icon={faXmark} />
+                              Archive this list
                             </button>
                           </div>
-                        </div>
+                        )}
                       </div>
-                    ) : (
-                      <div className="d-flex justify-content-start gap-2 p-2 block__label-add-list">
-                        <div>
-                          <FontAwesomeIcon icon={faPlus} />
-                        </div>
-                        <div onClick={handleInputAddList} className="w-100">
-                          <p className="mb-0 fw-semibold">Add another list</p>
-                        </div>
-                      </div>
-                    )}
+                    </div>
+                    <Card
+                      listIdProps={catalogList.id}
+                      listNameProps={catalogList.name}
+                      listBoardIdProps={catalogList.boardId}
+                    />
                   </div>
+                </li>
+              ))}
+
+            <li>
+              <div>
+                <div className="block__add-list">
+                  {isAddListInputVisible ? (
+                    <div className="d-flex p-2" ref={inputAddList}>
+                      <div className="w-100 d-flex flex-column gap-2 ">
+                        <input
+                          className="w-100 border border-1 border-primary rounded-1"
+                          placeholder="Enter list title..."
+                          value={titleList}
+                          onChange={(e) => setTitleList(e.target.value)}
+                          autoFocus
+                        ></input>
+                        <div className="d-flex justify-content-start gap-3">
+                          <button
+                            className="btn btn-primary"
+                            onClick={() => handleCreateList()}
+                          >
+                            Add list
+                          </button>
+                          <button
+                            className="btn__close-input-add-list"
+                            onClick={() => setIsAddListInputVisible(false)}
+                          >
+                            <FontAwesomeIcon icon={faXmark} />
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  ) : (
+                    <div className="d-flex justify-content-start gap-2 p-2 block__label-add-list">
+                      <div>
+                        <FontAwesomeIcon icon={faPlus} />
+                      </div>
+                      <div onClick={handleInputAddList} className="w-100">
+                        <p className="mb-0 fw-semibold">Add another list</p>
+                      </div>
+                    </div>
+                  )}
                 </div>
-              </li>
-            </div>
-          </ol>
-        </div>
+              </div>
+            </li>
+          </div>
+        </ol>
       </div>
     </React.Fragment>
   );

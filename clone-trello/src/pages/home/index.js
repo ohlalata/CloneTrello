@@ -67,6 +67,7 @@ const HomePages = () => {
 
   const handleModal = () => {
     setModalShow(!modalShow);
+    setBoardName("");
   };
 
   const handleInviteModal = () => {
@@ -83,6 +84,7 @@ const HomePages = () => {
     handleCreateBoard();
     setModalShow(false);
     handleGetAllBoard();
+    handleGetBoardByMember();
   };
 
   const handleSelect = (selectedKey) => {
@@ -133,6 +135,7 @@ const HomePages = () => {
         setModalShowDelete(false);
         toast.success("delete board successful");
         handleGetAllBoard();
+        handleGetBoardByMember();
       }
     } catch (error) {
       console.error(error);
@@ -150,6 +153,8 @@ const HomePages = () => {
       if (response.data.code == 201) {
         console.log("create board successful!");
         handleGetAllBoard();
+        handleGetBoardByMember();
+        setBoardName("");
       }
     } catch (error) {
       console.error(error);
