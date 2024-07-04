@@ -60,15 +60,18 @@ const getCurrentBoardMemberRole = async (query) => {
 
 const updateBoardMember = async (query) => {
   let { id, roleId } = query;
-  let data;
-  let serviceUrl = urlConstant.endpoint.boardMember.updateBoardMember + id;
-  if (id && roleId) {
-    data = {
-      roleId: roleId,
-    };
+  if (!id || !roleId) {
+    return;
   }
-  const response = await axiosLocalHost.normalRequest.put(serviceUrl, data);
-  return response;
+
+  let serviceUrl = `${urlConstant.endpoint.boardMember.updateBoardMember}${id}?roleId=${roleId}`;
+
+  try {
+    const response = await axiosLocalHost.normalRequest.put(serviceUrl);
+    return response;
+  } catch (error) {
+    throw error; 
+  }
 };
 
 export default {
