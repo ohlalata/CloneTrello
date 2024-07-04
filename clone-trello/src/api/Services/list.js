@@ -16,6 +16,23 @@ const getAllList = async (query) => {
   return response;
 };
 
+const getListByFilter = async (query) => {
+  let { boardId, isActive } = query;
+  let params;
+  const serviceUrl = urlConstant.endpoint.list.getListByFilter;
+  if (boardId) {
+    params = {
+      params: {
+        boardId: boardId,
+        isActive: isActive,
+      },
+    };
+  }
+  const response = await axiosLocalHost.normalRequest.get(serviceUrl, params);
+  //console.log(response);
+  return response;
+};
+
 const createList = async (requestBody) => {
   let { boardId, name } = requestBody;
   let data;
@@ -58,4 +75,10 @@ const changeStatus = async (query) => {
   return response;
 };
 
-export default { getAllList, createList, updateListName, changeStatus };
+export default {
+  getAllList,
+  createList,
+  updateListName,
+  changeStatus,
+  getListByFilter,
+};

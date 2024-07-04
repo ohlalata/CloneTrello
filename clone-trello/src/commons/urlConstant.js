@@ -14,8 +14,9 @@ export default {
       getUserProfileByToken: "/user/get-user-profile",
     },
     board: {
-      getAllBoard: "/board/gets",
+      getAllBoard: "/board/get-all",
       getBoardByFilter: "/Board/get-by-filter",
+      getBoardByMember: "/board/get-by-membership",
       createBoard: "/board/create",
       getBoardByName:
         "/board/get-all?PageIndex=1&PageSize=50&name=${boardName}",
@@ -58,7 +59,8 @@ export default {
     CardMember: {
       createCardMember: "cardMember/create",
       getAllCardMember: "/cardMember/get-all?cardId=${cardId}",
-      inactiveCardMember: "/cardMember/change-status/${id}?isActive=${isActive}",
+      inactiveCardMember:
+        "/cardMember/change-status/${id}?isActive=${isActive}",
     },
   },
 };

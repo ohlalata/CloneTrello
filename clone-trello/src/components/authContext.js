@@ -8,6 +8,7 @@ const AuthContext = createContext();
 const AuthProvider = ({ children }) => {
   const navigate = useNavigate();
   const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [navigateHot, setNavigateHot] = useState();
 
   const loginContext = (Token) => {
     if (Token) {
@@ -44,12 +45,16 @@ const AuthProvider = ({ children }) => {
     if (checkAuth && token) {
       axiosLocalHost.setAuthToken(token);
       fetchUserProfile();
-      navigate("/home");
+      navigate(navigateHot);
     } else {
       axiosLocalHost.setAuthToken(null);
       navigate("/");
     }
   }, []);
+
+  useEffect(() => {
+    setNavigateHot(window.location.href);
+  });
 
   return (
     <AuthContext.Provider value={{ isAuthenticated, loginContext }}>

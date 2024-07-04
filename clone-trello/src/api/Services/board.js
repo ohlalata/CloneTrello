@@ -78,26 +78,8 @@ const changeBoardStatus = async (query) => {
 };
 
 const updateBoardName = async (query) => {
-  // const serviceUrl = urlConstant.endpoint.board.updateBoardName.replace(
-  //   "${id}",
-  //   id
-  // );
-  // const config = {
-  //   header: {
-  //     "Content-Type": "multipart/form-data",
-  //   },
-  // };
-  // const response = await axiosLocalHost.sendAuthorizedRequest(
-  //   serviceUrl,
-  //   "PUT",
-  //   formData,
-  //   config
-  // );
-
   let { id, name } = query;
-
   let data;
-
   const serviceUrl = urlConstant.endpoint.board.updateBoardName + id;
   if (id && name) {
     data = {
@@ -121,6 +103,12 @@ const updateBoardVisibility = async (query) => {
   return response;
 };
 
+const getBoardByMember = async () => {
+  const serviceUrl = urlConstant.endpoint.board.getBoardByMember;
+  const response = await axiosLocalHost.normalRequest.get(serviceUrl);
+  return response;
+};
+
 export default {
   getAllBoard,
   createBoard,
@@ -128,4 +116,5 @@ export default {
   changeBoardStatus,
   updateBoardName,
   updateBoardVisibility,
+  getBoardByMember,
 };

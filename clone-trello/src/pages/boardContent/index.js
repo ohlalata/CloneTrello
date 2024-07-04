@@ -1,4 +1,3 @@
-/* eslint-disable no-undef */
 import React, { useRef, useState, useEffect } from "react";
 import "./style.scss";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -11,6 +10,7 @@ import Card from "../../components/card";
 import { toast } from "react-toastify";
 import "react-toastify/ReactToastify.css";
 import NavbarBoardContent from "../../components/navBarBoardContent";
+import board from "../../api/Services/board";
 
 const BoardContentPages = () => {
   const { id } = useParams();
@@ -72,6 +72,18 @@ const BoardContentPages = () => {
     }
   };
 
+  const handleGetListByFilter = async () => {
+    let query = { boardId: id, isActive: true };
+    try {
+      const response = await listServices.getListByFilter(query);
+      if (response.data.code == 200) {
+        setAllList(response.data.data);
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
   const handleUpdateListName = async (listID) => {
     // const formData = new FormData();
     // formData.append("BoardId", id);
@@ -85,7 +97,7 @@ const BoardContentPages = () => {
       const response = await listServices.updateListName(query);
       if (response.data.code == 200) {
         setInputTitleList("");
-        handleGetAllList();
+        handleGetListByFilter();
       }
     } catch (error) {
       console.error(error);
@@ -102,7 +114,7 @@ const BoardContentPages = () => {
       if (response.data.code == 201) {
         setTitleList("");
         setIsAddListInputVisible(false);
-        handleGetAllList();
+        handleGetListByFilter();
       }
     } catch (error) {
       console.error(error);
@@ -118,9 +130,8 @@ const BoardContentPages = () => {
       const response = await listServices.changeStatus(query);
       if (response.data.code == 200) {
         window.location.reload();
-        //console.log("archive list successful!");
         toast.success("List archived successfully!");
-        handleGetAllList();
+        handleGetListByFilter();
       }
     } catch (error) {
       toast.error("List archived failed!");
@@ -129,12 +140,11 @@ const BoardContentPages = () => {
   };
 
   const handleDropdownClick = (listID) => {
-    //console.log("Dropdown clicked for list ID:", listID);
     setDropdownVisible(dropdownVisible === listID ? null : listID);
   };
 
   useEffect(() => {
-    handleGetAllList();
+    handleGetListByFilter();
   }, []);
 
   return (

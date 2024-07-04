@@ -16,6 +16,22 @@ const getAllCard = async (query) => {
   return response;
 };
 
+const getCardByFilter = async (query) => {
+  let { listId, isActive } = query;
+  let params;
+  const serviceUrl = urlConstant.endpoint.card.getCardByFilter;
+  if (listId) {
+    params = {
+      params: {
+        listId: listId,
+        isActive: isActive,
+      },
+    };
+  }
+  const response = await axiosLocalHost.normalRequest.get(serviceUrl, params);
+  return response;
+};
+
 const createCard = async (query) => {
   let { listId, title } = query;
   let data;
@@ -75,4 +91,5 @@ export default {
   updateCardTitle,
   changeStatus,
   updateCardDescription,
+  getCardByFilter,
 };

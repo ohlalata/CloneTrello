@@ -129,7 +129,7 @@ const Card = (listIdProps, listBoardIdProps) => {
     setDueTime(e.target.value);
   };
 
-  useEffect(() => {}, []);
+  //useEffect(() => {}, []);
 
   //-----------------------------------------------------------------
 
@@ -170,7 +170,8 @@ const Card = (listIdProps, listBoardIdProps) => {
     setDatePopover(false);
 
     setIsMemberPopoverOpen(false);
-    handleGetAllCard();
+    //handleGetAllCard();
+    handleGetCardByFilter();
   };
 
   const handleAddCardTitle = () => {
@@ -212,6 +213,18 @@ const Card = (listIdProps, listBoardIdProps) => {
     }
   };
 
+  const handleGetCardByFilter = async () => {
+    let query = { listId: listIdProps.listIdProps, isActive: true };
+    try {
+      const response = await cardServices.getCardByFilter(query);
+      if (response.data.code == 200) {
+        setListCard(response.data.data);
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   const handleUpdateDescription = async (cardID, description) => {
     let query = { id: cardID, description: description };
     try {
@@ -220,7 +233,8 @@ const Card = (listIdProps, listBoardIdProps) => {
         setModalCardDetail(response.data.data);
         setRichTextVisible(false);
         console.log("update description ok!");
-        handleGetAllCard();
+        //handleGetAllCard();
+        handleGetCardByFilter();
       }
     } catch (error) {
       console.error(error);
@@ -233,7 +247,8 @@ const Card = (listIdProps, listBoardIdProps) => {
       const response = await cardServices.updateCardTitle(query);
       if (response.data.code == 200) {
         setEditingCardTitle("false");
-        handleGetAllCard();
+        //handleGetAllCard();
+        handleGetCardByFilter();
       }
     } catch (error) {
       console.error(error);
@@ -247,7 +262,8 @@ const Card = (listIdProps, listBoardIdProps) => {
       if (response.data.code == 200) {
         setIsCardTitleModal(true);
         setModalCardDetail(response.data.data);
-        handleGetAllCard();
+        //handleGetAllCard();
+        handleGetCardByFilter();
       }
     } catch (error) {
       console.error(error);
@@ -261,7 +277,8 @@ const Card = (listIdProps, listBoardIdProps) => {
       if (response.data.code == 201) {
         setTitleCard("");
         setAddCardTitleVisible(false);
-        handleGetAllCard();
+        //handleGetAllCard();
+        handleGetCardByFilter();
       }
     } catch (error) {
       console.error(error);
@@ -277,7 +294,8 @@ const Card = (listIdProps, listBoardIdProps) => {
 
         toast.success("Card archived successfully!");
         setIsModalCardShow(false);
-        handleGetAllCard();
+        //handleGetAllCard();
+        handleGetCardByFilter();
       }
     } catch (error) {
       toast.error("Card archived failed!");
@@ -355,7 +373,8 @@ const Card = (listIdProps, listBoardIdProps) => {
   }, [listIdProps.listBoardIdProps]);
 
   useEffect(() => {
-    handleGetAllCard();
+    //handleGetAllCard();
+    handleGetCardByFilter();
     handleGetAllBoardMember();
   }, []);
 
