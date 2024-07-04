@@ -61,5 +61,12 @@ export default {
       getAllCardMember: "/cardMember/get-all?cardId=", 
       inactiveCardMember: "/cardMember/change-status/", 
     },
+    toDo: {
+      createTodo: "/toDo/create",
+      getAllTodo: "/toDo/get-all", 
+      getTodoByFilter: "/toDo/get-by-filter", 
+      updateTodo:"/toDo/update/", 
+      inactiveTodo: "/toDo/change-status/", 
+    },
   },
 };

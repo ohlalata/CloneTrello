@@ -1,7 +1,7 @@
 import React, { useRef, useState, useEffect } from "react";
 import "./style.scss";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faPen, faX } from "@fortawesome/free-solid-svg-icons";
+import { faPen, faX, faListCheck } from "@fortawesome/free-solid-svg-icons";
 import cardServices from "../../api/Services/card";
 import { faPlus } from "@fortawesome/free-solid-svg-icons";
 import { faXmark } from "@fortawesome/free-solid-svg-icons";
@@ -28,12 +28,14 @@ import { faTags } from "@fortawesome/free-solid-svg-icons";
 import cardMemberService from "../../api/Services/cardMember";
 import userService from "../../api/Services/user";
 import boardMemberService from "../../api/Services/boardMember";
+import todoService from "../../api/Services/todo";
 
 const Card = (listIdProps, listBoardIdProps) => {
   const textareaRefCardTitle = useRef(null);
   const textAreaRefCreateCardTitle = useRef(null);
   const datePopoverRef = useRef(null);
   const memberPopoverRef = useRef(null);
+  const checklistPopoverRef = useRef(null);
 
   const [EditingCardTitle, setEditingCardTitle] = useState(null);
   const [inputTitleCard, setInputTitleCard] = useState("");
@@ -61,7 +63,8 @@ const Card = (listIdProps, listBoardIdProps) => {
   const [userDetails, setUserDetails] = useState({});
   const [boardMembers, setBoardMembers] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
-  const [selectedBoardMember, setSelectedBoardMember] = useState(null);
+  const [isChecklistPopoverOpen, setIsChecklistPopoverOpen] = useState(false);
+  const [checklistTitle, setChecklistTitle] = useState("");
 
   const initiallySelectedDate = new Date();
   const [daySelected, setDaySelected] = useState(initiallySelectedDate);
@@ -290,7 +293,7 @@ const Card = (listIdProps, listBoardIdProps) => {
     try {
       const response = await cardServices.changeStatus(query);
       if (response.data.code === 200) {
-       // window.location.reload();
+        // window.location.reload();
 
         toast.success("Card archived successfully!");
         setIsModalCardShow(false);
@@ -323,7 +326,7 @@ const Card = (listIdProps, listBoardIdProps) => {
       const response = await boardMemberService.getAllBoardMember(query);
       if (response.data.code === 200) {
         setBoardMembers(response.data.data);
-  
+
         response.data.data.forEach((member) => {
           handleGetUserDetails(member.userId);
         });
@@ -338,24 +341,23 @@ const Card = (listIdProps, listBoardIdProps) => {
   };
 
   const handleGetCardMember = async (cardId) => {
-  let query = { cardId: cardId };
-  try {
-    const response = await cardMemberService.getAllCardMember(query);
-    if (response.data.code === 200) {
-      const membersData = response.data.data;
-      setCardMembers(membersData);
-      setSelectedCardId(cardId);
-
-      membersData.forEach((member) => {
-        handleGetUserDetails(member.userId);
-      });
-    } else {
-      console.error("Failed to fetch card members!");
+    let query = { cardId: cardId };
+    try {
+      const response = await cardMemberService.getAllCardMember(query);
+      if (response.data.code === 200) {
+        const membersData = response.data.data;
+        setCardMembers(membersData);
+        setSelectedCardId(cardId);
+        membersData.forEach((member) => {
+          handleGetUserDetails(member.userId);
+        });
+      } else {
+        console.error("Failed to fetch card members!");
+      }
+    } catch (error) {
+      console.error("Error fetching card members:", error);
     }
-  } catch (error) {
-    console.error("Error fetching card members:", error);
-  }
-};
+  };
 
   const handleMemberClick = async (cardId) => {
     if (!isMemberPopoverOpen) {
@@ -454,6 +456,35 @@ const Card = (listIdProps, listBoardIdProps) => {
     } catch (error) {
       toast.error("Remove member Failed!");
       console.error(error);
+    }
+  };
+
+  const handleChecklistClick = () => {
+    setIsChecklistPopoverOpen(!isChecklistPopoverOpen);
+  };
+
+  const closeChecklistPopover = () => {
+    setIsChecklistPopoverOpen(false);
+    setChecklistTitle(null)
+  };
+
+  const handleChecklistTitleChange = (e) => {
+    setChecklistTitle(e.target.value);
+  };
+
+  const handleAddChecklist = async () => {
+    let query = { cardId: modalCardDetail.id, title: checklistTitle};
+    try {
+      const response = await todoService.createTodo(query);
+      if (response.data.code === 201) {
+        toast.success(`To-do list added successfully!`);
+
+      } else {
+        toast.error(`Failed to add to-do list`);
+      }
+      closeChecklistPopover();
+    } catch (error) {
+      console.error("Error creating todo:", error);
     }
   };
 
@@ -987,6 +1018,44 @@ const Card = (listIdProps, listBoardIdProps) => {
                     <span>Label</span>
                   </div>
 
+                  <div
+                    className="d-flex align-items-center gap-2 p-2 fw-semibold block__card-action"
+                    onClick={handleChecklistClick}
+                    ref={checklistPopoverRef}
+                  >
+                    <div>
+                      <FontAwesomeIcon icon={faListCheck} />
+                    </div>
+                    <span>Checklist</span>
+                    <Overlay
+                      target={checklistPopoverRef.current}
+                      container={checklistPopoverRef}
+                      show={isChecklistPopoverOpen}
+                      placement="bottom"
+                    >
+                      <Popover id="popover-basic">
+                        <Popover.Header as="h3">
+                          Add checklist
+                          <Button
+                            onClick={closeChecklistPopover}
+                            className="btn btn-close"
+                          ></Button>
+                        </Popover.Header>
+                        <Popover.Body>
+                          <div>Title</div>
+                          <FormControl
+                            type="text"
+                            placeholder="Checklist title"
+                            autoFocus
+                            value={checklistTitle}
+                            onChange={handleChecklistTitleChange}
+                            className="mb-3"
+                          />
+                          <Button onClick={handleAddChecklist}>Add</Button>
+                        </Popover.Body>
+                      </Popover>
+                    </Overlay>
+                  </div>
                   <div className="d-flex align-items-center gap-2 p-2 fw-semibold block__card-action">
                     <div>
                       <FontAwesomeIcon icon={faArrowRight} />
