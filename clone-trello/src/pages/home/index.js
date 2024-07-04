@@ -44,8 +44,6 @@ const HomePages = () => {
 
   const [yourBoard, setYourBoard] = useState([]);
 
-  const [result, setResult] = useState([]);
-
   const [deleteBoardId, setDeleteBoardId] = useState("");
 
   const [deleteBoardName, setDeleteBoardName] = useState("");
@@ -91,27 +89,10 @@ const HomePages = () => {
     setActiveKey(selectedKey);
   };
 
-  const deCrypAccessToken = () => {
-    const toKen = localStorage.getItem("accessToken");
-    const deCrypAccessToken = jwtDecode(toKen);
-    setCreateUser(deCrypAccessToken.sub);
-  };
-
-  const filterBoardMember = async () => {
-    let yourBoardJoined = [];
-    for (let boardElement of listBoard) {
-      const members = await boardMemberService.getAllBoardMember(
-        boardElement.id
-      );
-
-      const hasMyId = members.data.data.some(
-        (member) => member.userId == createUser
-      );
-      if (hasMyId) {
-        yourBoardJoined.push(boardElement);
-      }
-    }
-    setResult(yourBoardJoined);
+  const decryptAccessToken = () => {
+    const userProfile = localStorage.getItem("userProfile");
+    const userId = userProfile?.userId;
+    setCreateUser(userId);
   };
 
   const handleGetAllBoard = async () => {
@@ -126,9 +107,28 @@ const HomePages = () => {
     }
   };
 
-  const handleUpdateBoardStatus = async (id) => {
+  const handleGetBoardByMember = async () => {
     try {
-      const response = await boardService.changeBoardStatus(id, false);
+      const response = await boardService.getBoardByMember();
+      if (response.data.code == 200) {
+        setYourBoard(
+          response.data.data.sort(
+            (a, b) => new Date(b.createdDate) - new Date(a.createdDate)
+          )
+        );
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const handleUpdateBoardStatus = async (id) => {
+    let query = {
+      id: id,
+      isActive: false,
+    };
+    try {
+      const response = await boardService.changeBoardStatus(query);
       if (response.data.code == 200) {
         setModalShowDelete(false);
         toast.success("delete board successful");
@@ -136,13 +136,17 @@ const HomePages = () => {
       }
     } catch (error) {
       console.error(error);
-      toast.success("delete board  fail!");
+      setModalShowDelete(false);
+      toast.error("delete board  fail!");
     }
   };
 
   const handleCreateBoard = async () => {
+    let requestBody = {
+      name: boardName,
+    };
     try {
-      const response = await boardService.createBoard(boardName);
+      const response = await boardService.createBoard(requestBody);
       if (response.data.code == 201) {
         console.log("create board successful!");
         handleGetAllBoard();
@@ -169,8 +173,11 @@ const HomePages = () => {
   };
 
   const fetchSearchResults = async (keyword) => {
+    let query = {
+      keyword: keyword,
+    };
     try {
-      const response = await userService.searchUsers(keyword);
+      const response = await userService.searchUsers(query);
       if (response.data.code === 200) {
         setSearchResults(response.data.data);
       }
@@ -185,9 +192,11 @@ const HomePages = () => {
   );
 
   const handleInviteUser = async (user) => {
+    let query, requestBody;
     try {
-      const boardId = result[selectedBoardIndex].id;
-      const response = await boardMemberService.getAllBoardMember(boardId);
+      const boardId = yourBoard[selectedBoardIndex].id;
+      query = { boardId: boardId };
+      const response = await boardMemberService.getAllBoardMember(query);
       if (response.data.code === 200) {
         const members = response.data.data;
         const isMember = members.some((member) => member.userId === user.id);
@@ -196,10 +205,12 @@ const HomePages = () => {
           return;
         }
       }
-
+      requestBody = {
+        userId: user.id,
+        boardId: boardId,
+      };
       const inviteResponse = await boardMemberService.createBoardMember(
-        user.id,
-        boardId
+        requestBody
       );
       if (inviteResponse.data.code === 201) {
         toast.success("Board member invited successfully!");
@@ -218,8 +229,9 @@ const HomePages = () => {
   };
 
   useEffect(() => {
-    deCrypAccessToken();
+    decryptAccessToken();
     handleGetAllBoard();
+    handleGetBoardByMember();
   }, []);
 
   useEffect(() => {
@@ -230,15 +242,6 @@ const HomePages = () => {
       setSelectedBoardIndex(null);
     }
   }, [inviteModalShow]);
-
-  useEffect(() => {
-    // if (createUser) {
-    //   setYourBoard(
-    //     listBoard.filter((board) => board.createdUser === createUser)
-    //   );
-    // }
-    filterBoardMember();
-  }, [createUser, listBoard]);
 
   const boardTheme = [
     constants.BOARD_THEME_01,
@@ -304,7 +307,7 @@ const HomePages = () => {
             <div>
               <p className="mb-1 ps-1 fw-semibold fs-5">Workspaces</p>
               <div className="d-flex flex-column gap-2">
-                {result
+                {yourBoard
                   .sort(
                     (a, b) => new Date(b.createdDate) - new Date(a.createdDate)
                   )
@@ -342,6 +345,7 @@ const HomePages = () => {
                               </div>
                             </div>
                           </div>
+
                           <div className="mt-2 ps-2 d-flex flex-column gap-2">
                             <div
                               className="d-flex justify-content-between block__board-action"
@@ -377,49 +381,41 @@ const HomePages = () => {
                 </div>
                 <div>
                   <div className="d-flex gap-3 flex-wrap">
-                    {result
-                      .sort(
-                        (a, b) =>
-                          new Date(b.createdDate) - new Date(a.createdDate)
-                      )
-                      .map((yourBoards, index) => (
-                        <div
-                          key={index}
-                          className="block__your-board rounded d-flex flex-column justify-content-between"
-                          style={{
-                            backgroundImage: `url(${
-                              boardTheme[index % boardTheme.length]
-                            })`,
-                          }}
+                    {yourBoard.map((yourBoards, index) => (
+                      <div
+                        key={index}
+                        className="block__your-board rounded d-flex flex-column justify-content-between"
+                        style={{
+                          backgroundImage: `url(${
+                            boardTheme[index % boardTheme.length]
+                          })`,
+                        }}
+                      >
+                        <Link
+                          to={`/board/board-content/${yourBoards.id}`}
+                          style={{ textDecoration: "none" }}
                         >
-                          <Link
-                            to={`/board/board-content/${yourBoards.id}`}
-                            style={{ textDecoration: "none" }}
-                          >
-                            <div className="p-2">
-                              <div className="d-flex justify-content-between">
-                                <p className="text-white fw-bold mb-0">
-                                  {yourBoards.name}
-                                </p>
-                              </div>
+                          <div className="p-2">
+                            <div className="d-flex justify-content-between">
+                              <p className="text-white fw-bold mb-0">
+                                {yourBoards.name}
+                              </p>
                             </div>
-                          </Link>
-
-                          <div className="d-flex justify-content-end pe-2 pb-1">
-                            <span
-                              style={{ color: "#ffffff" }}
-                              onClick={() =>
-                                handleDeleteModal(
-                                  yourBoards.id,
-                                  yourBoards.name
-                                )
-                              }
-                            >
-                              <FontAwesomeIcon icon={faTrashCan} />
-                            </span>
                           </div>
+                        </Link>
+
+                        <div className="d-flex justify-content-end pe-2 pb-1">
+                          <span
+                            style={{ color: "#ffffff" }}
+                            onClick={() =>
+                              handleDeleteModal(yourBoards.id, yourBoards.name)
+                            }
+                          >
+                            <FontAwesomeIcon icon={faTrashCan} />
+                          </span>
                         </div>
-                      ))}
+                      </div>
+                    ))}
 
                     <Modal
                       show={modalShowDelete}
@@ -502,7 +498,6 @@ const HomePages = () => {
                   <div className="d-flex gap-3 flex-wrap">
                     {listBoard
                       .filter((board) => board.isPublic == true)
-                      .filter((board) => !result.includes(board))
                       .sort(
                         (a, b) =>
                           new Date(b.createdDate) - new Date(a.createdDate)

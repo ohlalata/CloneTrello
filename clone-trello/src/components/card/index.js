@@ -20,6 +20,11 @@ import { EditorState, convertToRaw, convertFromRaw } from "draft-js";
 import "../../../node_modules/react-draft-wysiwyg/dist/react-draft-wysiwyg.css";
 import { Popover, Overlay, Button, ButtonGroup } from "react-bootstrap";
 import draftToHtml from "draftjs-to-html";
+import { faArrowRight } from "@fortawesome/free-solid-svg-icons";
+import { DayPicker } from "react-day-picker";
+import "react-day-picker/dist/style.css";
+import { format } from "date-fns";
+import { faTags } from "@fortawesome/free-solid-svg-icons";
 import cardMemberService from "../../api/Services/cardMember";
 import userService from "../../api/Services/user";
 import boardMemberService from "../../api/Services/boardMember";
@@ -41,12 +46,13 @@ const Card = (listIdProps, listBoardIdProps) => {
   const [activityVisible, setActivityVisible] = useState(true);
   const [isCardTitleModal, setIsCardTitleModal] = useState(true);
   const [CardTitleModal, setCardTitleModal] = useState("");
-
   const [DescriptionTemp, setDescriptionTemp] = useState("");
 
   const [editorState, setEditorState] = useState(() =>
     EditorState.createEmpty()
   );
+  //------------------------------------------------------------
+  //const datePopoverRef = useRef(null);
   const [datePopover, setDatePopover] = useState(false);
   const [datePopoverTarget, setDatePopoverTarget] = useState(null);
   const [cardMembers, setCardMembers] = useState([]);
@@ -54,12 +60,78 @@ const Card = (listIdProps, listBoardIdProps) => {
   const [selectedCardId, setSelectedCardId] = useState(null);
   const [userDetails, setUserDetails] = useState({});
   const [boardMembers, setBoardMembers] = useState([]);
-  const [searchTerm, setSearchTerm] = useState('');
+  const [searchTerm, setSearchTerm] = useState("");
   const [selectedBoardMember, setSelectedBoardMember] = useState(null);
 
-  const handleDatePopoverClick = () => {
-    setDatePopover(true);
+  const initiallySelectedDate = new Date();
+  const [daySelected, setDaySelected] = useState(initiallySelectedDate);
+
+  const [isStartDay, setIsStartDay] = useState(true);
+  const [isDueDay, setIsDueDay] = useState(false);
+
+  const formatAMPM = (date) => {
+    let hours = date.getHours();
+    let minutes = date.getMinutes();
+    const ampm = hours >= 12 ? "PM" : "AM";
+    hours = hours % 12;
+    hours = hours ? hours : 12;
+    minutes = minutes < 10 ? "0" + minutes : minutes;
+    const strTime = hours + ":" + minutes + " " + ampm;
+    return strTime;
   };
+
+  const [startDay, setStartDay] = useState("M/D/YYYY");
+  const [dueDay, setDueDay] = useState(format(daySelected, "MM/dd/yyyy"));
+  const [dueTime, setDueTime] = useState(formatAMPM(initiallySelectedDate));
+
+  const handleDatePopoverClick = (event) => {
+    if (datePopover) return;
+    // event.preventDefault();
+    // event.stopPropagation();
+    setDatePopover(true);
+    setDatePopoverTarget(event.target);
+    console.log(event);
+  };
+
+  const handleHideDatePopover = () => {
+    setDatePopover(false);
+  };
+
+  const dayChange = (day, selectedDay, activeModifiers, e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    console.log("day: ", day);
+    console.log("selectedDay: ", selectedDay);
+    console.log("activeModifiers: ", activeModifiers);
+    console.log("event: ", e);
+    setDaySelected(selectedDay);
+  };
+
+  //----------------------------------------------------------------
+
+  const handleStartDayDisable = () => {
+    setIsStartDay(!isStartDay);
+  };
+
+  const handleDueDayDisable = () => {
+    setIsDueDay(!isDueDay);
+  };
+
+  const handleChangeStartDay = (e) => {
+    setStartDay(e.target.value);
+  };
+
+  const handleChangeDueDay = (e) => {
+    setDueDay(e.target.value);
+  };
+
+  const handleChangeDueTime = (e) => {
+    setDueTime(e.target.value);
+  };
+
+  //useEffect(() => {}, []);
+
+  //-----------------------------------------------------------------
 
   const handleEditorChange = (state) => {
     setEditorState(state);
@@ -83,10 +155,10 @@ const Card = (listIdProps, listBoardIdProps) => {
     const rawContent = convertToRaw(contentState);
     const contentString = draftToHtml(rawContent);
 
-    console.log(
-      typeof draftToHtml(convertToRaw(editorState.getCurrentContent()))
-    );
-    console.log("contentString", contentString);
+    // console.log(
+    //   typeof draftToHtml(convertToRaw(editorState.getCurrentContent()))
+    // );
+    // console.log("contentString", contentString);
 
     setDescriptionTemp(contentString);
     handleUpdateDescription(id, contentString, title);
@@ -95,9 +167,11 @@ const Card = (listIdProps, listBoardIdProps) => {
   const handleModalCard = (objCardDetail) => {
     setModalCardDetail(objCardDetail);
     setIsModalCardShow(!isModalCardShow);
+    setDatePopover(false);
 
     setIsMemberPopoverOpen(false);
-    handleGetAllCard();
+    //handleGetAllCard();
+    handleGetCardByFilter();
   };
 
   const handleAddCardTitle = () => {
@@ -128,8 +202,9 @@ const Card = (listIdProps, listBoardIdProps) => {
   };
 
   const handleGetAllCard = async () => {
+    let query = { listId: listIdProps.listIdProps };
     try {
-      const response = await cardServices.getAllCard(listIdProps.listIdProps);
+      const response = await cardServices.getAllCard(query);
       if (response.data.code == 200) {
         setListCard(response.data.data);
       }
@@ -138,20 +213,28 @@ const Card = (listIdProps, listBoardIdProps) => {
     }
   };
 
-  const handleUpdateDescription = async (cardID, description, tite) => {
-    const formData = new FormData();
-    formData.append("Description", description);
-    formData.append("Title", tite);
-
+  const handleGetCardByFilter = async () => {
+    let query = { listId: listIdProps.listIdProps, isActive: true };
     try {
-      const response = await cardServices.updateCardDescription(
-        cardID,
-        formData
-      );
+      const response = await cardServices.getCardByFilter(query);
+      if (response.data.code == 200) {
+        setListCard(response.data.data);
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const handleUpdateDescription = async (cardID, description) => {
+    let query = { id: cardID, description: description };
+    try {
+      const response = await cardServices.updateCardDescription(query);
       if (response.data.code == 200) {
         setModalCardDetail(response.data.data);
-        //setRichTextVisible(false);
-        handleGetAllCard();
+        setRichTextVisible(false);
+        console.log("update description ok!");
+        //handleGetAllCard();
+        handleGetCardByFilter();
       }
     } catch (error) {
       console.error(error);
@@ -159,13 +242,13 @@ const Card = (listIdProps, listBoardIdProps) => {
   };
 
   const handleUpdateCardTitle = async (cardID) => {
-    const formData = new FormData();
-    formData.append("Title", inputTitleCard);
+    let query = { id: cardID, title: inputTitleCard };
     try {
-      const response = await cardServices.updateCardTitle(cardID, formData);
+      const response = await cardServices.updateCardTitle(query);
       if (response.data.code == 200) {
         setEditingCardTitle("false");
-        handleGetAllCard();
+        //handleGetAllCard();
+        handleGetCardByFilter();
       }
     } catch (error) {
       console.error(error);
@@ -173,14 +256,14 @@ const Card = (listIdProps, listBoardIdProps) => {
   };
 
   const handleUpdateCardTitleModal = async (cardID) => {
-    const formData = new FormData();
-    formData.append("Title", CardTitleModal);
+    let query = { id: cardID, title: CardTitleModal };
     try {
-      const response = await cardServices.updateCardTitle(cardID, formData);
+      const response = await cardServices.updateCardTitle(query);
       if (response.data.code == 200) {
         setIsCardTitleModal(true);
         setModalCardDetail(response.data.data);
-        handleGetAllCard();
+        //handleGetAllCard();
+        handleGetCardByFilter();
       }
     } catch (error) {
       console.error(error);
@@ -189,14 +272,13 @@ const Card = (listIdProps, listBoardIdProps) => {
 
   const handleCreateCard = async () => {
     try {
-      const response = await cardServices.createCard(
-        listIdProps.listIdProps,
-        titleCard
-      );
+      let query = { listId: listIdProps.listIdProps, title: titleCard };
+      const response = await cardServices.createCard(query);
       if (response.data.code == 201) {
         setTitleCard("");
         setAddCardTitleVisible(false);
-        handleGetAllCard();
+        //handleGetAllCard();
+        handleGetCardByFilter();
       }
     } catch (error) {
       console.error(error);
@@ -204,14 +286,16 @@ const Card = (listIdProps, listBoardIdProps) => {
   };
 
   const handleArchiveCard = async (cardID) => {
+    let query = { id: cardID, isActive: false };
     try {
-      const response = await cardServices.changeStatus(cardID, false);
+      const response = await cardServices.changeStatus(query);
       if (response.data.code === 200) {
         window.location.reload();
 
         toast.success("Card archived successfully!");
         setIsModalCardShow(false);
-        handleGetAllCard();
+        //handleGetAllCard();
+        handleGetCardByFilter();
       }
     } catch (error) {
       toast.error("Card archived failed!");
@@ -235,11 +319,13 @@ const Card = (listIdProps, listBoardIdProps) => {
 
   const handleGetAllBoardMember = async () => {
     try {
-      const response = await boardMemberService.getAllBoardMember(listIdProps.listBoardIdProps);
+      const response = await boardMemberService.getAllBoardMember(
+        listIdProps.listBoardIdProps
+      );
       if (response.data.code === 200) {
         setBoardMembers(response.data.data);
 
-        response.data.data.forEach(member => {
+        response.data.data.forEach((member) => {
           handleGetUserDetails(member.userId);
         });
       } else {
@@ -252,7 +338,6 @@ const Card = (listIdProps, listBoardIdProps) => {
     }
   };
 
-
   const handleGetCardMember = async (cardId) => {
     try {
       const response = await cardMemberService.getAllCardMember(cardId);
@@ -264,7 +349,6 @@ const Card = (listIdProps, listBoardIdProps) => {
         membersData.forEach((member) => {
           handleGetUserDetails(member.userId);
         });
-
       } else {
         console.error("Failed to fetch card members!");
       }
@@ -289,10 +373,21 @@ const Card = (listIdProps, listBoardIdProps) => {
   }, [listIdProps.listBoardIdProps]);
 
   useEffect(() => {
-    handleGetAllCard();
+    //handleGetAllCard();
+    handleGetCardByFilter();
     handleGetAllBoardMember();
   }, []);
 
+  useEffect(() => {
+    const contentString = modalCardDetail?.description;
+
+    // console.log(typeof modalCardDetail?.description);
+
+    if (modalCardDetail?.description) {
+      setDescriptionTemp(contentString);
+      // console.log(contentString);
+    }
+  }, [isModalCardShow, richTextVisible]);
 
   // useEffect(() => {
   //   const contentString = modalCardDetail?.description;
@@ -317,16 +412,19 @@ const Card = (listIdProps, listBoardIdProps) => {
     setSearchTerm(event.target.value);
   };
 
-  const filteredBoardMembers = boardMembers.filter(member => {
+  const filteredBoardMembers = boardMembers.filter((member) => {
     const userDetail = userDetails[member.userId];
-    const userName = userDetail ? userDetail.name.toLowerCase() : '';
+    const userName = userDetail ? userDetail.name.toLowerCase() : "";
 
     return userName.includes(searchTerm.toLowerCase());
   });
 
   const handleCreateMemberClick = async (member) => {
     try {
-      const response = await cardMemberService.createCardMember(member.userId, selectedCardId);
+      const response = await cardMemberService.createCardMember(
+        member.userId,
+        selectedCardId
+      );
       if (response.data.code === 201) {
         toast.success(`Member ${member.name} added successfully!`);
         handleGetCardMember(selectedCardId);
@@ -339,21 +437,24 @@ const Card = (listIdProps, listBoardIdProps) => {
     }
   };
 
-  const availableBoardMembers = filteredBoardMembers.filter(boardMember =>
-    !cardMembers.some(cardMember => cardMember.userId === boardMember.userId)
+  const availableBoardMembers = filteredBoardMembers.filter(
+    (boardMember) =>
+      !cardMembers.some(
+        (cardMember) => cardMember.userId === boardMember.userId
+      )
   );
 
   const handleRemoveCardMember = async (id) => {
     try {
       const response = await cardMemberService.changeStatus(id, false);
       if (response.data.code === 200) {
-        toast.success('Remove member successfully!');
+        toast.success("Remove member successfully!");
         handleGetCardMember(selectedCardId);
       } else {
-        toast.error('Remove member Failed!');
+        toast.error("Remove member Failed!");
       }
     } catch (error) {
-      toast.error('Remove member Failed!');
+      toast.error("Remove member Failed!");
       console.error(error);
     }
   };
@@ -442,6 +543,7 @@ const Card = (listIdProps, listBoardIdProps) => {
                   </span>
                 ) : (
                   <input
+                    name="input-card-title-modal"
                     className="w-100  fw-semibold fs-4"
                     type="text"
                     value={CardTitleModal}
@@ -634,12 +736,15 @@ const Card = (listIdProps, listBoardIdProps) => {
                       container={memberPopoverRef}
                       show={isMemberPopoverOpen}
                       placement="bottom"
-
                     >
                       <Popover id="popover-basic">
-                        <Popover.Header as="h3"> Members
-                          <Button onClick={closePopover} className="btn btn-close">
-                          </Button>
+                        <Popover.Header as="h3">
+                          {" "}
+                          Members
+                          <Button
+                            onClick={closePopover}
+                            className="btn btn-close"
+                          ></Button>
                         </Popover.Header>
                         <Popover.Body>
                           <FormControl
@@ -657,19 +762,28 @@ const Card = (listIdProps, listBoardIdProps) => {
                                 {cardMembers.map((member, index) => (
                                   <div key={index} className="member-item">
                                     <div className="member-details">
-                                      <FontAwesomeIcon icon={faUser} className="user-icon" />
-                                      {userDetails[member.userId] ? userDetails[member.userId].name : `User ${member.userId}`}
+                                      <FontAwesomeIcon
+                                        icon={faUser}
+                                        className="user-icon"
+                                      />
+                                      {userDetails[member.userId]
+                                        ? userDetails[member.userId].name
+                                        : `User ${member.userId}`}
                                     </div>
                                     <FontAwesomeIcon
                                       icon={faXmark}
                                       className="remove-icon"
-                                      onClick={() => handleRemoveCardMember(member.id)}
+                                      onClick={() =>
+                                        handleRemoveCardMember(member.id)
+                                      }
                                     />
                                   </div>
                                 ))}
                               </div>
                             ) : (
-                              <div className="no-members">No card members found</div>
+                              <div className="no-members">
+                                No card members found
+                              </div>
                             )}
                           </div>
                           <div>Board Members</div>
@@ -678,22 +792,38 @@ const Card = (listIdProps, listBoardIdProps) => {
                               <div>
                                 {availableBoardMembers.map((member, index) => (
                                   <div key={index} className="member-item">
-                                    <div className="member-details" onClick={() => handleCreateMemberClick(member)}>
-                                      <FontAwesomeIcon icon={faUser} className="user-icon" />
-                                      {userDetails[member.userId] ? userDetails[member.userId].name : `User ${member.userId}`}
+                                    <div
+                                      className="member-details"
+                                      onClick={() =>
+                                        handleCreateMemberClick(member)
+                                      }
+                                    >
+                                      <FontAwesomeIcon
+                                        icon={faUser}
+                                        className="user-icon"
+                                      />
+                                      {userDetails[member.userId]
+                                        ? userDetails[member.userId].name
+                                        : `User ${member.userId}`}
                                     </div>
                                   </div>
                                 ))}
                               </div>
                             ) : (
-                              <div className="no-members">No board members found</div>
+                              <div className="no-members">
+                                No board members found
+                              </div>
                             )}
                           </div>
                         </Popover.Body>
                       </Popover>
                     </Overlay>
                   </div>
-                  <div>
+
+                  <div
+                    ref={datePopoverRef}
+                    onClick={(e) => handleDatePopoverClick(e)}
+                  >
                     <div className="d-flex align-items-center gap-2 p-2 fw-semibold block__card-action">
                       <div>
                         <FontAwesomeIcon icon={faClock} />
@@ -701,12 +831,169 @@ const Card = (listIdProps, listBoardIdProps) => {
                       <span>Dates</span>
                     </div>
 
-                    <Overlay>
-                      <Popover>
-                        <Popover.Header></Popover.Header>
-                        <Popover.Body></Popover.Body>
+                    <Overlay
+                      show={datePopover}
+                      target={datePopoverTarget}
+                      placement="right"
+                      container={datePopoverRef.current}
+                      containerPadding={12}
+                      rootClose={true}
+                      onHide={handleHideDatePopover}
+                    >
+                      <Popover
+                        id="datePopover-contained"
+                        className="block__datePopover-visibility"
+                      >
+                        <Popover.Header
+                          className="d-flex justify-content-between"
+                          style={{ backgroundColor: "#ffffff" }}
+                        >
+                          <div></div>
+                          <span className="fw-semibold label__dates">
+                            Dates
+                          </span>
+                          <div>
+                            <Button
+                              size="sm"
+                              variant="close"
+                              aria-label="close"
+                              onClick={handleHideDatePopover}
+                            />
+                          </div>
+                        </Popover.Header>
+                        <Popover.Body>
+                          <div className="d-flex justify-content-center">
+                            <DayPicker
+                              mode="single"
+                              selected={daySelected}
+                              //onSelect={setDaySelected}
+                              onSelect={(
+                                day,
+                                selectedDay,
+                                activeModifiers,
+                                e
+                              ) => {
+                                dayChange(day, selectedDay, activeModifiers, e);
+                              }}
+                            />
+                          </div>
+
+                          <div className="d-flex flex-column ">
+                            <span
+                              className="fw-semibold label__dates"
+                              style={{ fontSize: "13px" }}
+                            >
+                              Start date
+                            </span>
+                            <div className="d-flex gap-1">
+                              <input
+                                name="checkbox-startdate"
+                                type="checkbox"
+                                onChange={handleStartDayDisable}
+                              />
+                              <input
+                                name="input-startday"
+                                disabled={isStartDay}
+                                className="input__start-date"
+                                type="text"
+                                value={startDay}
+                                onChange={handleChangeStartDay}
+                              />
+                            </div>
+                          </div>
+                          <div className="d-flex flex-column mt-2">
+                            <span
+                              className="fw-semibold label__dates"
+                              style={{ fontSize: "13px" }}
+                            >
+                              Due date
+                            </span>
+                            <div className="d-flex gap-1">
+                              <input
+                                type="checkbox"
+                                name="checkbox-dueday"
+                                onChange={handleDueDayDisable}
+                              />
+                              <input
+                                disabled={isDueDay}
+                                name="input-dueday"
+                                className="input__due-date"
+                                type="text"
+                                style={{ width: "90px" }}
+                                value={dueDay}
+                                onChange={handleChangeDueDay}
+                              />
+                              <input
+                                disabled={isDueDay}
+                                name="input-duetime"
+                                className="input__due-date"
+                                type="text"
+                                style={{ width: "90px" }}
+                                value={dueTime}
+                                onChange={handleChangeDueTime}
+                              />
+                            </div>
+                          </div>
+
+                          <div className="d-flex flex-column mt-3">
+                            <span
+                              className="fw-semibold label__dates"
+                              style={{ fontSize: "12px" }}
+                            >
+                              Set due date reminder
+                            </span>
+                            <div className="w-100">
+                              <select
+                                className="w-100 select__reminder"
+                                name="select-remind"
+                                defaultValue={"None"}
+                              >
+                                <option value={"None"}>None</option>
+                                <option value={"At time"}>
+                                  At time of due date
+                                </option>
+                                <option value={"5 Minutes"}>
+                                  5 Minutes before
+                                </option>
+                                <option value={"10 Minutes"}>
+                                  10 Minutes before
+                                </option>
+                                <option value={"15 Minutes"}>
+                                  15 Minutes before
+                                </option>
+                                <option value={"1 Hour"}>1 Hour before</option>
+                                <option value={"2 Hour"}>2 Hour before</option>
+                                <option value={"1 Day"}>1 Day before</option>
+                                <option value={"2 Day"}>2 Day before</option>
+                              </select>
+                            </div>
+                          </div>
+
+                          <div className="mt-3 d-flex flex-column w-100 gap-2">
+                            <button className="btn btn-primary fw-semibold">
+                              Save
+                            </button>
+                            <button className="btn btn-light fw-semibold">
+                              Remove
+                            </button>
+                          </div>
+                        </Popover.Body>
                       </Popover>
                     </Overlay>
+                  </div>
+
+                  <div className="d-flex align-items-center gap-2 p-2 fw-semibold block__card-action">
+                    <div>
+                      <FontAwesomeIcon icon={faTags} />
+                    </div>
+                    <span>Label</span>
+                  </div>
+
+                  <div className="d-flex align-items-center gap-2 p-2 fw-semibold block__card-action">
+                    <div>
+                      <FontAwesomeIcon icon={faArrowRight} />
+                    </div>
+                    <span>Move</span>
                   </div>
 
                   <div className="d-flex align-items-center gap-2 p-2 fw-semibold block__card-action">

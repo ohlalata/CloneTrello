@@ -1,13 +1,18 @@
 import urlConstant from "../../commons/urlConstant";
 import axiosLocalHost from "../../utils/customAxios";
 
-const Register = async (email, password, name) => {
+const Register = async (query) => {
+  let { name, email, password } = query;
+  let data;
   const serviceUrl = urlConstant.endpoint.auth.register;
-  const response = await axiosLocalHost.normalRequest.post(serviceUrl, {
-    email,
-    password,
-    name,
-  });
+  if (name && email && password) {
+    data = {
+      name: name,
+      email: email,
+      password: password,
+    };
+  }
+  const response = await axiosLocalHost.normalRequest.post(serviceUrl, data);
   return response;
 };
 

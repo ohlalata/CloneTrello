@@ -3,74 +3,109 @@ import axiosLocalHost from "../../utils/customAxios";
 
 const getAllBoard = async () => {
   const serviceUrl = urlConstant.endpoint.board.getAllBoard;
-  const response = await axiosLocalHost.sendAuthorizedRequest(
-    serviceUrl,
-    "GET"
-  );
+  const response = await axiosLocalHost.normalRequest.get(serviceUrl);
   return response;
 };
 
-const createBoard = async (name) => {
+//------------------------------------------------------------------------------------
+// const getBoardByFilter = async (query) => {
+//   let { pageIndex, pageSize, name } = query;
+
+//   const serviceUrl = urlConstant.endpoint.board.getBoardByFilter; //getBoardByFilter edit
+
+//   let params = {
+//     pageIndex: 1, //default
+//     pageSize: 50, //default
+//   };
+
+//   if (pageIndex && pageSize) {
+//     params = {
+//       pageIndex: parseInt(pageIndex),
+//       pageSize: parseInt(pageSize),
+//     };
+//   }
+
+//   if (name) {
+//     params = {
+//       ...params,
+//       boardName: name,
+//     };
+//   }
+
+//   const response = await axiosLocalHost.normalRequest.get(serviceUrl, params);
+// };
+
+//--------------------------------------------------------------------------------------
+
+const createBoard = async (requestBody) => {
   const serviceUrl = urlConstant.endpoint.board.createBoard;
-  const response = await axiosLocalHost.sendAuthorizedRequest(
-    serviceUrl,
-    "POST",
-    { name }
-  );
+  let { name } = requestBody;
+  let data;
+  if (name) {
+    data = {
+      name: name,
+    };
+  }
+  const response = await axiosLocalHost.normalRequest.post(serviceUrl, data);
   return response;
 };
 
-const getBoardByName = async (boardName) => {
-  const serviceUrl = urlConstant.endpoint.board.getBoardByName.replace(
-    "${boardName}",
-    boardName
-  );
-  const response = await axiosLocalHost.sendAuthorizedRequest(
-    serviceUrl,
-    "GET"
-  );
+const getBoardByName = async (query) => {
+  let { name } = query;
+  const serviceUrl = urlConstant.endpoint.board.getBoardByFilter;
+  let params;
+  if (name) {
+    params = {
+      params: { name: name },
+    };
+  }
+  const response = await axiosLocalHost.normalRequest.get(serviceUrl, params);
   return response;
 };
 
-const changeBoardStatus = async (id, isActive) => {
-  const serviceUrl = urlConstant.endpoint.board.updateBoardStatus
-    .replace("${id}", id)
-    .replace("${isActive}", isActive);
-  const response = await axiosLocalHost.sendAuthorizedRequest(
-    serviceUrl,
-    "PUT"
-  );
+const changeBoardStatus = async (query) => {
+  let { id, isActive } = query;
+  let data;
+  let serviceUrl = urlConstant.endpoint.board.updateBoardStatus + id;
+  if (id) {
+    data = {
+      isActive: isActive,
+    };
+  }
+
+  const response = await axiosLocalHost.normalRequest.put(serviceUrl, data);
   return response;
 };
 
-const updateBoardName = async (id, formData) => {
-  const serviceUrl = urlConstant.endpoint.board.updateBoardName.replace(
-    "${id}",
-    id
-  );
-  const config = {
-    header: {
-      "Content-Type": "multipart/form-data",
-    },
-  };
-  const response = await axiosLocalHost.sendAuthorizedRequest(
-    serviceUrl,
-    "PUT",
-    formData,
-    config
-  );
-
+const updateBoardName = async (query) => {
+  let { id, name } = query;
+  let data;
+  const serviceUrl = urlConstant.endpoint.board.updateBoardName + id;
+  if (id && name) {
+    data = {
+      name: name,
+    };
+  }
+  const response = await axiosLocalHost.normalRequest.put(serviceUrl, data);
   return response;
 };
 
-const updateBoardVisibility = async (id, isPublic) => {
-  const serviceUrl = urlConstant.endpoint.board.updateBoardVisibility
-    .replace("${id}", id)
-    .replace("${isPublic}", isPublic);
-  const response = await axiosLocalHost.sendAuthorizedRequest(
-    serviceUrl,
-    "PUT"
-  );
+const updateBoardVisibility = async (query) => {
+  let { id, isPublic } = query;
+  let data;
+  const serviceUrl = urlConstant.endpoint.board.updateBoardVisibility + id;
+  if (id) {
+    data = {
+      isPublic: isPublic,
+    };
+  }
+  const response = await axiosLocalHost.normalRequest.put(serviceUrl, data);
+  return response;
+};
+
+const getBoardByMember = async () => {
+  const serviceUrl = urlConstant.endpoint.board.getBoardByMember;
+  const response = await axiosLocalHost.normalRequest.get(serviceUrl);
   return response;
 };
 
@@ -81,4 +116,5 @@ export default {
   changeBoardStatus,
   updateBoardName,
   updateBoardVisibility,
+  getBoardByMember,
 };

@@ -1,21 +1,25 @@
 import urlConstant from "../../commons/urlConstant";
 import axiosLocalHost from "../../utils/customAxios";
 
-const login = async (email, password) => {
+const login = async (query) => {
+  let { email, password } = query;
+  let data;
   const serviceUrl = urlConstant.endpoint.auth.login;
-  const response = await axiosLocalHost.normalRequest.post(serviceUrl, {
-    email,
-    password,
-  });
-
-  const accessToken = response.data.bearer;
-  if (accessToken) {
-    localStorage.setItem("accessToken", accessToken);
-  } else {
-    console.log("Access token not found!");
+  try {
+    if (email && password) {
+      data = {
+        email: email,
+        password: password,
+      };
+    }
+    const response = await axiosLocalHost.normalRequest.post(serviceUrl, data);
+    const accessToken = response.data.bearer;
+    axiosLocalHost.setAuthToken(accessToken);
+    return response;
+  } catch (error) {
+    console.error(error);
+    axiosLocalHost.setAuthToken(null);
   }
-
-  return response;
 };
 
 export default { login };

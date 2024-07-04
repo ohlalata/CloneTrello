@@ -5,8 +5,6 @@ import UserRoutes from "./userRoutes";
 import PrivateRoute from "../components/privateRoute";
 
 const Index = () => {
-  let isAuthenticated = true;
-
   return (
     <Routes>
       <Route>
@@ -20,7 +18,7 @@ const Index = () => {
         ))}
       </Route>
 
-      <Route element={<PrivateRoute isAuthenticated={isAuthenticated} />}>
+      <Route element={<PrivateRoute />}>
         {UserRoutes.map((route, idx) => {
           if (route?.index)
             return (

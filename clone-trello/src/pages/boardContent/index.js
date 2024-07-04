@@ -1,4 +1,3 @@
-/* eslint-disable no-undef */
 import React, { useRef, useState, useEffect } from "react";
 import "./style.scss";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -11,6 +10,7 @@ import Card from "../../components/card";
 import { toast } from "react-toastify";
 import "react-toastify/ReactToastify.css";
 import NavbarBoardContent from "../../components/navBarBoardContent";
+import board from "../../api/Services/board";
 
 const BoardContentPages = () => {
   const { id } = useParams();
@@ -61,8 +61,21 @@ const BoardContentPages = () => {
   }, [isAddListInputVisible]);
 
   const handleGetAllList = async () => {
+    let query = { boardId: id };
     try {
-      const response = await listServices.getAllList(id);
+      const response = await listServices.getAllList(query);
+      if (response.data.code == 200) {
+        setAllList(response.data.data);
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  const handleGetListByFilter = async () => {
+    let query = { boardId: id, isActive: true };
+    try {
+      const response = await listServices.getListByFilter(query);
       if (response.data.code == 200) {
         setAllList(response.data.data);
       }
@@ -72,14 +85,19 @@ const BoardContentPages = () => {
   };
 
   const handleUpdateListName = async (listID) => {
-    const formData = new FormData();
-    formData.append("BoardId", id);
-    formData.append("Name", inputTitleList);
+    // const formData = new FormData();
+    // formData.append("BoardId", id);
+    // formData.append("Name", inputTitleList);
+    let query = {
+      id: listID,
+      boardId: id,
+      name: inputTitleList,
+    };
     try {
-      const response = await listServices.updateListName(listID, formData);
+      const response = await listServices.updateListName(query);
       if (response.data.code == 200) {
         setInputTitleList("");
-        handleGetAllList();
+        handleGetListByFilter();
       }
     } catch (error) {
       console.error(error);
@@ -87,13 +105,16 @@ const BoardContentPages = () => {
   };
 
   const handleCreateList = async () => {
+    let requestBody = {
+      boardId: id,
+      name: titleList,
+    };
     try {
-      const response = await listServices.createList(id, titleList);
+      const response = await listServices.createList(requestBody);
       if (response.data.code == 201) {
-        //console.log("create list successful!");
         setTitleList("");
         setIsAddListInputVisible(false);
-        handleGetAllList();
+        handleGetListByFilter();
       }
     } catch (error) {
       console.error(error);
@@ -101,13 +122,16 @@ const BoardContentPages = () => {
   };
 
   const handleArchiveList = async (listID) => {
+    let query = {
+      id: listID,
+      isActive: false,
+    };
     try {
-      const response = await listServices.changeStatus(listID, false);
+      const response = await listServices.changeStatus(query);
       if (response.data.code == 200) {
         window.location.reload();
-        //console.log("archive list successful!");
         toast.success("List archived successfully!");
-        handleGetAllList();
+        handleGetListByFilter();
       }
     } catch (error) {
       toast.error("List archived failed!");
@@ -116,12 +140,11 @@ const BoardContentPages = () => {
   };
 
   const handleDropdownClick = (listID) => {
-    //console.log("Dropdown clicked for list ID:", listID);
     setDropdownVisible(dropdownVisible === listID ? null : listID);
   };
 
   useEffect(() => {
-    handleGetAllList();
+    handleGetListByFilter();
   }, []);
 
   return (

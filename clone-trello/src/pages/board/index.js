@@ -8,7 +8,6 @@ const BoardPages = () => {
     <React.Fragment>
       <div>
         <NavBar />
-
         <Outlet />
       </div>
     </React.Fragment>
