@@ -39,7 +39,12 @@ export default {
       archiveCard: "/card/change-status/", // noi duoi id
     },
     task: {
-      getAllTask: "",
+      createTask: "/task/create",
+      getAllTask: "/task/get-all", 
+      getTaskByFilter: "/task/get-by-filter", 
+      updateTask:"/task/update/", 
+      checkTask: "/task/check/",
+      inactiveTask: "/task/change-status/", 
     },
     boardMember: {
       createBoardMember: "boardMember/create",

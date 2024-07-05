@@ -1,7 +1,7 @@
 import React, { useRef, useState, useEffect } from "react";
 import "./style.scss";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faPen, faX, faListCheck, faTrash } from "@fortawesome/free-solid-svg-icons";
+import { faPen, faX, faListCheck, faTrash, faUserPlus } from "@fortawesome/free-solid-svg-icons";
 import cardServices from "../../api/Services/card";
 import { faPlus } from "@fortawesome/free-solid-svg-icons";
 import { faXmark } from "@fortawesome/free-solid-svg-icons";
@@ -29,6 +29,7 @@ import cardMemberService from "../../api/Services/cardMember";
 import userService from "../../api/Services/user";
 import boardMemberService from "../../api/Services/boardMember";
 import todoService from "../../api/Services/todo";
+import taskService from "../../api/Services/task";
 
 const Card = (listIdProps, listBoardIdProps) => {
   const textareaRefCardTitle = useRef(null);
@@ -68,6 +69,15 @@ const Card = (listIdProps, listBoardIdProps) => {
   const [todoItems, setTodoItems] = useState([]);
   const [editingId, setEditingId] = useState(null);
   const [newTitle, setNewTitle] = useState('');
+  const [addingItem, setAddingItem] = useState(null);
+  const [newTask, setNewTask] = useState({
+    name: '',
+    priorityLevel: '',
+    status: '',
+    description: '',
+    assignedUserId: '',
+    dueDate: ''
+  });
 
   const initiallySelectedDate = new Date();
   const [daySelected, setDaySelected] = useState(initiallySelectedDate);
@@ -557,6 +567,39 @@ const Card = (listIdProps, listBoardIdProps) => {
     }
   };
 
+  const handleCreateTask = async (todoId) => {
+    const requestBody = { ...newTask, todoId };
+    try {
+      const response = await taskService.createTask(requestBody);
+      if (response.data.code === 201) {
+        toast.success('Task added successfully!');
+        stopAddingItem();
+        // Assuming you have a function to refresh the task list
+        // handleGetAllChecklist();
+      } else {
+        toast.error('Failed to add task');
+      }
+    } catch (error) {
+      console.error('Error creating task:', error);
+    }
+  };
+
+  const startAddingItem = (todoId) => {
+    setAddingItem(todoId);
+    setNewTask({
+      name: '',
+      priorityLevel: '',
+      status: '',
+      description: '',
+      assignedUserId: '',
+      dueDate: ''
+    });
+  };
+
+  const stopAddingItem = () => {
+    setAddingItem(null);
+  };
+
   return (
     <React.Fragment>
       <ol className="block__list-card">
@@ -774,9 +817,66 @@ const Card = (listIdProps, listBoardIdProps) => {
                             </div>
                           </div>
                           <div className="mt-2">
-                            <button className="custom-button">
-                              Add an item
-                            </button>
+                            {addingItem === todo.id ? (
+                              <div className="new-task-form">
+                                <div className="form-row">
+                                  <input
+                                    type="text"
+                                    placeholder="Task name"
+                                    value={newTask.name}
+                                    onChange={(e) => setNewTask({ ...newTask, name: e.target.value })}
+                                  />
+                                </div>
+                                <div className="form-row">
+                                  <select
+                                    value={newTask.priorityLevel}
+                                    onChange={(e) => setNewTask({ ...newTask, priorityLevel: e.target.value })}
+                                  >
+                                    <option value="" disabled>Select priority</option>
+                                    <option value="2">Low</option>
+                                    <option value="1">Medium</option>
+                                    <option value="0">High</option>
+                                  </select>
+                                  <select
+                                    value={newTask.status}
+                                    onChange={(e) => setNewTask({ ...newTask, status: e.target.value })}
+                                  >
+                                    <option value="" disabled>Select status</option>
+                                    <option value="0">New</option>
+                                    <option value="1">In Progress</option>
+                                    <option value="2">Resolved</option>
+                                  </select>
+                                </div>
+                                <div className="form-row">
+                                  <input
+                                    type="text"
+                                    placeholder="Description"
+                                    value={newTask.description}
+                                    onChange={(e) => setNewTask({ ...newTask, description: e.target.value })}
+                                  />
+                                </div>
+                                <div className="button-container">
+                                  <div className="form-row justify-content-end">
+                                    <button className="custom-button" onClick={() => handleCreateTask(todo.id)}>Add</button>
+                                    <button className="custom-button" onClick={stopAddingItem}>Cancel</button>
+                                  </div>
+                                  <div className="form-row justify-content-end">
+                                    <button className="custom-button">
+                                      <FontAwesomeIcon icon={faUserPlus} style={{ marginRight: "5px" }} />
+                                      Assign
+                                    </button>
+                                    <button className="custom-button">
+                                      <FontAwesomeIcon icon={faClock} style={{ marginRight: "5px" }} />
+                                      Due Date
+                                    </button>
+                                  </div>
+                                </div>
+                              </div>
+                            ) : (
+                              <button className="custom-button" onClick={() => startAddingItem(todo.id)}>
+                                Add an item
+                              </button>
+                            )}
                           </div>
                         </div>
                       ))}
