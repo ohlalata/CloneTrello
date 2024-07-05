@@ -1,7 +1,12 @@
 import React, { useRef, useState, useEffect } from "react";
 import "./style.scss";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faPen, faX, faListCheck, faTrash } from "@fortawesome/free-solid-svg-icons";
+import {
+  faPen,
+  faX,
+  faListCheck,
+  faTrash,
+} from "@fortawesome/free-solid-svg-icons";
 import cardServices from "../../api/Services/card";
 import { faPlus } from "@fortawesome/free-solid-svg-icons";
 import { faXmark } from "@fortawesome/free-solid-svg-icons";
@@ -15,11 +20,9 @@ import { faClock } from "@fortawesome/free-regular-svg-icons";
 import { faTrashCan } from "@fortawesome/free-regular-svg-icons";
 import { toast } from "react-toastify";
 import "react-toastify/ReactToastify.css";
-import { Editor } from "react-draft-wysiwyg";
-import { EditorState, convertToRaw, convertFromRaw } from "draft-js";
-import "../../../node_modules/react-draft-wysiwyg/dist/react-draft-wysiwyg.css";
+
 import { Popover, Overlay, Button, ButtonGroup } from "react-bootstrap";
-import draftToHtml from "draftjs-to-html";
+
 import { faArrowRight } from "@fortawesome/free-solid-svg-icons";
 import { DayPicker } from "react-day-picker";
 import "react-day-picker/dist/style.css";
@@ -28,6 +31,8 @@ import { faTags } from "@fortawesome/free-solid-svg-icons";
 import cardMemberService from "../../api/Services/cardMember";
 import userService from "../../api/Services/user";
 import boardMemberService from "../../api/Services/boardMember";
+import ReactQuill from "react-quill";
+import "react-quill/dist/quill.snow.css";
 import todoService from "../../api/Services/todo";
 
 const Card = (listIdProps, listBoardIdProps) => {
@@ -48,11 +53,7 @@ const Card = (listIdProps, listBoardIdProps) => {
   const [activityVisible, setActivityVisible] = useState(true);
   const [isCardTitleModal, setIsCardTitleModal] = useState(true);
   const [CardTitleModal, setCardTitleModal] = useState("");
-  const [DescriptionTemp, setDescriptionTemp] = useState("");
 
-  const [editorState, setEditorState] = useState(() =>
-    EditorState.createEmpty()
-  );
   //------------------------------------------------------------
   //const datePopoverRef = useRef(null);
   const [datePopover, setDatePopover] = useState(false);
@@ -67,7 +68,11 @@ const Card = (listIdProps, listBoardIdProps) => {
   const [checklistTitle, setChecklistTitle] = useState("");
   const [todoItems, setTodoItems] = useState([]);
   const [editingId, setEditingId] = useState(null);
-  const [newTitle, setNewTitle] = useState('');
+  const [newTitle, setNewTitle] = useState("");
+
+  const [valueQuill, setValueQuill] = useState("");
+  const quillRef = useRef(null);
+  //const [DescriptionTemp, setDescriptionTemp] = useState("");
 
   const initiallySelectedDate = new Date();
   const [daySelected, setDaySelected] = useState(initiallySelectedDate);
@@ -138,10 +143,51 @@ const Card = (listIdProps, listBoardIdProps) => {
   //useEffect(() => {}, []);
 
   //-----------------------------------------------------------------
+  // QUILL
 
-  const handleEditorChange = (state) => {
-    setEditorState(state);
+  const modules = {
+    toolbar: [
+      [{ header: "1" }, { header: "2" }, { font: [] }],
+      [{ size: [] }],
+      ["bold", "italic", "underline", "strike", "blockquote"],
+      [
+        { list: "ordered" },
+        { list: "bullet" },
+        { indent: "-1" },
+        { indent: "+1" },
+      ],
+      [{ color: [] }, { background: [] }],
+      ["link", "image", "video"],
+      ["clean"],
+    ],
+    clipboard: {
+      // toggle to add extra line breaks when pasting HTML:
+      matchVisual: false,
+    },
   };
+
+  const formats = [
+    "header",
+    "font",
+    "size",
+    "bold",
+    "italic",
+    "underline",
+    "strike",
+    "blockquote",
+    "list",
+    "bullet",
+    "indent",
+    "link",
+    "image",
+    "video",
+  ];
+
+  const handleChangeQuill = (content) => {
+    setValueQuill(content);
+  };
+
+  //-----------------------------------------------------------------
 
   const handleChangeCardTitleModal = (e) => {
     setCardTitleModal(e.target.value);
@@ -156,22 +202,9 @@ const Card = (listIdProps, listBoardIdProps) => {
     setActivityVisible(!activityVisible);
   };
 
-  const saveContent = (id, title) => {
-    const contentState = editorState.getCurrentContent();
-    const rawContent = convertToRaw(contentState);
-    const contentString = draftToHtml(rawContent);
-
-    // console.log(
-    //   typeof draftToHtml(convertToRaw(editorState.getCurrentContent()))
-    // );
-    // console.log("contentString", contentString);
-
-    setDescriptionTemp(contentString);
-    handleUpdateDescription(id, contentString, title);
-  };
-
   const handleModalCard = (objCardDetail) => {
     setModalCardDetail(objCardDetail);
+
     setIsModalCardShow(!isModalCardShow);
     setDatePopover(false);
 
@@ -184,8 +217,9 @@ const Card = (listIdProps, listBoardIdProps) => {
     setAddCardTitleVisible(true);
   };
 
-  const handleRichTextVisible = () => {
+  const handleRichTextVisible = (abc) => {
     setRichTextVisible(true);
+    setValueQuill(abc);
   };
 
   const handleEditClickCardTitle = (cardIdVisible, e) => {
@@ -231,8 +265,8 @@ const Card = (listIdProps, listBoardIdProps) => {
     }
   };
 
-  const handleUpdateDescription = async (cardID, description) => {
-    let query = { id: cardID, description: description };
+  const handleUpdateDescription = async (cardID, description, title) => {
+    let query = { id: cardID, description: description, title: title };
     try {
       const response = await cardServices.updateCardDescription(query);
       if (response.data.code == 200) {
@@ -382,36 +416,6 @@ const Card = (listIdProps, listBoardIdProps) => {
     handleGetAllBoardMember();
   }, []);
 
-  useEffect(() => {
-    const contentString = modalCardDetail?.description;
-
-    // console.log(typeof modalCardDetail?.description);
-
-    if (modalCardDetail?.description) {
-      setDescriptionTemp(contentString);
-      // console.log(contentString);
-    }
-  }, [isModalCardShow, richTextVisible]);
-
-  // useEffect(() => {
-  //   const contentString = modalCardDetail?.description;
-  //   if (modalCardDetail?.description && isModalCardShow) {
-  //     const rawContent = JSON.parse(contentString);
-  //     setDescriptionTemp(rawContent.blocks[0]?.text);
-  //     const contentState = convertFromRaw(rawContent);
-  // // useEffect(() => {
-  // //   const contentString = modalCardDetail?.description;
-  // //   console.log("contentString", modalCardDetail?.description);
-
-  // //   if (modalCardDetail?.description) {
-  // //     const rawContent = JSON.parse(contentString);
-  // //     setDescriptionTemp(rawContent.blocks[0]?.text);
-  // //     const contentState = convertFromRaw(rawContent);
-
-  // //     setEditorState(EditorState.createWithContent(contentState));
-  // //   }
-  // // }, [isModalCardShow, richTextVisible]);
-
   const handleSearchChange = (event) => {
     setSearchTerm(event.target.value);
   };
@@ -462,13 +466,23 @@ const Card = (listIdProps, listBoardIdProps) => {
     }
   };
 
+  const saveCardDescription = (cardID, description, title) => {
+    if (valueQuill) {
+      handleUpdateDescription(cardID, description, title);
+      setValueQuill("");
+      console.log("description", description);
+    } else {
+      setRichTextVisible(false);
+      setValueQuill("");
+    }
+  };
   const handleChecklistClick = () => {
     setIsChecklistPopoverOpen(!isChecklistPopoverOpen);
   };
 
   const closeChecklistPopover = () => {
     setIsChecklistPopoverOpen(false);
-    setChecklistTitle(null)
+    setChecklistTitle(null);
   };
 
   const handleChecklistTitleChange = (e) => {
@@ -481,7 +495,6 @@ const Card = (listIdProps, listBoardIdProps) => {
       const response = await todoService.createTodo(query);
       if (response.data.code === 201) {
         toast.success(`To-do list added successfully!`);
-
       } else {
         toast.error(`Failed to add to-do list`);
       }
@@ -494,14 +507,16 @@ const Card = (listIdProps, listBoardIdProps) => {
 
   const handleGetAllChecklist = async () => {
     try {
-      const response = await todoService.getAllTodo({ cardId: modalCardDetail.id });
+      const response = await todoService.getAllTodo({
+        cardId: modalCardDetail.id,
+      });
       if (response.data.code === 200) {
         setTodoItems(response.data.data);
       } else {
-        console.error('Failed to fetch todo:', response.data.message);
+        console.error("Failed to fetch todo:", response.data.message);
       }
     } catch (error) {
-      console.error('Error fetching todo:', error);
+      console.error("Error fetching todo:", error);
     }
   };
 
@@ -534,7 +549,7 @@ const Card = (listIdProps, listBoardIdProps) => {
 
   const stopEditing = () => {
     setEditingId(null);
-    setNewTitle('');
+    setNewTitle("");
   };
 
   const saveTitle = async (id) => {
@@ -678,7 +693,9 @@ const Card = (listIdProps, listBoardIdProps) => {
                       <div>
                         <button
                           className="btn btn-secondary btn-sm"
-                          onClick={handleRichTextVisible}
+                          onClick={() =>
+                            handleRichTextVisible(modalCardDetail.description)
+                          }
                         >
                           <span className="fw-semibold">Edit</span>
                         </button>
@@ -689,20 +706,21 @@ const Card = (listIdProps, listBoardIdProps) => {
                   {richTextVisible ? (
                     <div className="d-flex flex-column gap-2">
                       <div className="block__rich-text-editor">
-                        <Editor
-                          editorState={editorState}
-                          wrapperClassName="wrapperClassName"
-                          toolbarClassName="toolbarClassName"
-                          editorClassName="editorClassName"
-                          onEditorStateChange={handleEditorChange}
+                        <ReactQuill
+                          ref={quillRef}
+                          value={valueQuill}
+                          onChange={handleChangeQuill}
+                          modules={modules}
+                          formats={formats}
                         />
                       </div>
                       <div className="d-flex justify-content-start gap-3">
                         <button
                           className="btn btn-primary btn-sm"
                           onClick={() =>
-                            saveContent(
+                            saveCardDescription(
                               modalCardDetail.id,
+                              valueQuill,
                               modalCardDetail.title
                             )
                           }
@@ -718,7 +736,11 @@ const Card = (listIdProps, listBoardIdProps) => {
                       </div>
                     </div>
                   ) : (
-                    <div onClick={handleRichTextVisible}>
+                    <div
+                      onClick={() =>
+                        handleRichTextVisible(modalCardDetail.description)
+                      }
+                    >
                       {!modalCardDetail.description ? (
                         <div className="block__input-description p-2 mt-3">
                           <span
@@ -730,7 +752,9 @@ const Card = (listIdProps, listBoardIdProps) => {
                         </div>
                       ) : (
                         <div
-                          dangerouslySetInnerHTML={{ __html: DescriptionTemp }}
+                          dangerouslySetInnerHTML={{
+                            __html: modalCardDetail.description,
+                          }}
                         />
                       )}
                     </div>
@@ -741,7 +765,7 @@ const Card = (listIdProps, listBoardIdProps) => {
                 <div className="mt-3">
                   {todoItems.length > 0 && (
                     <div>
-                      {todoItems.map(todo => (
+                      {todoItems.map((todo) => (
                         <div key={todo.id}>
                           <div className="todo-item d-flex justify-content-between align-items-center mt-3">
                             <div className="d-flex gap-2 align-items-center">
@@ -753,14 +777,18 @@ const Card = (listIdProps, listBoardIdProps) => {
                                   <input
                                     type="text"
                                     value={newTitle}
-                                    onChange={(e) => setNewTitle(e.target.value)}
+                                    onChange={(e) =>
+                                      setNewTitle(e.target.value)
+                                    }
                                     onBlur={() => saveTitle(todo.id)}
                                     autoFocus
                                   />
                                 ) : (
                                   <span
                                     className="label__modal-todo fw-semibold"
-                                    onClick={() => startEditing(todo.id, todo.title)}
+                                    onClick={() =>
+                                      startEditing(todo.id, todo.title)
+                                    }
                                   >
                                     {todo.title}
                                   </span>
@@ -769,7 +797,12 @@ const Card = (listIdProps, listBoardIdProps) => {
                             </div>
                             <div>
                               <button className="custom-button">
-                                <FontAwesomeIcon icon={faTrash} onClick={() => handleChangeStatusChecklist(todo.id)} />
+                                <FontAwesomeIcon
+                                  icon={faTrash}
+                                  onClick={() =>
+                                    handleChangeStatusChecklist(todo.id)
+                                  }
+                                />
                               </button>
                             </div>
                           </div>
@@ -1057,9 +1090,11 @@ const Card = (listIdProps, listBoardIdProps) => {
                             <div className="d-flex gap-1">
                               <input
                                 type="checkbox"
+                                checked
                                 name="checkbox-dueday"
                                 onChange={handleDueDayDisable}
                               />
+
                               <input
                                 disabled={isDueDay}
                                 name="input-dueday"
