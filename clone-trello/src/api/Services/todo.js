@@ -59,19 +59,6 @@ const updateTodo = async (query) => {
   return response;
 };
 
-const updateTodoDescription = async (query) => {
-  let { id, description } = query;
-  let data;
-  let serviceUrl = urlConstant.endpoint.toDo.updateTodo + id;
-  if (id && description) {
-    data = {
-      description: description,
-    };
-  }
-  const response = await axiosLocalHost.normalRequest.put(serviceUrl, data);
-  return response;
-};
-
 const changeStatus = async (query) => {
   let { id, isActive } = query;
   let data;
@@ -89,7 +76,6 @@ export default {
   getAllTodo,
   createTodo,
   updateTodo,
-  updateTodoDescription,
   changeStatus,
   getTodoByFilter,
 };
