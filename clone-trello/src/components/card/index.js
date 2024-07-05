@@ -1,7 +1,12 @@
 import React, { useRef, useState, useEffect } from "react";
 import "./style.scss";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faPen, faX } from "@fortawesome/free-solid-svg-icons";
+import {
+  faPen,
+  faX,
+  faListCheck,
+  faTrash,
+} from "@fortawesome/free-solid-svg-icons";
 import cardServices from "../../api/Services/card";
 import { faPlus } from "@fortawesome/free-solid-svg-icons";
 import { faXmark } from "@fortawesome/free-solid-svg-icons";
@@ -28,12 +33,14 @@ import userService from "../../api/Services/user";
 import boardMemberService from "../../api/Services/boardMember";
 import ReactQuill from "react-quill";
 import "react-quill/dist/quill.snow.css";
+import todoService from "../../api/Services/todo";
 
 const Card = (listIdProps, listBoardIdProps) => {
   const textareaRefCardTitle = useRef(null);
   const textAreaRefCreateCardTitle = useRef(null);
   const datePopoverRef = useRef(null);
   const memberPopoverRef = useRef(null);
+  const checklistPopoverRef = useRef(null);
 
   const [EditingCardTitle, setEditingCardTitle] = useState(null);
   const [inputTitleCard, setInputTitleCard] = useState("");
@@ -57,7 +64,11 @@ const Card = (listIdProps, listBoardIdProps) => {
   const [userDetails, setUserDetails] = useState({});
   const [boardMembers, setBoardMembers] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
-  const [selectedBoardMember, setSelectedBoardMember] = useState(null);
+  const [isChecklistPopoverOpen, setIsChecklistPopoverOpen] = useState(false);
+  const [checklistTitle, setChecklistTitle] = useState("");
+  const [todoItems, setTodoItems] = useState([]);
+  const [editingId, setEditingId] = useState(null);
+  const [newTitle, setNewTitle] = useState("");
 
   const [valueQuill, setValueQuill] = useState("");
   const quillRef = useRef(null);
@@ -374,7 +385,6 @@ const Card = (listIdProps, listBoardIdProps) => {
         const membersData = response.data.data;
         setCardMembers(membersData);
         setSelectedCardId(cardId);
-
         membersData.forEach((member) => {
           handleGetUserDetails(member.userId);
         });
@@ -464,6 +474,101 @@ const Card = (listIdProps, listBoardIdProps) => {
     } else {
       setRichTextVisible(false);
       setValueQuill("");
+    }
+  };
+  const handleChecklistClick = () => {
+    setIsChecklistPopoverOpen(!isChecklistPopoverOpen);
+  };
+
+  const closeChecklistPopover = () => {
+    setIsChecklistPopoverOpen(false);
+    setChecklistTitle(null);
+  };
+
+  const handleChecklistTitleChange = (e) => {
+    setChecklistTitle(e.target.value);
+  };
+
+  const handleAddChecklist = async () => {
+    let query = { cardId: modalCardDetail.id, title: checklistTitle };
+    try {
+      const response = await todoService.createTodo(query);
+      if (response.data.code === 201) {
+        toast.success(`To-do list added successfully!`);
+      } else {
+        toast.error(`Failed to add to-do list`);
+      }
+      closeChecklistPopover();
+      handleGetAllChecklist();
+    } catch (error) {
+      console.error("Error creating todo:", error);
+    }
+  };
+
+  const handleGetAllChecklist = async () => {
+    try {
+      const response = await todoService.getAllTodo({
+        cardId: modalCardDetail.id,
+      });
+      if (response.data.code === 200) {
+        setTodoItems(response.data.data);
+      } else {
+        console.error("Failed to fetch todo:", response.data.message);
+      }
+    } catch (error) {
+      console.error("Error fetching todo:", error);
+    }
+  };
+
+  useEffect(() => {
+    if (isModalCardShow && modalCardDetail.id) {
+      handleGetAllChecklist();
+    }
+  }, [isModalCardShow, modalCardDetail]);
+
+  const handleUpdateChecklist = async (id, title) => {
+    let query = { id, title };
+    try {
+      const response = await todoService.updateTodo(query);
+      if (response.status === 200) {
+        toast.success("To-do list updated successfully!");
+      } else {
+        toast.error("Failed to update to-do list");
+      }
+      closeChecklistPopover();
+      handleGetAllChecklist();
+    } catch (error) {
+      console.error("Error updating todo:", error);
+    }
+  };
+
+  const startEditing = (id, title) => {
+    setEditingId(id);
+    setNewTitle(title);
+  };
+
+  const stopEditing = () => {
+    setEditingId(null);
+    setNewTitle("");
+  };
+
+  const saveTitle = async (id) => {
+    await handleUpdateChecklist(id, newTitle);
+    stopEditing();
+  };
+
+  const handleChangeStatusChecklist = async (id) => {
+    let query = { id: id, isActive: false };
+    try {
+      const response = await todoService.changeStatus(query);
+      if (response.status === 200) {
+        toast.success(`To-do status updated successfully!`);
+      } else {
+        toast.error(`Failed to update to-do status`);
+      }
+      handleGetAllChecklist();
+    } catch (error) {
+      console.error("Error updating todo status:", error);
     }
   };
 
@@ -655,6 +760,63 @@ const Card = (listIdProps, listBoardIdProps) => {
                     </div>
                   )}
                 </div>
+
+                {/* todo part */}
+                <div className="mt-3">
+                  {todoItems.length > 0 && (
+                    <div>
+                      {todoItems.map((todo) => (
+                        <div key={todo.id}>
+                          <div className="todo-item d-flex justify-content-between align-items-center mt-3">
+                            <div className="d-flex gap-2 align-items-center">
+                              <div>
+                                <FontAwesomeIcon icon={faListCheck} />
+                              </div>
+                              <div>
+                                {editingId === todo.id ? (
+                                  <input
+                                    type="text"
+                                    value={newTitle}
+                                    onChange={(e) =>
+                                      setNewTitle(e.target.value)
+                                    }
+                                    onBlur={() => saveTitle(todo.id)}
+                                    autoFocus
+                                  />
+                                ) : (
+                                  <span
+                                    className="label__modal-todo fw-semibold"
+                                    onClick={() =>
+                                      startEditing(todo.id, todo.title)
+                                    }
+                                  >
+                                    {todo.title}
+                                  </span>
+                                )}
+                              </div>
+                            </div>
+                            <div>
+                              <button className="custom-button">
+                                <FontAwesomeIcon
+                                  icon={faTrash}
+                                  onClick={() =>
+                                    handleChangeStatusChecklist(todo.id)
+                                  }
+                                />
+                              </button>
+                            </div>
+                          </div>
+                          <div className="mt-2">
+                            <button className="custom-button">
+                              Add an item
+                            </button>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+
                 {/* <div className="d-flex justify-content-between mt-3">
                   <div className="d-flex gap-2 align-items-center">
                     <div>
@@ -1008,6 +1170,44 @@ const Card = (listIdProps, listBoardIdProps) => {
                     <span>Label</span>
                   </div>
 
+                  <div
+                    className="d-flex align-items-center gap-2 p-2 fw-semibold block__card-action"
+                    onClick={handleChecklistClick}
+                    ref={checklistPopoverRef}
+                  >
+                    <div>
+                      <FontAwesomeIcon icon={faListCheck} />
+                    </div>
+                    <span>Checklist</span>
+                    <Overlay
+                      target={checklistPopoverRef.current}
+                      container={checklistPopoverRef}
+                      show={isChecklistPopoverOpen}
+                      placement="bottom"
+                    >
+                      <Popover id="popover-basic">
+                        <Popover.Header as="h3">
+                          Add checklist
+                          <Button
+                            onClick={closeChecklistPopover}
+                            className="btn btn-close"
+                          ></Button>
+                        </Popover.Header>
+                        <Popover.Body>
+                          <div>Title</div>
+                          <FormControl
+                            type="text"
+                            placeholder="Checklist title"
+                            autoFocus
+                            value={checklistTitle}
+                            onChange={handleChecklistTitleChange}
+                            className="mb-3"
+                          />
+                          <Button onClick={handleAddChecklist}>Add</Button>
+                        </Popover.Body>
+                      </Popover>
+                    </Overlay>
+                  </div>
                   <div className="d-flex align-items-center gap-2 p-2 fw-semibold block__card-action">
                     <div>
                       <FontAwesomeIcon icon={faArrowRight} />
