@@ -15,11 +15,9 @@ import { faClock } from "@fortawesome/free-regular-svg-icons";
 import { faTrashCan } from "@fortawesome/free-regular-svg-icons";
 import { toast } from "react-toastify";
 import "react-toastify/ReactToastify.css";
-import { Editor } from "react-draft-wysiwyg";
-import { EditorState, convertToRaw, convertFromRaw } from "draft-js";
-import "../../../node_modules/react-draft-wysiwyg/dist/react-draft-wysiwyg.css";
+
 import { Popover, Overlay, Button, ButtonGroup } from "react-bootstrap";
-import draftToHtml from "draftjs-to-html";
+
 import { faArrowRight } from "@fortawesome/free-solid-svg-icons";
 import { DayPicker } from "react-day-picker";
 import "react-day-picker/dist/style.css";
@@ -28,6 +26,8 @@ import { faTags } from "@fortawesome/free-solid-svg-icons";
 import cardMemberService from "../../api/Services/cardMember";
 import userService from "../../api/Services/user";
 import boardMemberService from "../../api/Services/boardMember";
+import ReactQuill from "react-quill";
+import "react-quill/dist/quill.snow.css";
 
 const Card = (listIdProps, listBoardIdProps) => {
   const textareaRefCardTitle = useRef(null);
@@ -46,11 +46,7 @@ const Card = (listIdProps, listBoardIdProps) => {
   const [activityVisible, setActivityVisible] = useState(true);
   const [isCardTitleModal, setIsCardTitleModal] = useState(true);
   const [CardTitleModal, setCardTitleModal] = useState("");
-  const [DescriptionTemp, setDescriptionTemp] = useState("");
 
-  const [editorState, setEditorState] = useState(() =>
-    EditorState.createEmpty()
-  );
   //------------------------------------------------------------
   //const datePopoverRef = useRef(null);
   const [datePopover, setDatePopover] = useState(false);
@@ -62,6 +58,10 @@ const Card = (listIdProps, listBoardIdProps) => {
   const [boardMembers, setBoardMembers] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedBoardMember, setSelectedBoardMember] = useState(null);
+
+  const [valueQuill, setValueQuill] = useState("");
+  const quillRef = useRef(null);
+  //const [DescriptionTemp, setDescriptionTemp] = useState("");
 
   const initiallySelectedDate = new Date();
   const [daySelected, setDaySelected] = useState(initiallySelectedDate);
@@ -132,10 +132,51 @@ const Card = (listIdProps, listBoardIdProps) => {
   //useEffect(() => {}, []);
 
   //-----------------------------------------------------------------
+  // QUILL
 
-  const handleEditorChange = (state) => {
-    setEditorState(state);
+  const modules = {
+    toolbar: [
+      [{ header: "1" }, { header: "2" }, { font: [] }],
+      [{ size: [] }],
+      ["bold", "italic", "underline", "strike", "blockquote"],
+      [
+        { list: "ordered" },
+        { list: "bullet" },
+        { indent: "-1" },
+        { indent: "+1" },
+      ],
+      [{ color: [] }, { background: [] }],
+      ["link", "image", "video"],
+      ["clean"],
+    ],
+    clipboard: {
+      // toggle to add extra line breaks when pasting HTML:
+      matchVisual: false,
+    },
   };
+
+  const formats = [
+    "header",
+    "font",
+    "size",
+    "bold",
+    "italic",
+    "underline",
+    "strike",
+    "blockquote",
+    "list",
+    "bullet",
+    "indent",
+    "link",
+    "image",
+    "video",
+  ];
+
+  const handleChangeQuill = (content) => {
+    setValueQuill(content);
+  };
+
+  //-----------------------------------------------------------------
 
   const handleChangeCardTitleModal = (e) => {
     setCardTitleModal(e.target.value);
@@ -150,22 +191,9 @@ const Card = (listIdProps, listBoardIdProps) => {
     setActivityVisible(!activityVisible);
   };
 
-  const saveContent = (id, title) => {
-    const contentState = editorState.getCurrentContent();
-    const rawContent = convertToRaw(contentState);
-    const contentString = draftToHtml(rawContent);
-
-    // console.log(
-    //   typeof draftToHtml(convertToRaw(editorState.getCurrentContent()))
-    // );
-    // console.log("contentString", contentString);
-
-    setDescriptionTemp(contentString);
-    handleUpdateDescription(id, contentString, title);
-  };
-
   const handleModalCard = (objCardDetail) => {
     setModalCardDetail(objCardDetail);
+
     setIsModalCardShow(!isModalCardShow);
     setDatePopover(false);
 
@@ -178,8 +206,9 @@ const Card = (listIdProps, listBoardIdProps) => {
     setAddCardTitleVisible(true);
   };
 
-  const handleRichTextVisible = () => {
+  const handleRichTextVisible = (abc) => {
     setRichTextVisible(true);
+    setValueQuill(abc);
   };
 
   const handleEditClickCardTitle = (cardIdVisible, e) => {
@@ -225,8 +254,8 @@ const Card = (listIdProps, listBoardIdProps) => {
     }
   };
 
-  const handleUpdateDescription = async (cardID, description) => {
-    let query = { id: cardID, description: description };
+  const handleUpdateDescription = async (cardID, description, title) => {
+    let query = { id: cardID, description: description, title: title };
     try {
       const response = await cardServices.updateCardDescription(query);
       if (response.data.code == 200) {
@@ -290,7 +319,7 @@ const Card = (listIdProps, listBoardIdProps) => {
     try {
       const response = await cardServices.changeStatus(query);
       if (response.data.code === 200) {
-       // window.location.reload();
+        // window.location.reload();
 
         toast.success("Card archived successfully!");
         setIsModalCardShow(false);
@@ -323,7 +352,7 @@ const Card = (listIdProps, listBoardIdProps) => {
       const response = await boardMemberService.getAllBoardMember(query);
       if (response.data.code === 200) {
         setBoardMembers(response.data.data);
-  
+
         response.data.data.forEach((member) => {
           handleGetUserDetails(member.userId);
         });
@@ -338,24 +367,24 @@ const Card = (listIdProps, listBoardIdProps) => {
   };
 
   const handleGetCardMember = async (cardId) => {
-  let query = { cardId: cardId };
-  try {
-    const response = await cardMemberService.getAllCardMember(query);
-    if (response.data.code === 200) {
-      const membersData = response.data.data;
-      setCardMembers(membersData);
-      setSelectedCardId(cardId);
+    let query = { cardId: cardId };
+    try {
+      const response = await cardMemberService.getAllCardMember(query);
+      if (response.data.code === 200) {
+        const membersData = response.data.data;
+        setCardMembers(membersData);
+        setSelectedCardId(cardId);
 
-      membersData.forEach((member) => {
-        handleGetUserDetails(member.userId);
-      });
-    } else {
-      console.error("Failed to fetch card members!");
+        membersData.forEach((member) => {
+          handleGetUserDetails(member.userId);
+        });
+      } else {
+        console.error("Failed to fetch card members!");
+      }
+    } catch (error) {
+      console.error("Error fetching card members:", error);
     }
-  } catch (error) {
-    console.error("Error fetching card members:", error);
-  }
-};
+  };
 
   const handleMemberClick = async (cardId) => {
     if (!isMemberPopoverOpen) {
@@ -376,36 +405,6 @@ const Card = (listIdProps, listBoardIdProps) => {
     handleGetAllCard();
     handleGetAllBoardMember();
   }, []);
-
-  useEffect(() => {
-    const contentString = modalCardDetail?.description;
-
-    // console.log(typeof modalCardDetail?.description);
-
-    if (modalCardDetail?.description) {
-      setDescriptionTemp(contentString);
-      // console.log(contentString);
-    }
-  }, [isModalCardShow, richTextVisible]);
-
-  // useEffect(() => {
-  //   const contentString = modalCardDetail?.description;
-  //   if (modalCardDetail?.description && isModalCardShow) {
-  //     const rawContent = JSON.parse(contentString);
-  //     setDescriptionTemp(rawContent.blocks[0]?.text);
-  //     const contentState = convertFromRaw(rawContent);
-  // // useEffect(() => {
-  // //   const contentString = modalCardDetail?.description;
-  // //   console.log("contentString", modalCardDetail?.description);
-
-  // //   if (modalCardDetail?.description) {
-  // //     const rawContent = JSON.parse(contentString);
-  // //     setDescriptionTemp(rawContent.blocks[0]?.text);
-  // //     const contentState = convertFromRaw(rawContent);
-
-  // //     setEditorState(EditorState.createWithContent(contentState));
-  // //   }
-  // // }, [isModalCardShow, richTextVisible]);
 
   const handleSearchChange = (event) => {
     setSearchTerm(event.target.value);
@@ -454,6 +453,17 @@ const Card = (listIdProps, listBoardIdProps) => {
     } catch (error) {
       toast.error("Remove member Failed!");
       console.error(error);
+    }
+  };
+
+  const saveCardDescription = (cardID, description, title) => {
+    if (valueQuill) {
+      handleUpdateDescription(cardID, description, title);
+      setValueQuill("");
+      console.log("description", description);
+    } else {
+      setRichTextVisible(false);
+      setValueQuill("");
     }
   };
 
@@ -578,7 +588,9 @@ const Card = (listIdProps, listBoardIdProps) => {
                       <div>
                         <button
                           className="btn btn-secondary btn-sm"
-                          onClick={handleRichTextVisible}
+                          onClick={() =>
+                            handleRichTextVisible(modalCardDetail.description)
+                          }
                         >
                           <span className="fw-semibold">Edit</span>
                         </button>
@@ -589,20 +601,21 @@ const Card = (listIdProps, listBoardIdProps) => {
                   {richTextVisible ? (
                     <div className="d-flex flex-column gap-2">
                       <div className="block__rich-text-editor">
-                        <Editor
-                          editorState={editorState}
-                          wrapperClassName="wrapperClassName"
-                          toolbarClassName="toolbarClassName"
-                          editorClassName="editorClassName"
-                          onEditorStateChange={handleEditorChange}
+                        <ReactQuill
+                          ref={quillRef}
+                          value={valueQuill}
+                          onChange={handleChangeQuill}
+                          modules={modules}
+                          formats={formats}
                         />
                       </div>
                       <div className="d-flex justify-content-start gap-3">
                         <button
                           className="btn btn-primary btn-sm"
                           onClick={() =>
-                            saveContent(
+                            saveCardDescription(
                               modalCardDetail.id,
+                              valueQuill,
                               modalCardDetail.title
                             )
                           }
@@ -618,7 +631,11 @@ const Card = (listIdProps, listBoardIdProps) => {
                       </div>
                     </div>
                   ) : (
-                    <div onClick={handleRichTextVisible}>
+                    <div
+                      onClick={() =>
+                        handleRichTextVisible(modalCardDetail.description)
+                      }
+                    >
                       {!modalCardDetail.description ? (
                         <div className="block__input-description p-2 mt-3">
                           <span
@@ -630,7 +647,9 @@ const Card = (listIdProps, listBoardIdProps) => {
                         </div>
                       ) : (
                         <div
-                          dangerouslySetInnerHTML={{ __html: DescriptionTemp }}
+                          dangerouslySetInnerHTML={{
+                            __html: modalCardDetail.description,
+                          }}
                         />
                       )}
                     </div>
@@ -909,9 +928,11 @@ const Card = (listIdProps, listBoardIdProps) => {
                             <div className="d-flex gap-1">
                               <input
                                 type="checkbox"
+                                checked
                                 name="checkbox-dueday"
                                 onChange={handleDueDayDisable}
                               />
+
                               <input
                                 disabled={isDueDay}
                                 name="input-dueday"
