@@ -568,21 +568,28 @@ const Card = (listIdProps, listBoardIdProps) => {
   };
 
   const handleCreateTask = async (todoId) => {
-    const requestBody = { ...newTask, todoId };
+    const requestBody = {
+      todoId: todoId,
+      name: newTask.name,
+      priorityLevel: newTask.priorityLevel,
+      status: newTask.status,
+      description: newTask.description || null,
+      assignedUserId: newTask.assignedUserId || null,
+      dueDate: newTask.dueDate || null,
+    };
+  
     try {
       const response = await taskService.createTask(requestBody);
       if (response.data.code === 201) {
-        toast.success('Task added successfully!');
+        toast.success("Task added successfully!");
         stopAddingItem();
-        // Assuming you have a function to refresh the task list
-        // handleGetAllChecklist();
       } else {
-        toast.error('Failed to add task');
+        toast.error("Failed to add task");
       }
     } catch (error) {
-      console.error('Error creating task:', error);
+      console.error("Error creating task:", error);
     }
-  };
+  };  
 
   const startAddingItem = (todoId) => {
     setAddingItem(todoId);
@@ -830,21 +837,21 @@ const Card = (listIdProps, listBoardIdProps) => {
                                 <div className="form-row">
                                   <select
                                     value={newTask.priorityLevel}
-                                    onChange={(e) => setNewTask({ ...newTask, priorityLevel: e.target.value })}
+                                    onChange={(e) => setNewTask({ ...newTask, priorityLevel: parseInt(e.target.value) })}
                                   >
                                     <option value="" disabled>Select priority</option>
-                                    <option value="2">Low</option>
-                                    <option value="1">Medium</option>
-                                    <option value="0">High</option>
+                                    <option value={2}>Low</option>
+                                    <option value={1}>Medium</option>
+                                    <option value={0}>High</option>
                                   </select>
                                   <select
                                     value={newTask.status}
-                                    onChange={(e) => setNewTask({ ...newTask, status: e.target.value })}
+                                    onChange={(e) => setNewTask({ ...newTask, status: parseInt(e.target.value) })}
                                   >
                                     <option value="" disabled>Select status</option>
-                                    <option value="0">New</option>
-                                    <option value="1">In Progress</option>
-                                    <option value="2">Resolved</option>
+                                    <option value={0}>New</option>
+                                    <option value={1}>In Progress</option>
+                                    <option value={2}>Resolved</option>
                                   </select>
                                 </div>
                                 <div className="form-row">
