@@ -24,9 +24,9 @@ import "react-toastify/ReactToastify.css";
 import { Popover, Overlay, Button, ButtonGroup } from "react-bootstrap";
 
 import { faArrowRight } from "@fortawesome/free-solid-svg-icons";
-import { DayPicker } from "react-day-picker";
+import { format, addDays } from "date-fns"; /////////////////////////////
+import { DateRange, DayPicker } from "react-day-picker"; /////////////////////////
 import "react-day-picker/dist/style.css";
-import { format } from "date-fns";
 import { faTags } from "@fortawesome/free-solid-svg-icons";
 import cardMemberService from "../../api/Services/cardMember";
 import userService from "../../api/Services/user";
@@ -72,13 +72,13 @@ const Card = (listIdProps, listBoardIdProps) => {
 
   const [valueQuill, setValueQuill] = useState("");
   const quillRef = useRef(null);
-  //const [DescriptionTemp, setDescriptionTemp] = useState("");
 
   const initiallySelectedDate = new Date();
   const [daySelected, setDaySelected] = useState(initiallySelectedDate);
 
   const [isStartDay, setIsStartDay] = useState(true);
   const [isDueDay, setIsDueDay] = useState(false);
+  const [checkDueday, setCheckDueDay] = useState(true);
 
   const formatAMPM = (date) => {
     let hours = date.getHours();
@@ -116,6 +116,7 @@ const Card = (listIdProps, listBoardIdProps) => {
     console.log("activeModifiers: ", activeModifiers);
     console.log("event: ", e);
     setDaySelected(selectedDay);
+    setDueDay(format(selectedDay, "MM/dd/yyyy"));
   };
 
   //----------------------------------------------------------------
@@ -125,6 +126,7 @@ const Card = (listIdProps, listBoardIdProps) => {
   };
 
   const handleDueDayDisable = () => {
+    setCheckDueDay(!checkDueday);
     setIsDueDay(!isDueDay);
   };
 
@@ -139,9 +141,45 @@ const Card = (listIdProps, listBoardIdProps) => {
   const handleChangeDueTime = (e) => {
     setDueTime(e.target.value);
   };
+  ///////////////////////////////////////////////////////////////////////////////////////////////////
+  const pastMonth = new Date();
+  const dayRange = {
+    from: pastMonth,
+    to: addDays(pastMonth, 1),
+  };
 
-  //useEffect(() => {}, []);
+  const [range, setRange] = useState(dayRange);
 
+  let footer = <p>Please pick the first day.</p>;
+  if (range?.from) {
+    if (!range.to) {
+      footer = <p>{format(range.from, "PPP")}</p>;
+    }
+  }
+  if (range.to) {
+    footer = (
+      <p>
+        {format(range.from, "PPP")} and {format(range.to, "PPP")}
+      </p>
+    );
+  }
+
+  const handleSelectRange = (selectedRange) => {
+    if (!selectedRange) {
+      setRange({
+        from: pastMonth,
+        to: pastMonth,
+      });
+    } else {
+      setRange({
+        from: selectedRange.from,
+        to: selectedRange.to,
+      });
+    }
+  };
+
+  // truong hop range true && range.from < range.to mà set range.to = range.from thì lỗi
+  // truong hop range.from = range.to mà set range.to = range.from thì lỗi
   //-----------------------------------------------------------------
   // QUILL
 
@@ -1042,10 +1080,9 @@ const Card = (listIdProps, listBoardIdProps) => {
                         </Popover.Header>
                         <Popover.Body>
                           <div className="d-flex justify-content-center">
-                            <DayPicker
+                            {/* <DayPicker
                               mode="single"
                               selected={daySelected}
-                              //onSelect={setDaySelected}
                               onSelect={(
                                 day,
                                 selectedDay,
@@ -1054,6 +1091,15 @@ const Card = (listIdProps, listBoardIdProps) => {
                               ) => {
                                 dayChange(day, selectedDay, activeModifiers, e);
                               }}
+                            /> */}
+
+                            <DayPicker
+                              mode="range"
+                              defaultMonth={pastMonth}
+                              selected={range}
+                              footer={footer}
+                              //onSelect={setRange}
+                              onSelect={handleSelectRange}
                             />
                           </div>
 
@@ -1090,7 +1136,7 @@ const Card = (listIdProps, listBoardIdProps) => {
                             <div className="d-flex gap-1">
                               <input
                                 type="checkbox"
-                                checked
+                                checked={checkDueday}
                                 name="checkbox-dueday"
                                 onChange={handleDueDayDisable}
                               />
