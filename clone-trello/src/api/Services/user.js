@@ -55,4 +55,19 @@ const getUserProfile = async () => {
   return response;
 };
 
-export default { getUserById, getAllUser, searchUsers, getUserProfile };
+const getUserByTodoId = async (query) => {
+  let { todoId } = query;
+  let params;
+  const serviceUrl = urlConstant.endpoint.user.getUserByTodoId;
+  if (todoId) {
+    params = {
+      params: {
+        todoId: todoId,
+      },
+    };
+  }
+  const response = await axiosLocalHost.normalRequest.get(serviceUrl, params);
+  return response;
+};
+
+export default { getUserById, getAllUser, searchUsers, getUserProfile, getUserByTodoId };

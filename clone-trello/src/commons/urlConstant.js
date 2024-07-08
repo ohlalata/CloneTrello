@@ -12,6 +12,7 @@ export default {
       getAllUser: "/user/get-all",
       getUserByFilter: "/user/get-by-filter",
       getUserProfileByToken: "/user/get-user-profile",
+      getUserByTodoId: "/user/get-by-todo-id",
     },
     board: {
       getAllBoard: "/board/get-all",
@@ -39,7 +40,12 @@ export default {
       archiveCard: "/card/change-status/", // noi duoi id
     },
     task: {
-      getAllTask: "",
+      createTask: "/task/create",
+      getAllTask: "/task/get-all", 
+      getTaskByFilter: "/task/get-by-filter", 
+      updateTask:"/task/update/", 
+      checkTask: "/task/check/",
+      inactiveTask: "/task/change-status/", 
     },
     boardMember: {
       createBoardMember: "boardMember/create",
