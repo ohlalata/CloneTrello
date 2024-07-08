@@ -325,10 +325,62 @@
   font-weight: 500; 
   justify-content: center;
   line-height: 20px;
-  padding: 6px 12px;
+  padding: 8px 16px;
   text-decoration: none;
   transition-duration: 85ms;
   transition-property: background-color, border-color, box-shadow;
   transition-timing-function: ease;
-  white-space: normal;
+  white-space: nowrap;
+}
+
+.new-task-form {
+  border: 1px solid #ccc;
+  padding: 10px;
+  border-radius: 5px;
+  //background-color: #f9f9f9;
+  background-color: var(--ds-background-neutral, #091e420f);
+}
+
+.new-task-form .form-row {
+  margin-bottom: 10px;
+  display: flex;
+  align-items: center;
+}
+
+.new-task-form .form-row:last-child {
+  margin-bottom: 0;
+}
+
+.new-task-form input[type="text"],
+.new-task-form select {
+  flex: 1;
+  padding: 8px;
+  border: 1px solid #ccc;
+  border-radius: 3px;
+  font-size: 14px;
+
+}
+
+.new-task-form .form-row.justify-content-end {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.new-task-form .form-row.justify-content-end .custom-button {
+  margin-left: 10px;
+}
+
+.new-task-form .button-container {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 10px;
+}
+
+.new-task-form .button-container .custom-button {
+  flex: 1;
+  margin-right: 0.5px;
+}
+
+.assign-container {
+  position: relative;
 }
