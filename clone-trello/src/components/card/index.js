@@ -24,7 +24,7 @@ import "react-toastify/ReactToastify.css";
 import { Popover, Overlay, Button, ButtonGroup } from "react-bootstrap";
 
 import { faArrowRight } from "@fortawesome/free-solid-svg-icons";
-import { format, addDays } from "date-fns"; /////////////////////////////
+import { format, addDays, parse } from "date-fns"; /////////////////////////////
 import { DateRange, DayPicker } from "react-day-picker"; /////////////////////////
 import "react-day-picker/dist/style.css";
 import { faTags } from "@fortawesome/free-solid-svg-icons";
@@ -34,6 +34,7 @@ import boardMemberService from "../../api/Services/boardMember";
 import ReactQuill from "react-quill";
 import "react-quill/dist/quill.snow.css";
 import todoService from "../../api/Services/todo";
+import { useForm } from "react-hook-form";
 
 const Card = (listIdProps, listBoardIdProps) => {
   const textareaRefCardTitle = useRef(null);
@@ -72,8 +73,14 @@ const Card = (listIdProps, listBoardIdProps) => {
 
   const [valueQuill, setValueQuill] = useState("");
   const quillRef = useRef(null);
+  const { register } = useForm();
+  // const onSubmit = (data) => console.log(data);
 
   const initiallySelectedDate = new Date();
+  console.log(
+    "initiallySelectedDate",
+    format(initiallySelectedDate, "MM/dd/yyyy HH:mm:ss")
+  );
   const [daySelected, setDaySelected] = useState(initiallySelectedDate);
 
   const [isStartDay, setIsStartDay] = useState(true);
@@ -91,9 +98,10 @@ const Card = (listIdProps, listBoardIdProps) => {
     return strTime;
   };
 
-  const [startDay, setStartDay] = useState("M/D/YYYY");
+  const [startDay, setStartDay] = useState(""); //"M/D/YYYY"
   const [dueDay, setDueDay] = useState(format(daySelected, "MM/dd/yyyy"));
   const [dueTime, setDueTime] = useState(formatAMPM(initiallySelectedDate));
+  const [dueDateRemind, setDueDateRemind] = useState("None");
 
   const handleDatePopoverClick = (event) => {
     if (datePopover) return;
@@ -153,31 +161,51 @@ const Card = (listIdProps, listBoardIdProps) => {
   let footer = <p>Please pick the first day.</p>;
   if (range?.from) {
     if (!range.to) {
-      footer = <p>{format(range.from, "PPP")}</p>;
+      footer = <p> From {format(range.from, "PPP")}</p>;
     }
   }
   if (range.to) {
     footer = (
-      <p>
-        {format(range.from, "PPP")} and {format(range.to, "PPP")}
-      </p>
+      <span>
+        From {format(range.from, "PPP")} To {format(range.to, "PPP")}
+      </span>
     );
   }
 
   const handleSelectRange = (selectedRange) => {
+    console.log("selectedRange", selectedRange);
     if (!selectedRange) {
       setRange({
         from: pastMonth,
         to: pastMonth,
       });
+      setStartDay(format(pastMonth, "MM/dd/yyyy"));
+      setDueDay(format(pastMonth, "MM/dd/yyyy"));
+    } else if (!selectedRange.to) {
+      setRange({
+        from: selectedRange.from,
+        to: selectedRange.from,
+      });
+      setStartDay(format(selectedRange.from, "MM/dd/yyyy"));
+      setDueDay(format(selectedRange.from, "MM/dd/yyyy"));
     } else {
       setRange({
         from: selectedRange.from,
         to: selectedRange.to,
       });
+      setStartDay(format(selectedRange.from, "MM/dd/yyyy"));
+      setDueDay(format(selectedRange.to, "MM/dd/yyyy"));
     }
   };
 
+  useEffect(() => {
+    if (isStartDay == false) {
+      setStartDay(format(initiallySelectedDate, "MM/dd/yyyy"));
+      setDueDay(format(addDays(initiallySelectedDate, 1), "MM/dd/yyyy"));
+    } else {
+      setDueDay(format(daySelected, "MM/dd/yyyy"));
+    }
+  }, [isStartDay]);
   // truong hop range true && range.from < range.to mà set range.to = range.from thì lỗi
   // truong hop range.from = range.to mà set range.to = range.from thì lỗi
   //-----------------------------------------------------------------
@@ -199,7 +227,6 @@ const Card = (listIdProps, listBoardIdProps) => {
       ["clean"],
     ],
     clipboard: {
-      // toggle to add extra line breaks when pasting HTML:
       matchVisual: false,
     },
   };
@@ -226,6 +253,11 @@ const Card = (listIdProps, listBoardIdProps) => {
   };
 
   //-----------------------------------------------------------------
+
+  const onChangeRemind = (event) => {
+    console.log(event.target.value);
+    setDueDateRemind(event.target.value);
+  };
 
   const handleChangeCardTitleModal = (e) => {
     setCardTitleModal(e.target.value);
@@ -277,6 +309,60 @@ const Card = (listIdProps, listBoardIdProps) => {
     const textareaCreateCardTitle = textAreaRefCreateCardTitle.current;
     textareaCreateCardTitle.style.height = "auto";
     textareaCreateCardTitle.style.height = `${textareaCreateCardTitle.scrollHeight}px`;
+  };
+
+  const handleUpdateDates = async (
+    cardID,
+    description,
+    startDate,
+    endDate,
+    dueTime,
+    reminderDate,
+    title
+  ) => {
+    let query = {
+      id: cardID,
+      description: description,
+      startDate: startDate,
+      endDate: endDate, // parse ISO 8601
+      reminderDate: reminderDate,
+      title: title,
+    };
+    try {
+      const response = await cardServices.updateCardDates(query);
+      if (response.data.code == 200) {
+        // tat popover date
+        // set lai modal card detail
+        // hien thong tin tren description
+        // get card by filter
+        console.log(response.data.data);
+        setModalCardDetail(response.data.data);
+        handleGetCardByFilter();
+        handleHideDatePopover();
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  const saveCardDates = (
+    cardID,
+    description,
+    startDate,
+    endDate,
+    dueTime,
+    reminderDate,
+    title
+  ) => {
+    handleUpdateDates(
+      cardID,
+      description,
+      startDate,
+      endDate,
+      dueTime,
+      reminderDate,
+      title
+    );
   };
 
   const handleGetAllCard = async () => {
@@ -1080,27 +1166,34 @@ const Card = (listIdProps, listBoardIdProps) => {
                         </Popover.Header>
                         <Popover.Body>
                           <div className="d-flex justify-content-center">
-                            {/* <DayPicker
-                              mode="single"
-                              selected={daySelected}
-                              onSelect={(
-                                day,
-                                selectedDay,
-                                activeModifiers,
-                                e
-                              ) => {
-                                dayChange(day, selectedDay, activeModifiers, e);
-                              }}
-                            /> */}
-
-                            <DayPicker
-                              mode="range"
-                              defaultMonth={pastMonth}
-                              selected={range}
-                              footer={footer}
-                              //onSelect={setRange}
-                              onSelect={handleSelectRange}
-                            />
+                            {isStartDay ? (
+                              <DayPicker
+                                mode="single"
+                                selected={daySelected}
+                                onSelect={(
+                                  day,
+                                  selectedDay,
+                                  activeModifiers,
+                                  e
+                                ) => {
+                                  dayChange(
+                                    day,
+                                    selectedDay,
+                                    activeModifiers,
+                                    e
+                                  );
+                                }}
+                              />
+                            ) : (
+                              <DayPicker
+                                mode="range"
+                                defaultMonth={pastMonth}
+                                selected={range}
+                                footer={footer}
+                                //onSelect={setRange}
+                                onSelect={handleSelectRange}
+                              />
+                            )}
                           </div>
 
                           <div className="d-flex flex-column ">
@@ -1112,10 +1205,12 @@ const Card = (listIdProps, listBoardIdProps) => {
                             </span>
                             <div className="d-flex gap-1">
                               <input
+                                checked={!isStartDay}
                                 name="checkbox-startdate"
                                 type="checkbox"
                                 onChange={handleStartDayDisable}
                               />
+
                               <input
                                 name="input-startday"
                                 disabled={isStartDay}
@@ -1126,6 +1221,7 @@ const Card = (listIdProps, listBoardIdProps) => {
                               />
                             </div>
                           </div>
+
                           <div className="d-flex flex-column mt-2">
                             <span
                               className="fw-semibold label__dates"
@@ -1169,35 +1265,52 @@ const Card = (listIdProps, listBoardIdProps) => {
                             >
                               Set due date reminder
                             </span>
-                            <div className="w-100">
+                            <form className="w-100">
                               <select
                                 className="w-100 select__reminder"
                                 name="select-remind"
                                 defaultValue={"None"}
+                                {...register("select-remind")}
+                                onChange={onChangeRemind}
                               >
                                 <option value={"None"}>None</option>
                                 <option value={"At time"}>
                                   At time of due date
                                 </option>
-                                <option value={"5 Minutes"}>
-                                  5 Minutes before
-                                </option>
-                                <option value={"10 Minutes"}>
-                                  10 Minutes before
-                                </option>
-                                <option value={"15 Minutes"}>
+                                <option value={"15 Minutes Before"}>
                                   15 Minutes before
                                 </option>
-                                <option value={"1 Hour"}>1 Hour before</option>
-                                <option value={"2 Hour"}>2 Hour before</option>
-                                <option value={"1 Day"}>1 Day before</option>
-                                <option value={"2 Day"}>2 Day before</option>
+                                <option value={"1 Hour Before"}>
+                                  1 Hour before
+                                </option>
+                                <option value={"2 Hour Before"}>
+                                  2 Hour before
+                                </option>
+                                <option value={"1 Day Before"}>
+                                  1 Day before
+                                </option>
+                                <option value={"2 Day Before"}>
+                                  2 Day before
+                                </option>
                               </select>
-                            </div>
+                            </form>
                           </div>
 
                           <div className="mt-3 d-flex flex-column w-100 gap-2">
-                            <button className="btn btn-primary fw-semibold">
+                            <button
+                              className="btn btn-primary fw-semibold"
+                              onClick={() =>
+                                saveCardDates(
+                                  modalCardDetail.id,
+                                  modalCardDetail.description,
+                                  startDay,
+                                  dueDay,
+                                  dueTime,
+                                  dueDateRemind,
+                                  modalCardDetail.tile
+                                )
+                              }
+                            >
                               Save
                             </button>
                             <button className="btn btn-light fw-semibold">
