@@ -60,12 +60,13 @@ const updateCardTitle = async (query) => {
 };
 
 const updateCardDescription = async (query) => {
-  let { id, description } = query;
+  let { id, description, title } = query;
   let data;
   let serviceUrl = urlConstant.endpoint.card.updateCard + id;
   if (id && description) {
     data = {
       description: description,
+      title: title,
     };
   }
   const response = await axiosLocalHost.normalRequest.put(serviceUrl, data);
