@@ -12,6 +12,7 @@ export default {
       getAllUser: "/user/get-all",
       getUserByFilter: "/user/get-by-filter",
       getUserProfileByToken: "/user/get-user-profile",
+      getUserByTodoId: "/user/get-by-todo-id",
     },
     board: {
       getAllBoard: "/board/get-all",

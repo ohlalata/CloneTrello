@@ -337,7 +337,8 @@
   border: 1px solid #ccc;
   padding: 10px;
   border-radius: 5px;
-  background-color: #f9f9f9;
+  //background-color: #f9f9f9;
+  background-color: var(--ds-background-neutral, #091e420f);
 }
 
 .new-task-form .form-row {
@@ -357,6 +358,7 @@
   border: 1px solid #ccc;
   border-radius: 3px;
   font-size: 14px;
+
 }
 
 .new-task-form .form-row.justify-content-end {
@@ -377,4 +379,8 @@
 .new-task-form .button-container .custom-button {
   flex: 1;
   margin-right: 0.5px;
+}
+
+.assign-container {
+  position: relative;
 }

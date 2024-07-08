@@ -37,6 +37,9 @@ const Card = (listIdProps, listBoardIdProps) => {
   const datePopoverRef = useRef(null);
   const memberPopoverRef = useRef(null);
   const checklistPopoverRef = useRef(null);
+  const assignPopoverRef = useRef(null);
+  const dueDatePopoverRef = useRef(null);
+
 
   const [EditingCardTitle, setEditingCardTitle] = useState(null);
   const [inputTitleCard, setInputTitleCard] = useState("");
@@ -78,6 +81,12 @@ const Card = (listIdProps, listBoardIdProps) => {
     assignedUserId: '',
     dueDate: ''
   });
+  const [isAssignPopoverOpen, setIsAssignPopoverOpen] = useState(false);
+  const [availableUsers, setAvailableUsers] = useState([]);
+  const [selectedUser, setSelectedUser] = useState(null);
+  const [dueDate, setDueDate] = useState(null);
+  const [isDatePickerOpen, setIsDatePickerOpen] = useState(false);
+  const [dueDateLabel, setDueDateLabel] = useState('Due Date');
 
   const initiallySelectedDate = new Date();
   const [daySelected, setDaySelected] = useState(initiallySelectedDate);
@@ -567,6 +576,51 @@ const Card = (listIdProps, listBoardIdProps) => {
     }
   };
 
+  const closeAssignPopover = () => {
+    setIsAssignPopoverOpen(false);
+  };
+
+  const handleGetUserByTodoId = async (todoId) => {
+    setIsAssignPopoverOpen(!isAssignPopoverOpen);
+    try {
+      const response = await userService.getUserByTodoId({ todoId });
+      setAvailableUsers(response.data.data);
+    } catch (error) {
+      console.error("Error fetching users by todoId:", error);
+    }
+  };
+
+  const handleAssignMemberClick = (user) => {
+    setNewTask({
+      ...newTask,
+      assignedUserId: user.id,
+    });
+    setSelectedUser(user);
+    closeAssignPopover();
+  };
+
+  const handleDueDateClick = () => {
+    setIsDatePickerOpen(!isDatePickerOpen); 
+  };
+
+  const handleDayClick = (day) => {
+    const utcDay = new Date(day.getTime() - day.getTimezoneOffset() * 60000);
+    setNewTask((prevTask) => ({ ...prevTask, dueDate: utcDay }));
+  };
+
+  const handleSaveDueDate = () => {
+    if (newTask.dueDate) {
+      setDueDateLabel(format(newTask.dueDate, 'MMM d'));
+    }
+    setIsDatePickerOpen(false);
+    console.log('Due Date selected:', newTask.dueDate);
+  };
+
+  const handleRemoveDueDate = () => {
+    setNewTask((prevTask) => ({ ...prevTask, dueDate: null }));
+    setDueDateLabel('Due Date');
+  };
+
   const handleCreateTask = async (todoId) => {
     const requestBody = {
       todoId: todoId,
@@ -577,7 +631,7 @@ const Card = (listIdProps, listBoardIdProps) => {
       assignedUserId: newTask.assignedUserId || null,
       dueDate: newTask.dueDate || null,
     };
-  
+
     try {
       const response = await taskService.createTask(requestBody);
       if (response.data.code === 201) {
@@ -589,7 +643,7 @@ const Card = (listIdProps, listBoardIdProps) => {
     } catch (error) {
       console.error("Error creating task:", error);
     }
-  };  
+  };
 
   const startAddingItem = (todoId) => {
     setAddingItem(todoId);
@@ -605,6 +659,9 @@ const Card = (listIdProps, listBoardIdProps) => {
 
   const stopAddingItem = () => {
     setAddingItem(null);
+    setSelectedUser(null);
+    setDueDate(null);
+    setDueDateLabel('Due Date');
   };
 
   return (
@@ -818,8 +875,8 @@ const Card = (listIdProps, listBoardIdProps) => {
                               </div>
                             </div>
                             <div>
-                              <button className="custom-button">
-                                <FontAwesomeIcon icon={faTrash} onClick={() => handleChangeStatusChecklist(todo.id)} />
+                              <button className="custom-button" onClick={() => handleChangeStatusChecklist(todo.id)}>
+                                <FontAwesomeIcon icon={faTrash} />
                               </button>
                             </div>
                           </div>
@@ -868,14 +925,93 @@ const Card = (listIdProps, listBoardIdProps) => {
                                     <button className="custom-button" onClick={stopAddingItem}>Cancel</button>
                                   </div>
                                   <div className="form-row justify-content-end">
-                                    <button className="custom-button">
-                                      <FontAwesomeIcon icon={faUserPlus} style={{ marginRight: "5px" }} />
-                                      Assign
-                                    </button>
-                                    <button className="custom-button">
-                                      <FontAwesomeIcon icon={faClock} style={{ marginRight: "5px" }} />
-                                      Due Date
-                                    </button>
+                                    <div className="assign-container">
+                                      <button className="custom-button" onClick={() => handleGetUserByTodoId(todo.id)} ref={assignPopoverRef}>
+                                        {selectedUser ? (
+                                          <>
+                                            <FontAwesomeIcon icon={faUserPlus} style={{ marginRight: "5px" }} />
+                                            {selectedUser.name}
+                                          </>
+                                        ) : (
+                                          <>
+                                            <FontAwesomeIcon icon={faUserPlus} style={{ marginRight: "5px" }} />
+                                            Assign
+                                          </>
+                                        )}
+                                      </button>
+                                      <Overlay
+                                        target={assignPopoverRef.current}
+                                        show={isAssignPopoverOpen}
+                                        placement="bottom"
+                                      >
+                                        <Popover id="popover-basic" >
+                                          <Popover.Header as="h3">
+                                            Members
+                                            <Button onClick={closeAssignPopover} className="btn btn-close" style={{ marginLeft: "10px" }}></Button>
+                                          </Popover.Header>
+                                          <Popover.Body>
+                                            <div>Available Users</div>
+                                            <div className="scrollable-container">
+                                              {availableUsers.length > 0 ? (
+                                                <div>
+                                                  {availableUsers.map((user, index) => (
+                                                    <div key={index} className="member-item">
+                                                      <div
+                                                        className="member-details"
+                                                        onClick={() => handleAssignMemberClick(user)}
+                                                      >
+                                                        <FontAwesomeIcon icon={faUser} className="user-icon" />
+                                                        {user.name}
+                                                      </div>
+                                                    </div>
+                                                  ))}
+                                                </div>
+                                              ) : (
+                                                <div className="no-members">No available users found</div>
+                                              )}
+                                            </div>
+                                          </Popover.Body>
+                                        </Popover>
+                                      </Overlay>
+                                    </div>
+                                    <div ref={dueDatePopoverRef}>
+                                      <button className="custom-button" onClick={handleDueDateClick}>
+                                        <FontAwesomeIcon icon={faClock} style={{ marginRight: "5px" }} />
+                                        {dueDateLabel}
+                                      </button>
+                                    </div>
+                                    <Overlay
+                                      show={isDatePickerOpen}
+                                      target={dueDatePopoverRef.current}
+                                      placement="right"
+                                      container={dueDatePopoverRef.current}
+                                      containerPadding={12}
+                                      rootClose={true}
+                                      onHide={() => setIsDatePickerOpen(false)}
+                                    >
+                                      <Popover id="datePopover-contained" className="block__datePopover-visibility">
+                                        <Popover.Header className="d-flex justify-content-between">
+                                          <div></div>
+                                          <span className="fw-semibold label__dates">Select Due Date</span>
+                                          <div>
+                                            <Button size="sm" variant="close" aria-label="close" onClick={() => setIsDatePickerOpen(false)} />
+                                          </div>
+                                        </Popover.Header>
+                                        <Popover.Body>
+                                          <div className="d-flex justify-content-center">
+                                            <DayPicker mode="single" selected={newTask.dueDate} onDayClick={handleDayClick} />
+                                          </div>
+                                          <div className="mt-3 d-flex flex-column w-100 gap-2">
+                                            <button className="btn btn-primary fw-semibold" onClick={handleSaveDueDate}>
+                                              Save
+                                            </button>
+                                            <button className="btn btn-light fw-semibold" onClick={handleRemoveDueDate}>
+                                              Remove
+                                            </button>
+                                          </div>
+                                        </Popover.Body>
+                                      </Popover>
+                                    </Overlay>
                                   </div>
                                 </div>
                               </div>
@@ -885,6 +1021,7 @@ const Card = (listIdProps, listBoardIdProps) => {
                               </button>
                             )}
                           </div>
+
                         </div>
                       ))}
                     </div>
