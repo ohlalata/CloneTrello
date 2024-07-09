@@ -80,12 +80,19 @@ const updateCardDates = async (query) => {
   if (id && title) {
     data = {
       description: description,
-      startDate: startDate,
-      endDate: endDate,
-      reminderDate: reminderDate,
       title: title,
     };
+    if (startDate) {
+      data.startDate = startDate;
+    }
+    if (endDate) {
+      data.endDate = endDate;
+    }
+    if (reminderDate) {
+      data.reminderDate = reminderDate;
+    }
   }
+  //console.log("data", data);
   const response = await axiosLocalHost.normalRequest.put(serviceUrl, data);
   return response;
 };

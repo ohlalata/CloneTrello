@@ -25,7 +25,16 @@ import "react-toastify/ReactToastify.css";
 import { Popover, Overlay, Button, ButtonGroup } from "react-bootstrap";
 
 import { faArrowRight } from "@fortawesome/free-solid-svg-icons";
-import { format, addDays, parse } from "date-fns"; /////////////////////////////
+import {
+  format,
+  addDays,
+  parse,
+  endOfDay,
+  isValid,
+  subMinutes,
+  subDays,
+  subHours,
+} from "date-fns"; /////////////////////////////
 import { DateRange, DayPicker } from "react-day-picker"; /////////////////////////
 import "react-day-picker/dist/style.css";
 import { faTags } from "@fortawesome/free-solid-svg-icons";
@@ -37,6 +46,7 @@ import "react-quill/dist/quill.snow.css";
 import todoService from "../../api/Services/todo";
 import { useForm } from "react-hook-form";
 import taskService from "../../api/Services/task";
+import { enUS, vi } from "date-fns/locale";
 
 const Card = (listIdProps, listBoardIdProps) => {
   const textareaRefCardTitle = useRef(null);
@@ -61,8 +71,7 @@ const Card = (listIdProps, listBoardIdProps) => {
 
   //------------------------------------------------------------
   //const datePopoverRef = useRef(null);
-  const [datePopover, setDatePopover] = useState(false);
-  const [datePopoverTarget, setDatePopoverTarget] = useState(null);
+
   const [cardMembers, setCardMembers] = useState([]);
   const [isMemberPopoverOpen, setIsMemberPopoverOpen] = useState(false);
   const [selectedCardId, setSelectedCardId] = useState(null);
@@ -96,17 +105,14 @@ const Card = (listIdProps, listBoardIdProps) => {
   const [isDatePickerOpen, setIsDatePickerOpen] = useState(false);
   const [dueDateLabel, setDueDateLabel] = useState("Due Date");
 
+  //------------ DATE PICKER-------------
+  const [datePopover, setDatePopover] = useState(false);
+  const [datePopoverTarget, setDatePopoverTarget] = useState(null);
   const initiallySelectedDate = new Date();
-  console.log(
-    "initiallySelectedDate",
-    format(initiallySelectedDate, "MM/dd/yyyy HH:mm:ss")
-  );
   const [daySelected, setDaySelected] = useState(initiallySelectedDate);
-
   const [isStartDay, setIsStartDay] = useState(true);
   const [isDueDay, setIsDueDay] = useState(false);
   const [checkDueday, setCheckDueDay] = useState(true);
-
   const formatAMPM = (date) => {
     let hours = date.getHours();
     let minutes = date.getMinutes();
@@ -117,16 +123,19 @@ const Card = (listIdProps, listBoardIdProps) => {
     const strTime = hours + ":" + minutes + " " + ampm;
     return strTime;
   };
-
-  const [startDay, setStartDay] = useState(""); //"M/D/YYYY"
+  const [startDay, setStartDay] = useState("M/D/YYYY");
   const [dueDay, setDueDay] = useState(format(daySelected, "MM/dd/yyyy"));
   const [dueTime, setDueTime] = useState(formatAMPM(initiallySelectedDate));
   const [dueDateRemind, setDueDateRemind] = useState("None");
+  const pastMonth = new Date();
+  const dayRange = {
+    from: pastMonth,
+    to: addDays(pastMonth, 1),
+  };
+  const [range, setRange] = useState(dayRange);
 
   const handleDatePopoverClick = (event) => {
     if (datePopover) return;
-    // event.preventDefault();
-    // event.stopPropagation();
     setDatePopover(true);
     setDatePopoverTarget(event.target);
     console.log(event);
@@ -146,8 +155,6 @@ const Card = (listIdProps, listBoardIdProps) => {
     setDaySelected(selectedDay);
     setDueDay(format(selectedDay, "MM/dd/yyyy"));
   };
-
-  //----------------------------------------------------------------
 
   const handleStartDayDisable = () => {
     setIsStartDay(!isStartDay);
@@ -169,14 +176,6 @@ const Card = (listIdProps, listBoardIdProps) => {
   const handleChangeDueTime = (e) => {
     setDueTime(e.target.value);
   };
-  ///////////////////////////////////////////////////////////////////////////////////////////////////
-  const pastMonth = new Date();
-  const dayRange = {
-    from: pastMonth,
-    to: addDays(pastMonth, 1),
-  };
-
-  const [range, setRange] = useState(dayRange);
 
   let footer = <p>Please pick the first day.</p>;
   if (range?.from) {
@@ -275,8 +274,23 @@ const Card = (listIdProps, listBoardIdProps) => {
   //-----------------------------------------------------------------
 
   const onChangeRemind = (event) => {
-    console.log(event.target.value);
-    setDueDateRemind(event.target.value);
+    let rawRemind = parse(
+      dueDay + " " + dueTime,
+      "MM/dd/yyyy h:mm a",
+      new Date(),
+      { locale: vi }
+    );
+    if (event.target.value == "None") {
+      setDueDateRemind("");
+    } else if (event.target.value == "At time") {
+      setDueDateRemind(dueDay + " " + dueTime);
+    } else if (event.target.value == "15 Minutes Before") {
+      setDueDateRemind(format(subMinutes(rawRemind, 15), "MM/dd/yyyy h:mm a"));
+    } else if (event.target.value == "1 Hour Before") {
+      setDueDateRemind(format(subHours(rawRemind, 1), "MM/dd/yyyy h:mm a"));
+    } else if (event.target.value == "1 Day Before") {
+      setDueDateRemind(format(subDays(rawRemind, 1), "MM/dd/yyyy h:mm a"));
+    }
   };
 
   const handleChangeCardTitleModal = (e) => {
@@ -334,20 +348,47 @@ const Card = (listIdProps, listBoardIdProps) => {
   const handleUpdateDates = async (
     cardID,
     description,
-    startDate,
-    endDate,
+    startDay,
+    dueDay,
     dueTime,
     reminderDate,
     title
   ) => {
+    //parse start day
+    let parseStartDay = parse(
+      startDay + " 08:00 AM",
+      "MM/dd/yyyy h:mm a",
+      new Date(),
+      {
+        locale: vi,
+      }
+    );
+    let isoStartDay = isValid(parseStartDay) ? parseStartDay.toISOString() : "";
+
+    // parse due day
+    let parseDueDay = parse(
+      dueDay + " " + dueTime,
+      "MM/dd/yyyy h:mm a",
+      new Date(),
+      { locale: vi }
+    );
+    let isoDueDay = isValid(parseDueDay) ? parseDueDay.toISOString() : "";
+
+    // parse remind
+    let parseRemind = parse(reminderDate, "MM/dd/yyyy h:mm a", new Date(), {
+      locale: vi,
+    });
+    let isoRemind = isValid(parseRemind) ? parseRemind.toISOString() : "";
+
     let query = {
       id: cardID,
       description: description,
-      startDate: startDate,
-      endDate: endDate, // parse ISO 8601
-      reminderDate: reminderDate,
+      startDate: isoStartDay,
+      endDate: isoDueDay,
+      reminderDate: isoRemind,
       title: title,
     };
+    console.log("query", query);
     try {
       const response = await cardServices.updateCardDates(query);
       if (response.data.code == 200) {
@@ -355,6 +396,7 @@ const Card = (listIdProps, listBoardIdProps) => {
         // set lai modal card detail
         // hien thong tin tren description
         // get card by filter
+        console.log("update day ok");
         console.log(response.data.data);
         setModalCardDetail(response.data.data);
         handleGetCardByFilter();
@@ -368,8 +410,8 @@ const Card = (listIdProps, listBoardIdProps) => {
   const saveCardDates = (
     cardID,
     description,
-    startDate,
-    endDate,
+    startDay,
+    dueDay,
     dueTime,
     reminderDate,
     title
@@ -377,8 +419,8 @@ const Card = (listIdProps, listBoardIdProps) => {
     handleUpdateDates(
       cardID,
       description,
-      startDate,
-      endDate,
+      startDay,
+      dueDay,
       dueTime,
       reminderDate,
       title
@@ -1622,14 +1664,8 @@ const Card = (listIdProps, listBoardIdProps) => {
                                 <option value={"1 Hour Before"}>
                                   1 Hour before
                                 </option>
-                                <option value={"2 Hour Before"}>
-                                  2 Hour before
-                                </option>
                                 <option value={"1 Day Before"}>
                                   1 Day before
-                                </option>
-                                <option value={"2 Day Before"}>
-                                  2 Day before
                                 </option>
                               </select>
                             </form>
@@ -1646,7 +1682,7 @@ const Card = (listIdProps, listBoardIdProps) => {
                                   dueDay,
                                   dueTime,
                                   dueDateRemind,
-                                  modalCardDetail.tile
+                                  modalCardDetail.title
                                 )
                               }
                             >
