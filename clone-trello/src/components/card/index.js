@@ -1,7 +1,7 @@
 import React, { useRef, useState, useEffect } from "react";
 import "./style.scss";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faPen, faX, faListCheck, faTrash, faUserPlus } from "@fortawesome/free-solid-svg-icons";
+import { faPen, faX, faListCheck, faTrash, faUserPlus, faEllipsis } from "@fortawesome/free-solid-svg-icons";
 import cardServices from "../../api/Services/card";
 import { faPlus } from "@fortawesome/free-solid-svg-icons";
 import { faXmark } from "@fortawesome/free-solid-svg-icons";
@@ -87,6 +87,17 @@ const Card = (listIdProps, listBoardIdProps) => {
   const [dueDate, setDueDate] = useState(null);
   const [isDatePickerOpen, setIsDatePickerOpen] = useState(false);
   const [dueDateLabel, setDueDateLabel] = useState('Due Date');
+  const [taskItems, setTaskItems] = useState([]);
+  const [editingTaskId, setEditingTaskId] = useState(null);
+  const [updatedTask, setUpdatedTask] = useState({
+    id: '',
+    name: '',
+    priorityLevel: '',
+    status: '',
+    description: '',
+    assignedUserId: '',
+    dueDate: '',
+  });
 
   const initiallySelectedDate = new Date();
   const [daySelected, setDaySelected] = useState(initiallySelectedDate);
@@ -586,6 +597,8 @@ const Card = (listIdProps, listBoardIdProps) => {
     }
   };
 
+  // module task
+
   const closeAssignPopover = () => {
     setIsAssignPopoverOpen(false);
   };
@@ -610,7 +623,7 @@ const Card = (listIdProps, listBoardIdProps) => {
   };
 
   const handleDueDateClick = () => {
-    setIsDatePickerOpen(!isDatePickerOpen); 
+    setIsDatePickerOpen(!isDatePickerOpen);
   };
 
   const handleDayClick = (day) => {
@@ -647,6 +660,7 @@ const Card = (listIdProps, listBoardIdProps) => {
       if (response.data.code === 201) {
         toast.success("Task added successfully!");
         stopAddingItem();
+        handleGetAllTask(todoId, setTaskItems);
       } else {
         toast.error("Failed to add task");
       }
@@ -673,6 +687,105 @@ const Card = (listIdProps, listBoardIdProps) => {
     setDueDate(null);
     setDueDateLabel('Due Date');
   };
+
+  const userLookup = {};
+  availableUsers.forEach(user => {
+    userLookup[user.id] = user.name;
+  });
+
+  const formatDate = (dateString) => {
+    const options = { month: 'short', day: 'numeric' };
+    return new Date(dateString).toLocaleDateString(undefined, options);
+  };
+
+  const handleGetAllTask = async (todoId, setTaskItems) => {
+    let query = { todoId: todoId };
+    try {
+      const response = await taskService.getAllTask(query);
+      if (response.status === 200) {
+        handleGetUserByTodoId(todoId);
+        setTaskItems((prevTaskItems) => {
+          const newTasks = response.data.data.filter(
+            newTask => !prevTaskItems.some(existingTask => existingTask.id === newTask.id)
+          );
+          return [...prevTaskItems, ...newTasks];
+        });
+      } else {
+        console.error("Failed to fetch tasks:", response.data.message);
+      }
+    } catch (error) {
+      console.error("Error fetching tasks:", error);
+    }
+  };
+
+  const handleUpdateTask = async (taskId, todoId) => {
+    const requestBody = {
+      id: taskId,
+      name: newTask.name,
+      priorityLevel: newTask.priorityLevel,
+      status: newTask.status,
+      description: newTask.description || null,
+      assignedUserId: newTask.assignedUserId || null,
+      dueDate: newTask.dueDate || null,
+    };
+
+    try {
+      const response = await taskService.updateTask(requestBody);
+      if (response.data.code === 200) {
+        toast.success("Task updated successfully!");
+        handleGetAllTask(todoId, setTaskItems);
+        stopEditing();
+      } else {
+        toast.error("Failed to update task");
+      }
+    } catch (error) {
+      console.error("Error updating task:", error);
+    }
+  };
+
+  const startEditingTask = (taskId, task) => {
+    setEditingId(taskId);
+    setNewTask({
+      name: task.name,
+      priorityLevel: task.priorityLevel,
+      status: task.status,
+      description: task.description || '',
+      assignedUserId: task.assignedUserId || '',
+      dueDate: task.dueDate || null,
+    });
+  };
+
+  const stopEditingTask = () => {
+    setEditingId(null);
+    setNewTask({
+      name: '',
+      priorityLevel: '',
+      status: '',
+      description: '',
+      assignedUserId: '',
+      dueDate: null
+    });
+  };
+
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setNewTask(prevTask => ({
+      ...prevTask,
+      [name]: value
+    }));
+  };
+
+  const handleSaveTask = async (taskId, todoId) => {
+    await handleUpdateTask(taskId, todoId);
+  };
+
+  useEffect(() => {
+    if (todoItems.length > 0) {
+      todoItems.forEach((todo) => {
+        handleGetAllTask(todo.id, setTaskItems);
+      });
+    }
+  }, [todoItems]);
 
   return (
     <React.Fragment>
@@ -863,14 +976,14 @@ const Card = (listIdProps, listBoardIdProps) => {
                   )}
                 </div>
 
-                {/* todo part */}
+                {/* todo & task part */}
                 <div className="mt-3">
                   {todoItems.length > 0 && (
                     <div>
                       {todoItems.map((todo) => (
                         <div key={todo.id}>
                           <div className="todo-item d-flex justify-content-between align-items-center mt-3">
-                            <div className="d-flex gap-2 align-items-center">
+                            <div className="d-flex gap-2 align-items-center" style={{ cursor: "pointer" }}>
                               <div>
                                 <FontAwesomeIcon icon={faListCheck} />
                               </div>
@@ -898,17 +1011,47 @@ const Card = (listIdProps, listBoardIdProps) => {
                               </div>
                             </div>
                             <div>
-                              <button className="custom-button">
+                              <button className="custom-button" onClick={() => handleChangeStatusChecklist(todo.id)}>
                                 <FontAwesomeIcon
                                   icon={faTrash}
-                                  onClick={() =>
-                                    handleChangeStatusChecklist(todo.id)
-                                  }
                                 />
                               </button>
                             </div>
                           </div>
                           <div className="mt-2">
+                            {taskItems.filter(task => task.todoId === todo.id).map(task => (
+                              <div
+                                key={task.id}
+                                className="task-item mt-2 p-2 border rounded"
+                              >
+                                <div className="d-flex justify-content-between">
+                                  <span className="task-name fw-bold">{task.name}</span>
+                                  <div className="d-flex gap-1">
+                                    <span className={`task-priority ${task.priorityLevel === 'Low' ? 'priority-low' : task.priorityLevel === 'Medium' ? 'priority-medium' : task.priorityLevel === 'High' ? 'priority-high' : ''}`}>
+                                      {task.priorityLevel}
+                                    </span>
+                                    <span className={`task-status ${task.status === 'New' ? 'status-new' : task.status === 'InProgress' ? 'status-in_progress' : task.status === 'Resolved' ? 'status-resolved' : ''}`}>
+                                      {task.status}
+                                    </span>
+                                  </div>
+                                </div>
+                                <div className="task-description mt-1">{task.description}</div>
+                                <div className="d-flex justify-content-end mt-2">
+                                  <div className="task-assigned-user">
+                                    <FontAwesomeIcon icon={faUser} style={{ marginRight: "5px" }} />
+                                    {availableUsers.length > 0 && task.assignedUserId ? (
+                                      userLookup[task.assignedUserId] || 'User not found'
+                                    ) : (
+                                      'Unassigned'
+                                    )}
+                                  </div>
+                                  <div className="task-due-date" style={{ marginLeft: "10px" }}>
+                                    <FontAwesomeIcon icon={faClock} style={{ marginRight: "5px" }} />
+                                    {task.dueDate ? formatDate(task.dueDate) : 'No due date'}
+                                  </div>
+                                </div>
+                              </div>
+                            ))}
                             {addingItem === todo.id ? (
                               <div className="new-task-form">
                                 <div className="form-row">
@@ -1044,7 +1187,7 @@ const Card = (listIdProps, listBoardIdProps) => {
                                 </div>
                               </div>
                             ) : (
-                              <button className="custom-button" onClick={() => startAddingItem(todo.id)}>
+                              <button className="custom-button mt-2" onClick={() => startAddingItem(todo.id)}>
                                 Add an item
                               </button>
                             )}
@@ -1055,6 +1198,7 @@ const Card = (listIdProps, listBoardIdProps) => {
                     </div>
                   )}
                 </div>
+                {/* end todo & task part */}
 
                 {/* <div className="d-flex justify-content-between mt-3">
                   <div className="d-flex gap-2 align-items-center">
