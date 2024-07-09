@@ -1,0 +1,37 @@
+.block__user-comment {
+  width: 32px;
+  height: 100%;
+}
+
+.block__user-comment img {
+  height: 100%;
+  width: 100%;
+  object-fit: cover;
+}
+
+.block__input-comment {
+  background-color: #ffffff;
+  box-shadow: rgba(0, 0, 0, 0.18) 0px 2px 4px;
+  border-radius: 8px;
+}
+
+.modal-content {
+  background-color: #f8f9feed !important;
+}
+
+.block__card-action {
+  background-color: #d0d1d6;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.block__rich-text-editor {
+  background-color: #ffffff;
+  border: solid 2px #0c66e4;
+}
+
+.label__comment-action {
+  color: #44546f;
+  font-size: 13px;
+  text-decoration: underline;
+}

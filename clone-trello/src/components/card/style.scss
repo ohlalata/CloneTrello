@@ -172,43 +172,43 @@
   font-size: 17px;
 }
 
-.block__user-comment {
-  width: 32px;
-  height: 100%;
-}
+// .block__user-comment {
+//   width: 32px;
+//   height: 100%;
+// }
 
-.block__user-comment img {
-  height: 100%;
-  width: 100%;
-  object-fit: cover;
-}
+// .block__user-comment img {
+//   height: 100%;
+//   width: 100%;
+//   object-fit: cover;
+// }
 
-.block__input-comment {
-  background-color: #ffffff;
-  box-shadow: rgba(0, 0, 0, 0.18) 0px 2px 4px;
-  border-radius: 8px;
-}
+// .block__input-comment {
+//   background-color: #ffffff;
+//   box-shadow: rgba(0, 0, 0, 0.18) 0px 2px 4px;
+//   border-radius: 8px;
+// }
 
-.modal-content {
-  background-color: #f8f9feed !important;
-}
+// .modal-content {
+//   background-color: #f8f9feed !important;
+// }
 
-.block__card-action {
-  background-color: #d0d1d6;
-  border-radius: 5px;
-  cursor: pointer;
-}
+// .block__card-action {
+//   background-color: #d0d1d6;
+//   border-radius: 5px;
+//   cursor: pointer;
+// }
 
-.block__rich-text-editor {
-  background-color: #ffffff;
-  border: solid 2px #0c66e4;
-}
+// .block__rich-text-editor {
+//   background-color: #ffffff;
+//   border: solid 2px #0c66e4;
+// }
 
-.label__comment-action {
-  color: #44546f;
-  font-size: 13px;
-  text-decoration: underline;
-}
+// .label__comment-action {
+//   color: #44546f;
+//   font-size: 13px;
+//   text-decoration: underline;
+// }
 
 .block__user-activity {
   width: 32px;
@@ -320,9 +320,10 @@
   cursor: pointer;
   display: inline-flex;
   font-display: swap;
-  font-family: -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Noto Sans, Ubuntu, Droid Sans, Helvetica Neue, sans-serif;
+  font-family: -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Noto Sans,
+    Ubuntu, Droid Sans, Helvetica Neue, sans-serif;
   font-size: 14px;
-  font-weight: 500; 
+  font-weight: 500;
   justify-content: center;
   line-height: 20px;
   padding: 8px 16px;
@@ -358,7 +359,6 @@
   border: 1px solid #ccc;
   border-radius: 3px;
   font-size: 14px;
-
 }
 
 .new-task-form .form-row.justify-content-end {

@@ -21,9 +21,7 @@ import { faClock } from "@fortawesome/free-regular-svg-icons";
 import { faTrashCan } from "@fortawesome/free-regular-svg-icons";
 import { toast } from "react-toastify";
 import "react-toastify/ReactToastify.css";
-
 import { Popover, Overlay, Button, ButtonGroup } from "react-bootstrap";
-
 import { faArrowRight } from "@fortawesome/free-solid-svg-icons";
 import {
   format,
@@ -47,6 +45,8 @@ import todoService from "../../api/Services/todo";
 import { useForm } from "react-hook-form";
 import taskService from "../../api/Services/task";
 import { enUS, vi } from "date-fns/locale";
+//import Connection from "../signalrConnection";
+import Comments from "../comments";
 
 const Card = (listIdProps, listBoardIdProps) => {
   const textareaRefCardTitle = useRef(null);
@@ -68,10 +68,7 @@ const Card = (listIdProps, listBoardIdProps) => {
   const [activityVisible, setActivityVisible] = useState(true);
   const [isCardTitleModal, setIsCardTitleModal] = useState(true);
   const [CardTitleModal, setCardTitleModal] = useState("");
-
-  //------------------------------------------------------------
   //const datePopoverRef = useRef(null);
-
   const [cardMembers, setCardMembers] = useState([]);
   const [isMemberPopoverOpen, setIsMemberPopoverOpen] = useState(false);
   const [selectedCardId, setSelectedCardId] = useState(null);
@@ -83,7 +80,6 @@ const Card = (listIdProps, listBoardIdProps) => {
   const [todoItems, setTodoItems] = useState([]);
   const [editingId, setEditingId] = useState(null);
   const [newTitle, setNewTitle] = useState("");
-
   const [valueQuill, setValueQuill] = useState("");
   const quillRef = useRef(null);
   const { register } = useForm();
@@ -1322,7 +1318,7 @@ const Card = (listIdProps, listBoardIdProps) => {
                   )}
                 </div>
 
-                {/* <div className="d-flex justify-content-between mt-3">
+                <div className="d-flex justify-content-between mt-3">
                   <div className="d-flex gap-2 align-items-center">
                     <div>
                       <FontAwesomeIcon icon={faListUl} />
@@ -1353,8 +1349,9 @@ const Card = (listIdProps, listBoardIdProps) => {
                       </button>
                     </div>
                   )}
-                </div> */}
-
+                </div>
+                {/* Comment */}
+                <Comments />
                 {/* <div>
                   <div className="d-flex gap-2 mt-2 align-items-center">
                     <div className="block__user-comment">
@@ -1388,7 +1385,7 @@ const Card = (listIdProps, listBoardIdProps) => {
                   </div>
                 </div> */}
 
-                {/* {activityVisible && (
+                {activityVisible && (
                   <div className="d-flex gap-2 p-1">
                     <div className="block__user-activity">
                       <img src={constants.USER_UNDEFINE_URL} />
@@ -1402,7 +1399,7 @@ const Card = (listIdProps, listBoardIdProps) => {
                       <span>time</span>
                     </div>
                   </div>
-                )} */}
+                )}
               </div>
               <div className="col-3 px-2">
                 <div className="d-flex flex-column gap-2">
