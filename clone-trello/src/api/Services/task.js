@@ -34,55 +34,55 @@ const getTaskByFilter = async (query) => {
 };
 
 const createTask = async (requestBody) => {
-    let { todoId, name, priorityLevel, assignedUserId, description, status, dueDate } = requestBody;
-    let data;
-    const serviceUrl = urlConstant.endpoint.task.createTask;
-    if (todoId && name && priorityLevel !== undefined && status !== undefined) {
-      data = {
-        todoId: todoId,
-        name: name,
-        priorityLevel: priorityLevel,
-        status: status,
-      };
-      
-      if (assignedUserId) {
-        data.assignedUserId = assignedUserId;
-      }
-      if (description) {
-        data.description = description;
-      }
-      if (dueDate) {
-        data.dueDate = dueDate;
-      }
-    }
-    const response = await axiosLocalHost.normalRequest.post(serviceUrl, data);
-    return response;
-  };
+  let { todoId, name, priorityLevel, assignedUserId, description, status, dueDate } = requestBody;
+  let data;
+  const serviceUrl = urlConstant.endpoint.task.createTask;
+  if (todoId && name && priorityLevel !== undefined && status !== undefined) {
+    data = {
+      todoId: todoId,
+      name: name,
+      priorityLevel: priorityLevel,
+      status: status,
+    };
 
-  const updateTask = async (requestBody) => {
-    let { id, name, priorityLevel, assignedUserId, description, status, dueDate } = requestBody;
-    let data;
-    let serviceUrl = urlConstant.endpoint.task.updateTask + id;
-    if (id && name && priorityLevel !== undefined && status !== undefined) {
-      data = {
-        name: name,
-        priorityLevel: priorityLevel,
-        status: status,
-      };
-  
-      if (assignedUserId) {
-        data.assignedUserId = assignedUserId;
-      }
-      if (description) {
-        data.description = description;
-      }
-      if (dueDate) {
-        data.dueDate = dueDate;
-      }
+    if (assignedUserId) {
+      data.assignedUserId = assignedUserId;
     }
-    const response = await axiosLocalHost.normalRequest.put(serviceUrl, data);
-    return response;
-  };
+    if (description) {
+      data.description = description;
+    }
+    if (dueDate) {
+      data.dueDate = dueDate;
+    }
+  }
+  const response = await axiosLocalHost.normalRequest.post(serviceUrl, data);
+  return response;
+};
+
+const updateTask = async (requestBody) => {
+  let { id, name, priorityLevel, assignedUserId, description, status, dueDate } = requestBody;
+  let data;
+  let serviceUrl = urlConstant.endpoint.task.updateTask + id;
+  if (id && name && priorityLevel !== undefined && status !== undefined) {
+    data = {
+      name: name,
+      priorityLevel: priorityLevel,
+      status: status,
+    };
+
+    if (assignedUserId) {
+      data.assignedUserId = assignedUserId;
+    }
+    if (description) {
+      data.description = description;
+    }
+    if (dueDate) {
+      data.dueDate = dueDate;
+    }
+  }
+  const response = await axiosLocalHost.normalRequest.put(serviceUrl, data);
+  return response;
+};
 
 const changeStatus = async (query) => {
   let { id, isActive } = query;
