@@ -1351,7 +1351,7 @@ const Card = (listIdProps, listBoardIdProps) => {
                   )}
                 </div>
                 {/* Comment */}
-                <Comments />
+                <Comments cardId={modalCardDetail.id} />
                 {/* <div>
                   <div className="d-flex gap-2 mt-2 align-items-center">
                     <div className="block__user-comment">

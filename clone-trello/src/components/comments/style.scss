@@ -25,13 +25,17 @@
   cursor: pointer;
 }
 
-.block__rich-text-editor {
-  background-color: #ffffff;
-  border: solid 2px #0c66e4;
-}
-
 .label__comment-action {
   color: #44546f;
   font-size: 13px;
   text-decoration: underline;
+}
+
+.block__rich-text-comment {
+  background-color: #ffffff;
+  border: solid 2px #0c66e4;
+}
+
+.block__comment-input-wrapper {
+  max-width: 90%;
 }
