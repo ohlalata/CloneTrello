@@ -123,6 +123,9 @@ const Card = (listIdProps, listBoardIdProps) => {
   const [dueDay, setDueDay] = useState(format(daySelected, "MM/dd/yyyy"));
   const [dueTime, setDueTime] = useState(formatAMPM(initiallySelectedDate));
   const [dueDateRemind, setDueDateRemind] = useState("None");
+
+  const [labelDay, setLabelDay] = useState("");
+
   const pastMonth = new Date();
   const dayRange = {
     from: pastMonth,
@@ -304,13 +307,17 @@ const Card = (listIdProps, listBoardIdProps) => {
 
   const handleModalCard = (objCardDetail) => {
     setModalCardDetail(objCardDetail);
-
     setIsModalCardShow(!isModalCardShow);
     setDatePopover(false);
-
     setIsMemberPopoverOpen(false);
     //handleGetAllCard();
     handleGetCardByFilter();
+
+    // console.log("CARD DETAIL: ", objCardDetail.endDate);
+
+    // if (objCardDetail.startDate && objCardDetail.endDate) {
+    //   setLabelDay();
+    // }
   };
 
   const handleAddCardTitle = () => {
@@ -423,17 +430,17 @@ const Card = (listIdProps, listBoardIdProps) => {
     );
   };
 
-  const handleGetAllCard = async () => {
-    let query = { listId: listIdProps.listIdProps };
-    try {
-      const response = await cardServices.getAllCard(query);
-      if (response.data.code == 200) {
-        setListCard(response.data.data);
-      }
-    } catch (error) {
-      console.log(error);
-    }
-  };
+  // const handleGetAllCard = async () => {
+  //   let query = { listId: listIdProps.listIdProps };
+  //   try {
+  //     const response = await cardServices.getAllCard(query);
+  //     if (response.data.code == 200) {
+  //       setListCard(response.data.data);
+  //     }
+  //   } catch (error) {
+  //     console.log(error);
+  //   }
+  // };
 
   const handleGetCardByFilter = async () => {
     let query = { listId: listIdProps.listIdProps, isActive: true };
@@ -516,7 +523,8 @@ const Card = (listIdProps, listBoardIdProps) => {
 
         toast.success("Card archived successfully!");
         setIsModalCardShow(false);
-        handleGetAllCard();
+        //handleGetAllCard();
+        handleGetCardByFilter();
       }
     } catch (error) {
       toast.error("Card archived failed!");
@@ -594,7 +602,8 @@ const Card = (listIdProps, listBoardIdProps) => {
   }, [listIdProps.listBoardIdProps]);
 
   useEffect(() => {
-    handleGetAllCard();
+    //handleGetAllCard();
+    handleGetCardByFilter();
     handleGetAllBoardMember();
   }, []);
 
@@ -842,6 +851,8 @@ const Card = (listIdProps, listBoardIdProps) => {
     setDueDateLabel("Due Date");
   };
 
+  useEffect(() => {}, []);
+
   return (
     <React.Fragment>
       <ol className="block__list-card">
@@ -939,6 +950,11 @@ const Card = (listIdProps, listBoardIdProps) => {
                 )}
               </div>
               <span>in list {listIdProps.listNameProps}</span>
+              {/* VISUAL */}
+              <div className="mt-1">
+                <span>Dates</span>
+                <div></div>
+              </div>
             </div>
           </ModalHeader>
           <ModalBody>

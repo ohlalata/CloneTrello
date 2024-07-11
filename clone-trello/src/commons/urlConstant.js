@@ -62,6 +62,8 @@ export default {
     comment: {
       getAllComment: "/comment/get-all",
       createComment: "/comment/create",
+      deleteComment: "/comment/change-status/", // noi duoi id
+      updateComment: "/comment/update/", // noi duoi id
     },
     CardMember: {
       createCardMember: "cardMember/create",

@@ -28,4 +28,28 @@ const createComment = async (query) => {
   return response;
 };
 
-export default { getAllComment, createComment };
+const deleteComment = async (query) => {
+  let { id, isActive } = query;
+  const serviceUrl = urlConstant.endpoint.comment.deleteComment + id;
+  let data;
+  if (id) {
+    data = {
+      isActive: isActive,
+    };
+  }
+  const response = await axiosLocalHost.normalRequest.put(serviceUrl, data);
+  return response;
+};
+
+const updateComment = async (query) => {
+  let { id, stringEdit } = query;
+  const serviceUrl = urlConstant.endpoint.comment.updateComment + id;
+  let data;
+  if (id && stringEdit) {
+    data = stringEdit;
+  }
+  const response = await axiosLocalHost.normalRequest.put(serviceUrl, data);
+  return response;
+};
+
+export default { getAllComment, createComment, deleteComment, updateComment };

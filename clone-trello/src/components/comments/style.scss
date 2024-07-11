@@ -39,3 +39,17 @@
 .block__comment-input-wrapper {
   max-width: 90%;
 }
+
+.block__comment-render-wrapper p {
+  margin-bottom: 0px;
+}
+
+.block__popover-delete-wrapper .block__popover-delete-comment {
+  width: 300px;
+  --bs-popover-border-color: rgb(203 203 203 / 81%);
+}
+
+.block__rich-text-update {
+  background-color: #ffffff;
+  border: solid 2px #0c66e4;
+}
