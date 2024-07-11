@@ -498,3 +498,14 @@
   background-color: lightgreen;
   color: black; 
 }
+
+.task-item-container {
+  position: relative;
+  padding-left: 30px;
+}
+
+.task-checkbox {
+  position: absolute;
+  top: 10px; 
+  left: 10px;
+}
