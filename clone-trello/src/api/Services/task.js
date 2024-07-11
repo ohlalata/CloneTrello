@@ -84,6 +84,13 @@ const updateTask = async (requestBody) => {
   return response;
 };
 
+const updateCheckTask = async (query) => {
+  let { id, isChecked } = query;
+  let serviceUrl = urlConstant.endpoint.task.checkTask + id;
+  const response = await axiosLocalHost.normalRequest.put(serviceUrl, null, { params: { isChecked } });
+  return response;
+};
+
 const changeStatus = async (query) => {
   let { id, isActive } = query;
   let data;
@@ -101,6 +108,7 @@ export default {
   getAllTask,
   createTask,
   updateTask,
+  updateCheckTask,
   changeStatus,
   getTaskByFilter,
 };

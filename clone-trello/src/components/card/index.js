@@ -21,7 +21,7 @@ import { Popover, Overlay, Button, ButtonGroup } from "react-bootstrap";
 import { faArrowRight } from "@fortawesome/free-solid-svg-icons";
 import { DayPicker } from "react-day-picker";
 import "react-day-picker/dist/style.css";
-import { format } from "date-fns";
+import { format, set } from "date-fns";
 import { faTags } from "@fortawesome/free-solid-svg-icons";
 import cardMemberService from "../../api/Services/cardMember";
 import userService from "../../api/Services/user";
@@ -75,12 +75,12 @@ const Card = (listIdProps, listBoardIdProps) => {
   //const [DescriptionTemp, setDescriptionTemp] = useState("");
   const [addingItem, setAddingItem] = useState(null);
   const [newTask, setNewTask] = useState({
-    name: '',
-    priorityLevel: '',
-    status: '',
-    description: '',
-    assignedUserId: '',
-    dueDate: null
+    // name: '',
+    // priorityLevel: '',
+    // status: '',
+    // description: '',
+    // assignedUserId: '',
+    // dueDate: null
   });
   const [isAssignPopoverOpen, setIsAssignPopoverOpen] = useState(false);
   const [availableUsers, setAvailableUsers] = useState([]);
@@ -91,7 +91,6 @@ const Card = (listIdProps, listBoardIdProps) => {
   const [taskItems, setTaskItems] = useState([]);
   const [editingTask, setEditingTask] = useState(null);
   const [updatedTask, setUpdatedTask] = useState({});
-  const [showDropdown, setShowDropdown] = useState(false);
 
   const initiallySelectedDate = new Date();
   const [daySelected, setDaySelected] = useState(initiallySelectedDate);
@@ -593,10 +592,6 @@ const Card = (listIdProps, listBoardIdProps) => {
 
   // module task
 
-  const toggleDropdown = () => {
-    setShowDropdown(!showDropdown);
-  };
-
   const closeAssignPopover = () => {
     setIsAssignPopoverOpen(false);
   };
@@ -627,7 +622,7 @@ const Card = (listIdProps, listBoardIdProps) => {
   const handleDayClick = (day) => {
     const utcDay = new Date(day.getTime() - day.getTimezoneOffset() * 60000);
     setUpdatedTask((prevTask) => ({ ...prevTask, dueDate: utcDay }));
-    setIsDatePickerOpen(false);
+    setNewTask((prevTask) => ({ ...prevTask, dueDate: utcDay }));
   };
 
   const handleSaveDueDate = () => {
@@ -635,12 +630,13 @@ const Card = (listIdProps, listBoardIdProps) => {
       setDueDateLabel(format(newTask.dueDate, 'MMM d'));
     }
     setIsDatePickerOpen(false);
-    console.log('Due Date selected:', newTask.dueDate);
   };
 
   const handleRemoveDueDate = () => {
     setNewTask((prevTask) => ({ ...prevTask, dueDate: null }));
+    setUpdatedTask((prevTask) => ({ ...prevTask, dueDate: null }));
     setDueDateLabel('Due Date');
+    setIsDatePickerOpen(false);
   };
 
   const handleCreateTask = async (todoId) => {
@@ -669,6 +665,7 @@ const Card = (listIdProps, listBoardIdProps) => {
   };
 
   const startAddingItem = (todoId) => {
+    setIsAssignPopoverOpen(false);
     setAddingItem(todoId);
     setNewTask({
       name: '',
@@ -685,6 +682,7 @@ const Card = (listIdProps, listBoardIdProps) => {
     setSelectedUser(null);
     setDueDate(null);
     setDueDateLabel('Due Date');
+    setIsAssignPopoverOpen(false);
   };
 
   const userLookup = {};
@@ -753,6 +751,7 @@ const Card = (listIdProps, listBoardIdProps) => {
     const mappedPriorityLevel = priorityMapping[task.priorityLevel] !== undefined ? priorityMapping[task.priorityLevel] : task.priorityLevel;
     const mappedStatus = statusMapping[task.status] !== undefined ? statusMapping[task.status] : task.status;
 
+    setIsAssignPopoverOpen(false);
     setEditingTask(taskId);
     setUpdatedTask({
       id: task.id,
@@ -766,6 +765,7 @@ const Card = (listIdProps, listBoardIdProps) => {
   };
 
   const stopEditingTask = () => {
+    setIsAssignPopoverOpen(false);
     setEditingTask(null);
     setUpdatedTask({
       id: '',
@@ -788,6 +788,44 @@ const Card = (listIdProps, listBoardIdProps) => {
 
   const handleSaveTask = async (taskId, todoId) => {
     await handleUpdateTask(taskId, todoId);
+  };
+
+  const handleCheckTask = async (taskId, currentChecked, todoId) => {
+    let query = {
+      id: taskId,
+      isChecked: !currentChecked,
+    };
+
+    try {
+      const response = await taskService.updateCheckTask(query);
+      if (response.data.code === 200) {
+        toast.success("Task check status updated successfully!");
+        handleGetAllTask(todoId, setTaskItems);
+      } else {
+        toast.error("Failed to Check task");
+      }
+    } catch (error) {
+      console.error("Error updating task check status:", error);
+    }
+  };
+
+  const handleInactiveTask = async (taskId, todoId) => {
+    let query = {
+      id: taskId,
+      isActive: false,
+    };
+
+    try {
+      const response = await taskService.changeStatus(query);
+      if (response.data.code === 200) {
+        toast.success("Inactive task successfully!");
+        handleGetAllTask(todoId, setTaskItems);
+      } else {
+        toast.error("Failed to inactive task.");
+      }
+    } catch (error) {
+      console.error("Error updating task status:", error);
+    }
   };
 
   useEffect(() => {
@@ -1056,57 +1094,67 @@ const Card = (listIdProps, listBoardIdProps) => {
                                   />
                                 ) : (
                                   <div>
-                                    <div className="d-flex justify-content-between">
-                                      <span className="task-name fw-bold">{task.name}</span>
-                                      <div className="d-flex gap-1">
-                                        <span className={`task-priority ${task.priorityLevel === "Low"
-                                          ? "priority-low"
-                                          : task.priorityLevel === "Medium"
-                                            ? "priority-medium"
-                                            : task.priorityLevel === "High"
-                                              ? "priority-high"
-                                              : ""
-                                          }`}
-                                        >
-                                          {task.priorityLevel}
-                                        </span>
-                                        <span className={`task-status ${task.status === "New"
-                                          ? "status-new"
-                                          : task.status === "InProgress"
-                                            ? "status-in-progress"
-                                            : task.status === "Resolved"
-                                              ? "status-resolved"
-                                              : ""
-                                          }`}
-                                        >
-                                          {task.status}
-                                        </span>
-                                        <span>
-                                          <button className="custom-hover-button" onClick={() => startEditingTask(task.id, task)}>
-                                            <FontAwesomeIcon icon={faPenToSquare} />
-                                          </button>
-                                        </span>
-                                        <span>
-                                          <button className="custom-hover-button">
-                                            <FontAwesomeIcon icon={faTrash} />
-                                          </button>
-                                        </span>
+                                    <div className="task-item-container position-relative">
+                                      <input
+                                        type="checkbox"
+                                        className="task-checkbox"
+                                        checked={task.isChecked}
+                                        onChange={() => handleCheckTask(task.id, task.isChecked, task.todoId)}
+                                      />
+                                      <div onClick={() => startEditingTask(task.id, task)} className="w-100">
+                                        <div className="d-flex justify-content-between">
+                                          <span className="task-name fw-bold">{task.name}</span>
+                                          <div className="d-flex gap-1">
+                                            <span className={`task-priority ${task.priorityLevel === "Low"
+                                              ? "priority-low"
+                                              : task.priorityLevel === "Medium"
+                                                ? "priority-medium"
+                                                : task.priorityLevel === "High"
+                                                  ? "priority-high"
+                                                  : ""
+                                              }`}
+                                            >
+                                              {task.priorityLevel}
+                                            </span>
+                                            <span className={`task-status ${task.status === "New"
+                                              ? "status-new"
+                                              : task.status === "InProgress"
+                                                ? "status-in-progress"
+                                                : task.status === "Resolved"
+                                                  ? "status-resolved"
+                                                  : ""
+                                              }`}
+                                            >
+                                              {task.status}
+                                            </span>
+                                            <span>
+                                              <button
+                                                className="custom-button "
+                                                onClick={() => handleInactiveTask(task.id, task.todoId)}
+                                              >
+                                                <FontAwesomeIcon icon={faTrashCan} />
+                                              </button>
+                                            </span>
+                                          </div>
+                                        </div>
+                                        <div className="task-description mt-1">{task.description}</div>
+                                        <div className="d-flex justify-content-end mt-2">
+                                          <div className="task-assigned-user">
+                                            <FontAwesomeIcon icon={faUser} style={{ marginRight: "5px" }} />
+                                            {availableUsers.length > 0 && task.assignedUserId
+                                              ? userLookup[task.assignedUserId] || "User not found"
+                                              : "Unassigned"}
+                                          </div>
+                                          <div className="task-due-date" style={{ marginLeft: "10px" }}>
+                                            <FontAwesomeIcon icon={faClock} style={{ marginRight: "5px" }} />
+                                            {task.dueDate ? formatDate(task.dueDate) : "No due date"}
+                                          </div>
+                                        </div>
                                       </div>
                                     </div>
-                                    <div className="task-description mt-1">{task.description}</div>
-                                    <div className="d-flex justify-content-end mt-2">
-                                      <div className="task-assigned-user">
-                                        <FontAwesomeIcon icon={faUser} style={{ marginRight: "5px" }} />
-                                        {availableUsers.length > 0 && task.assignedUserId
-                                          ? userLookup[task.assignedUserId] || "User not found"
-                                          : "Unassigned"}
-                                      </div>
-                                      <div className="task-due-date" style={{ marginLeft: "10px" }}>
-                                        <FontAwesomeIcon icon={faClock} style={{ marginRight: "5px" }} />
-                                        {task.dueDate ? formatDate(task.dueDate) : "No due date"}
-                                      </div>
-                                    </div>
+
                                   </div>
+
                                 )}
                               </div>
                             ))}
