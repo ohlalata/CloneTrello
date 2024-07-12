@@ -53,7 +53,16 @@ const BoardMemberPages = () => {
     try {
       const response = await boardMemberService.getAllBoardMember({ boardId: id });
       if (response.data.code === 200) {
-        setBoardMembers(response.data.data);
+        const boardMembers = response.data.data;
+        setBoardMembers(boardMembers);
+
+        const userProfile = JSON.parse(localStorage.getItem("userProfile"));
+        const currentUserEmail = userProfile?.data?.email;
+
+        const currentUser = boardMembers.find(
+          (member) => member.userEmail === currentUserEmail
+        );
+        setCurrentUserRole(currentUser?.roleName);
       }
     } catch (error) {
       console.error("Failed to fetch board members:", error);
@@ -61,25 +70,9 @@ const BoardMemberPages = () => {
     }
   };
 
-  const handleGetCurrentUserRole = async () => {
-    let query = {
-      boardId: id,
-    };
-    try {
-      const response = await boardMemberService.getCurrentBoardMemberRole(query);
-      if (response.data.code === 200) {
-        setCurrentUserRole(response.data.data);
-      }
-    } catch (error) {
-      console.error("Error fetching current user role:", error);
-      toast.error("Failed to fetch current user role");
-    }
-  };
-
   useEffect(() => {
     handleGetAllRoles();
     handleGetAllBoardMember();
-    handleGetCurrentUserRole();
   }, [id]);
 
   const filteredBoardMembers = boardMembers.filter((member) => {
@@ -238,7 +231,7 @@ const BoardMemberPages = () => {
                         </Popover>
                       }
                     >
-                      <div className="board-member__role-wrapper">
+                      <div className="board-member__role-wrapper" style={{cursor: "pointer"}} >
                         <span className="board-member__role">
                           {member.roleName}
                         </span>
@@ -253,10 +246,6 @@ const BoardMemberPages = () => {
                       <span className="board-member__role">
                         {member.roleName}
                       </span>
-                      <FontAwesomeIcon
-                        icon={faPenToSquare}
-                        className="board-member__role-icon"
-                      />
                     </div>
                   )}
                 </td>
