@@ -125,6 +125,7 @@ const Card = (listIdProps, listBoardIdProps) => {
   const [dueDateRemind, setDueDateRemind] = useState("None");
 
   const [labelDay, setLabelDay] = useState("");
+  const [visileLabelDay, setVisileLabelDay] = useState("");
 
   const pastMonth = new Date();
   const dayRange = {
@@ -224,6 +225,7 @@ const Card = (listIdProps, listBoardIdProps) => {
       setDueDay(format(daySelected, "MM/dd/yyyy"));
     }
   }, [isStartDay]);
+
   // truong hop range true && range.from < range.to mà set range.to = range.from thì lỗi
   // truong hop range.from = range.to mà set range.to = range.from thì lỗi
   //-----------------------------------------------------------------
@@ -305,6 +307,32 @@ const Card = (listIdProps, listBoardIdProps) => {
     setActivityVisible(!activityVisible);
   };
 
+  const displayLabelDay = (cardDetail) => {
+    console.log("modalCardDetail", cardDetail);
+
+    if (!cardDetail?.startDate && cardDetail?.endDate) {
+      setLabelDay(format(new Date(cardDetail.endDate), "PPP, p"));
+      setVisileLabelDay("Due date");
+    }
+    if (cardDetail?.startDate && !cardDetail?.endDate) {
+      setLabelDay(format(new Date(cardDetail.startDate), "PPP"));
+      setVisileLabelDay("Start date");
+    }
+    if (!cardDetail?.startDate && !cardDetail?.endDate) {
+      setLabelDay("");
+      setVisileLabelDay("");
+    }
+
+    if (cardDetail?.startDate && cardDetail?.endDate) {
+      setLabelDay(
+        format(new Date(cardDetail.startDate), "PPP") +
+          " - " +
+          format(new Date(cardDetail.endDate), "PPP, p")
+      );
+      setVisileLabelDay("Dates");
+    }
+  };
+
   const handleModalCard = (objCardDetail) => {
     setModalCardDetail(objCardDetail);
     setIsModalCardShow(!isModalCardShow);
@@ -312,13 +340,10 @@ const Card = (listIdProps, listBoardIdProps) => {
     setIsMemberPopoverOpen(false);
     //handleGetAllCard();
     handleGetCardByFilter();
-
-    // console.log("CARD DETAIL: ", objCardDetail.endDate);
-
-    // if (objCardDetail.startDate && objCardDetail.endDate) {
-    //   setLabelDay();
-    // }
+    displayLabelDay(objCardDetail);
   };
+
+  /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
   const handleAddCardTitle = () => {
     setAddCardTitleVisible(true);
@@ -419,6 +444,30 @@ const Card = (listIdProps, listBoardIdProps) => {
     reminderDate,
     title
   ) => {
+    handleUpdateDates(
+      cardID,
+      description,
+      startDay,
+      dueDay,
+      dueTime,
+      reminderDate,
+      title
+    );
+  };
+
+  const removeDates = (
+    cardID,
+    description,
+    startDay,
+    dueDay,
+    dueTime,
+    reminderDate,
+    title
+  ) => {
+    startDay = "";
+    dueDay = "";
+    dueTime = "";
+    reminderDate = "";
     handleUpdateDates(
       cardID,
       description,
@@ -851,7 +900,9 @@ const Card = (listIdProps, listBoardIdProps) => {
     setDueDateLabel("Due Date");
   };
 
-  useEffect(() => {}, []);
+  useEffect(() => {
+    displayLabelDay(modalCardDetail);
+  }, [modalCardDetail]);
 
   return (
     <React.Fragment>
@@ -952,8 +1003,16 @@ const Card = (listIdProps, listBoardIdProps) => {
               <span>in list {listIdProps.listNameProps}</span>
               {/* VISUAL */}
               <div className="mt-1">
-                <span>Dates</span>
-                <div></div>
+                {visileLabelDay && labelDay && (
+                  <div className="d-flex flex-column gap-1">
+                    <span className="fw-semibold content__visual-label-day">
+                      {visileLabelDay}
+                    </span>
+                    <div>
+                      <span className="content__label-day p-1">{labelDay}</span>
+                    </div>
+                  </div>
+                )}
               </div>
             </div>
           </ModalHeader>
@@ -1701,7 +1760,20 @@ const Card = (listIdProps, listBoardIdProps) => {
                             >
                               Save
                             </button>
-                            <button className="btn btn-light fw-semibold">
+                            <button
+                              className="btn btn-light fw-semibold"
+                              onClick={() =>
+                                removeDates(
+                                  modalCardDetail.id,
+                                  modalCardDetail.description,
+                                  startDay,
+                                  dueDay,
+                                  dueTime,
+                                  dueDateRemind,
+                                  modalCardDetail.title
+                                )
+                              }
+                            >
                               Remove
                             </button>
                           </div>
