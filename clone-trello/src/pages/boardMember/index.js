@@ -129,7 +129,7 @@ const BoardMemberPages = () => {
       toast.error("Selected member or role is invalid");
     }
   };
-  
+
   const togglePopover = (memberId) => {
     setPopoverOpenMap((prevState) => ({
       ...prevState,
@@ -162,19 +162,19 @@ const BoardMemberPages = () => {
   }, []);
 
   return (
-    <div className="board-member-container">
-      <div className="header">
-        <h2 className="title">Board Members</h2>
+    <div className="board-member">
+      <div className="board-member__header">
+        <h2 className="board-member__title">Board Members</h2>
         <input
           type="text"
           placeholder="Search..."
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
-          className="search-box"
+          className="board-member__search-box"
         />
       </div>
       <div className="table-wrapper">
-        <table className="board-member-table">
+        <table className="board-member__table">
           <thead>
             <tr>
               <th>Name</th>
@@ -184,21 +184,14 @@ const BoardMemberPages = () => {
           </thead>
           <tbody>
             {filteredBoardMembers.map((member) => (
-              <tr key={member.id} className="board-member-row">
+              <tr key={member.id} className="board-member__row">
                 <td>
-                  <div className="member-info">
-                    <div className="member-name">
-                      {member.userName}
-                    </div>
-                    <div className="member-email">
-                      {member.userEmail}
-                    </div>
+                  <div className="board-member__info">
+                    <div className="board-member__name">{member.userName}</div>
+                    <div className="board-member__email">{member.userEmail}</div>
                   </div>
                 </td>
-                <td
-                  className="member-role"
-                  style={{ cursor: "pointer", textDecoration: "none" }}
-                >
+                <td className="board-member__role-cell" style={{ textAlign: "center", verticalAlign: "middle" }}>
                   {currentUserRole === "Admin" ? (
                     <OverlayTrigger
                       trigger="click"
@@ -221,9 +214,9 @@ const BoardMemberPages = () => {
                                 >
                                   <FontAwesomeIcon
                                     icon={faUserShield}
-                                    className="option-icon"
+                                    className="popover-option__icon"
                                   />
-                                  <span className="option-text">Admin</span>
+                                  <span className="popover-option__text">Admin</span>
                                 </div>
                               )}
                               {memberRoleId && (
@@ -235,9 +228,9 @@ const BoardMemberPages = () => {
                                 >
                                   <FontAwesomeIcon
                                     icon={faUser}
-                                    className="option-icon"
+                                    className="popover-option__icon"
                                   />
-                                  <span className="option-text">Member</span>
+                                  <span className="popover-option__text">Member</span>
                                 </div>
                               )}
                             </div>
@@ -245,31 +238,38 @@ const BoardMemberPages = () => {
                         </Popover>
                       }
                     >
-                      <div>
-                        {member.roleName}
+                      <div className="board-member__role-wrapper">
+                        <span className="board-member__role">
+                          {member.roleName}
+                        </span>
                         <FontAwesomeIcon
                           icon={faPenToSquare}
-                          className="role-icon"
+                          className="board-member__role-icon"
                         />
                       </div>
                     </OverlayTrigger>
                   ) : (
-                    <div>
-                      {member.roleName}
+                    <div className="board-member__role-wrapper">
+                      <span className="board-member__role">
+                        {member.roleName}
+                      </span>
+                      <FontAwesomeIcon
+                        icon={faPenToSquare}
+                        className="board-member__role-icon"
+                      />
                     </div>
                   )}
                 </td>
 
                 <td style={{ textAlign: "center", verticalAlign: "middle" }}>
                   <button
-                    className="ellipsis-icon"
+                    className="board-member__ellipsis-icon"
                     onClick={() => {
                       setSelectedMember(member);
                       setShowConfirmation(true);
                     }}
                     disabled={
-                      currentUserRole !== "Admin" ||
-                      member.roleName === "Admin"
+                      currentUserRole !== "Admin" || member.roleName === "Admin"
                     }
                   >
                     <FontAwesomeIcon icon={faUserXmark} />
@@ -294,10 +294,7 @@ const BoardMemberPages = () => {
             <p>Are you sure you want to inactive this member?</p>
           </Modal.Body>
           <Modal.Footer>
-            <Button
-              variant="secondary"
-              onClick={() => setShowConfirmation(false)}
-            >
+            <Button variant="secondary" onClick={() => setShowConfirmation(false)}>
               Cancel
             </Button>
             <Button variant="danger" onClick={handleInactiveMember}>
@@ -322,10 +319,7 @@ const BoardMemberPages = () => {
             Are you sure you want to update the role for {selectedMember.userName}?
           </Modal.Body>
           <Modal.Footer>
-            <Button
-              variant="secondary"
-              onClick={() => setShowRoleUpdateModal(false)}
-            >
+            <Button variant="secondary" onClick={() => setShowRoleUpdateModal(false)}>
               Cancel
             </Button>
             <Button variant="primary" onClick={handleUpdateBoardMember}>
