@@ -12,15 +12,12 @@ import {
   faPenToSquare,
 } from "@fortawesome/free-solid-svg-icons";
 import boardMemberService from "../../api/Services/boardMember";
-import userService from "../../api/Services/user";
 import roleService from "../../api/Services/role";
-import { Modal, Button, Form, OverlayTrigger, Popover } from "react-bootstrap";
+import { Modal, Button, OverlayTrigger, Popover } from "react-bootstrap";
 
 const BoardMemberPages = () => {
   const { id } = useParams();
   const [boardMembers, setBoardMembers] = useState([]);
-  const [userDetails, setUserDetails] = useState({});
-  const [roleDetails, setRoleDetails] = useState({});
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedMember, setSelectedMember] = useState(null);
   const [showConfirmation, setShowConfirmation] = useState(false);
@@ -63,35 +60,6 @@ const BoardMemberPages = () => {
       toast.error("Failed to fetch board members");
     }
   };
-  
-  const handleGetUserDetails = async (userId) => {
-    try {
-      const response = await userService.getUserById({ id: userId });
-      if (response.data.code === 200) {
-        setUserDetails((prevDetails) => ({
-          ...prevDetails,
-          [userId]: response.data.data,
-        }));
-      }
-    } catch (error) {
-      console.error(`Error fetching user details for userId ${userId}:`, error);
-    }
-  };  
-
-  const handleGetRoleDetails = async (roleId) => {
-    try {
-      const response = await roleService.getAllRole({ id: roleId });
-      if (response.data.code === 200) {
-        const role = response.data.data.find((r) => r.id === roleId);
-        setRoleDetails((prevDetails) => ({
-          ...prevDetails,
-          [roleId]: role,
-        }));
-      }
-    } catch (error) {
-      console.error(`Error fetching role details for roleId ${roleId}:`, error);
-    }
-  };
 
   const handleGetCurrentUserRole = async () => {
     let query = {
@@ -114,23 +82,10 @@ const BoardMemberPages = () => {
     handleGetCurrentUserRole();
   }, [id]);
 
-  useEffect(() => {
-    boardMembers.forEach((member) => {
-      if (!userDetails[member.userId]) {
-        handleGetUserDetails(member.userId);
-      }
-      if (!roleDetails[member.roleId]) {
-        handleGetRoleDetails(member.roleId);
-      }
-    });
-  }, [boardMembers]);
-
   const filteredBoardMembers = boardMembers.filter((member) => {
-    const user = userDetails[member.userId];
     return (
-      user &&
-      (user.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        user.email.toLowerCase().includes(searchTerm.toLowerCase()))
+      member.userName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      member.userEmail.toLowerCase().includes(searchTerm.toLowerCase())
     );
   });
 
@@ -233,10 +188,10 @@ const BoardMemberPages = () => {
                 <td>
                   <div className="member-info">
                     <div className="member-name">
-                      {userDetails[member.userId]?.name || "Loading..."}
+                      {member.userName}
                     </div>
                     <div className="member-email">
-                      {userDetails[member.userId]?.email || "Loading..."}
+                      {member.userEmail}
                     </div>
                   </div>
                 </td>
@@ -291,7 +246,7 @@ const BoardMemberPages = () => {
                       }
                     >
                       <div>
-                        {roleDetails[member.roleId]?.name || "Loading..."}
+                        {member.roleName}
                         <FontAwesomeIcon
                           icon={faPenToSquare}
                           className="role-icon"
@@ -300,7 +255,7 @@ const BoardMemberPages = () => {
                     </OverlayTrigger>
                   ) : (
                     <div>
-                      {roleDetails[member.roleId]?.name || "Loading..."}
+                      {member.roleName}
                     </div>
                   )}
                 </td>
@@ -314,7 +269,7 @@ const BoardMemberPages = () => {
                     }}
                     disabled={
                       currentUserRole !== "Admin" ||
-                      roleDetails[member.roleId]?.name === "Admin"
+                      member.roleName === "Admin"
                     }
                   >
                     <FontAwesomeIcon icon={faUserXmark} />
@@ -364,8 +319,7 @@ const BoardMemberPages = () => {
             <Modal.Title>Confirm Update Role</Modal.Title>
           </Modal.Header>
           <Modal.Body>
-            Are you sure you want to update the role for{" "}
-            {userDetails[selectedMember.userId]?.name}?
+            Are you sure you want to update the role for {selectedMember.userName}?
           </Modal.Body>
           <Modal.Footer>
             <Button
