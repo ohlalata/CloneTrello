@@ -1,4 +1,4 @@
-.board-member-container {
+.board-member {
   padding: 20px;
   background-color: #f9f9f9;
   border-radius: 8px;
@@ -8,20 +8,20 @@
   position: relative;
 }
 
-.header {
+.board-member__header {
   display: flex;
   justify-content: space-between;
   align-items: center;
   margin-bottom: 20px;
 }
 
-.title {
+.board-member__title {
   font-size: 28px;
   color: #333;
   margin: 0;
 }
 
-.search-box {
+.board-member__search-box {
   padding: 10px;
   width: 300px;
   border: 1px solid #ccc;
@@ -29,7 +29,7 @@
   font-size: 16px;
 }
 
-.board-member-table {
+.board-member__table {
   width: 100%;
   border-collapse: collapse;
   background-color: #fff;
@@ -38,126 +38,125 @@
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
-.board-member-table th,
-.board-member-table td {
+.board-member__table th,
+.board-member__table td {
   padding: 15px;
   text-align: left;
   border-bottom: 1px solid #eee;
 }
 
-.board-member-table th {
+.board-member__table th {
   background-color: #f2f2f2;
   font-weight: bold;
   color: #333;
 }
 
-.board-member-table th:nth-child(2),
-.board-member-table th:nth-child(3) {
+.board-member__table th:nth-child(2),
+.board-member__table th:nth-child(3) {
   text-align: center;
 }
 
-.board-member-row {
+.board-member__row {
   transition: background-color 0.3s;
 }
 
-.board-member-row:hover {
+.board-member__row:hover {
   background-color: #f9f9f9;
 }
 
-.member-info {
+.board-member__info {
   display: flex;
   flex-direction: column;
 }
 
-.member-name {
+.board-member__name {
   font-weight: bold;
   font-size: 16px;
   color: #333;
 }
 
-.member-email {
+.board-member__email {
   color: gray;
   font-size: 14px;
 }
 
-.board-member-table .member-role {
-  text-align: center;
+.board-member__role-wrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
-.member-role {
+.board-member__role {
   font-size: 16px;
   color: #333;
-  position: relative;
-
-  .role-dropdown-container {
-    position: relative;
-    width: 100%;
-
-    .role-current {
-      cursor: pointer;
-      padding: 8px;
-      border: 1px solid #ccc;
-      border-radius: 4px;
-      background-color: #fff;
-      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-      transition: background-color 0.3s ease;
-
-      &:hover {
-        background-color: #f0f0f0;
-      }
-    }
-
-    .role-dropdown {
-      position: absolute;
-      top: calc(100% + 5px);
-      left: 0;
-      width: 100%;
-      background-color: #fff;
-      border: 1px solid #ccc;
-      border-radius: 4px;
-      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-      z-index: 100;
-      opacity: 0;
-      pointer-events: none;
-      transition: opacity 0.3s ease;
-
-      &.show-dropdown {
-        opacity: 1;
-        pointer-events: auto;
-      }
-
-      .role-option {
-        padding: 8px;
-        cursor: pointer;
-        transition: background-color 0.3s ease;
-
-        &:hover {
-          background-color: #f0f0f0;
-        }
-      }
-    }
-
-  }
 }
 
-.ellipsis-icon {
+.board-member__role-dropdown-container {
+  position: relative;
+  width: 100%;
+}
+
+.board-member__role-current {
+  cursor: pointer;
+  padding: 8px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  background-color: #fff;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  transition: background-color 0.3s ease;
+}
+
+.board-member__role-current:hover {
+  background-color: #f0f0f0;
+}
+
+.board-member__role-dropdown {
+  position: absolute;
+  top: calc(100% + 5px);
+  left: 0;
+  width: 100%;
+  background-color: #fff;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  z-index: 100;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s ease;
+}
+
+.board-member__role-dropdown.show-dropdown {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.board-member__role-option {
+  padding: 8px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.board-member__role-option:hover {
+  background-color: #f0f0f0;
+}
+
+.board-member__ellipsis-icon {
   background: none;
   border: none;
   color: #888;
   cursor: pointer;
+}
 
-  &:hover {
-    color: #333;
-  }
+.board-member__ellipsis-icon:hover {
+  color: #333;
+}
 
-  &.disabled {
-    cursor: not-allowed;
-    opacity: 0.5;
-  }
+.board-member__ellipsis-icon:disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
 }
 
 /* Modal and Overlay */
-
 .modal-overlay {
   position: fixed;
   top: 0;
@@ -165,12 +164,10 @@
   width: 100%;
   height: 100%;
   background-color: rgba(0, 0, 0, 0.5);
-  /* Semi-transparent black overlay */
   display: flex;
   justify-content: center;
   align-items: center;
   z-index: 9999;
-  /* Ensure it's on top of other content */
 }
 
 .confirmation-modal {
@@ -179,27 +176,21 @@
   border-radius: 8px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   z-index: 10000;
-  /* Ensure it's on top of the overlay */
 }
 
 .confirmation-modal p {
   margin: 0;
 }
 
-.buttons {
+.confirmation-modal__buttons {
   display: flex;
   justify-content: flex-end;
   margin-top: 20px;
-
-  button {
-    margin-left: 10px;
-    padding: 10px 20px;
-  }
 }
 
-.ellipsis-icon:disabled {
-  cursor: not-allowed;
-  opacity: 0.5;
+.confirmation-modal__button {
+  margin-left: 10px;
+  padding: 10px 20px;
 }
 
 .table-wrapper {
@@ -235,25 +226,27 @@
   white-space: nowrap;
   text-overflow: ellipsis;
 }
+
 .popover-option {
   display: flex;
   align-items: center;
   padding: 10px;
   cursor: pointer;
   transition: background-color 0.3s ease;
-
-  &:hover {
-    background-color: #f0f0f0;
-  }
-
-  .option-icon {
-    margin-right: 8px; 
-  }
-
-  .option-text {
-    flex-grow: 1;
-  }
 }
-.role-icon {
-  margin-left: 1rem; 
+
+.popover-option:hover {
+  background-color: #f0f0f0;
+}
+
+.popover-option__icon {
+  margin-right: 8px;
+}
+
+.popover-option__text {
+  flex-grow: 1;
+}
+
+.board-member__role-icon {
+  margin-left: 0.5rem;
 }

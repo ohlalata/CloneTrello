@@ -12,15 +12,12 @@ import {
   faPenToSquare,
 } from "@fortawesome/free-solid-svg-icons";
 import boardMemberService from "../../api/Services/boardMember";
-import userService from "../../api/Services/user";
 import roleService from "../../api/Services/role";
-import { Modal, Button, Form, OverlayTrigger, Popover } from "react-bootstrap";
+import { Modal, Button, OverlayTrigger, Popover } from "react-bootstrap";
 
 const BoardMemberPages = () => {
   const { id } = useParams();
   const [boardMembers, setBoardMembers] = useState([]);
-  const [userDetails, setUserDetails] = useState({});
-  const [roleDetails, setRoleDetails] = useState({});
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedMember, setSelectedMember] = useState(null);
   const [showConfirmation, setShowConfirmation] = useState(false);
@@ -56,81 +53,32 @@ const BoardMemberPages = () => {
     try {
       const response = await boardMemberService.getAllBoardMember({ boardId: id });
       if (response.data.code === 200) {
-        setBoardMembers(response.data.data);
+        const boardMembers = response.data.data;
+        setBoardMembers(boardMembers);
+
+        const userProfile = JSON.parse(localStorage.getItem("userProfile"));
+        const currentUserEmail = userProfile?.data?.email;
+
+        const currentUser = boardMembers.find(
+          (member) => member.userEmail === currentUserEmail
+        );
+        setCurrentUserRole(currentUser?.roleName);
       }
     } catch (error) {
       console.error("Failed to fetch board members:", error);
       toast.error("Failed to fetch board members");
     }
   };
-  
-  const handleGetUserDetails = async (userId) => {
-    try {
-      const response = await userService.getUserById({ id: userId });
-      if (response.data.code === 200) {
-        setUserDetails((prevDetails) => ({
-          ...prevDetails,
-          [userId]: response.data.data,
-        }));
-      }
-    } catch (error) {
-      console.error(`Error fetching user details for userId ${userId}:`, error);
-    }
-  };  
-
-  const handleGetRoleDetails = async (roleId) => {
-    try {
-      const response = await roleService.getAllRole({ id: roleId });
-      if (response.data.code === 200) {
-        const role = response.data.data.find((r) => r.id === roleId);
-        setRoleDetails((prevDetails) => ({
-          ...prevDetails,
-          [roleId]: role,
-        }));
-      }
-    } catch (error) {
-      console.error(`Error fetching role details for roleId ${roleId}:`, error);
-    }
-  };
-
-  const handleGetCurrentUserRole = async () => {
-    let query = {
-      boardId: id,
-    };
-    try {
-      const response = await boardMemberService.getCurrentBoardMemberRole(query);
-      if (response.data.code === 200) {
-        setCurrentUserRole(response.data.data);
-      }
-    } catch (error) {
-      console.error("Error fetching current user role:", error);
-      toast.error("Failed to fetch current user role");
-    }
-  };
 
   useEffect(() => {
     handleGetAllRoles();
     handleGetAllBoardMember();
-    handleGetCurrentUserRole();
   }, [id]);
 
-  useEffect(() => {
-    boardMembers.forEach((member) => {
-      if (!userDetails[member.userId]) {
-        handleGetUserDetails(member.userId);
-      }
-      if (!roleDetails[member.roleId]) {
-        handleGetRoleDetails(member.roleId);
-      }
-    });
-  }, [boardMembers]);
-
   const filteredBoardMembers = boardMembers.filter((member) => {
-    const user = userDetails[member.userId];
     return (
-      user &&
-      (user.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        user.email.toLowerCase().includes(searchTerm.toLowerCase()))
+      member.userName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      member.userEmail.toLowerCase().includes(searchTerm.toLowerCase())
     );
   });
 
@@ -174,7 +122,7 @@ const BoardMemberPages = () => {
       toast.error("Selected member or role is invalid");
     }
   };
-  
+
   const togglePopover = (memberId) => {
     setPopoverOpenMap((prevState) => ({
       ...prevState,
@@ -207,19 +155,19 @@ const BoardMemberPages = () => {
   }, []);
 
   return (
-    <div className="board-member-container">
-      <div className="header">
-        <h2 className="title">Board Members</h2>
+    <div className="board-member">
+      <div className="board-member__header">
+        <h2 className="board-member__title">Board Members</h2>
         <input
           type="text"
           placeholder="Search..."
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
-          className="search-box"
+          className="board-member__search-box"
         />
       </div>
       <div className="table-wrapper">
-        <table className="board-member-table">
+        <table className="board-member__table">
           <thead>
             <tr>
               <th>Name</th>
@@ -229,21 +177,14 @@ const BoardMemberPages = () => {
           </thead>
           <tbody>
             {filteredBoardMembers.map((member) => (
-              <tr key={member.id} className="board-member-row">
+              <tr key={member.id} className="board-member__row">
                 <td>
-                  <div className="member-info">
-                    <div className="member-name">
-                      {userDetails[member.userId]?.name || "Loading..."}
-                    </div>
-                    <div className="member-email">
-                      {userDetails[member.userId]?.email || "Loading..."}
-                    </div>
+                  <div className="board-member__info">
+                    <div className="board-member__name">{member.userName}</div>
+                    <div className="board-member__email">{member.userEmail}</div>
                   </div>
                 </td>
-                <td
-                  className="member-role"
-                  style={{ cursor: "pointer", textDecoration: "none" }}
-                >
+                <td className="board-member__role-cell" style={{ textAlign: "center", verticalAlign: "middle" }}>
                   {currentUserRole === "Admin" ? (
                     <OverlayTrigger
                       trigger="click"
@@ -266,9 +207,9 @@ const BoardMemberPages = () => {
                                 >
                                   <FontAwesomeIcon
                                     icon={faUserShield}
-                                    className="option-icon"
+                                    className="popover-option__icon"
                                   />
-                                  <span className="option-text">Admin</span>
+                                  <span className="popover-option__text">Admin</span>
                                 </div>
                               )}
                               {memberRoleId && (
@@ -280,9 +221,9 @@ const BoardMemberPages = () => {
                                 >
                                   <FontAwesomeIcon
                                     icon={faUser}
-                                    className="option-icon"
+                                    className="popover-option__icon"
                                   />
-                                  <span className="option-text">Member</span>
+                                  <span className="popover-option__text">Member</span>
                                 </div>
                               )}
                             </div>
@@ -290,31 +231,34 @@ const BoardMemberPages = () => {
                         </Popover>
                       }
                     >
-                      <div>
-                        {roleDetails[member.roleId]?.name || "Loading..."}
+                      <div className="board-member__role-wrapper" style={{cursor: "pointer"}} >
+                        <span className="board-member__role">
+                          {member.roleName}
+                        </span>
                         <FontAwesomeIcon
                           icon={faPenToSquare}
-                          className="role-icon"
+                          className="board-member__role-icon"
                         />
                       </div>
                     </OverlayTrigger>
                   ) : (
-                    <div>
-                      {roleDetails[member.roleId]?.name || "Loading..."}
+                    <div className="board-member__role-wrapper">
+                      <span className="board-member__role">
+                        {member.roleName}
+                      </span>
                     </div>
                   )}
                 </td>
 
                 <td style={{ textAlign: "center", verticalAlign: "middle" }}>
                   <button
-                    className="ellipsis-icon"
+                    className="board-member__ellipsis-icon"
                     onClick={() => {
                       setSelectedMember(member);
                       setShowConfirmation(true);
                     }}
                     disabled={
-                      currentUserRole !== "Admin" ||
-                      roleDetails[member.roleId]?.name === "Admin"
+                      currentUserRole !== "Admin" || member.roleName === "Admin"
                     }
                   >
                     <FontAwesomeIcon icon={faUserXmark} />
@@ -339,10 +283,7 @@ const BoardMemberPages = () => {
             <p>Are you sure you want to inactive this member?</p>
           </Modal.Body>
           <Modal.Footer>
-            <Button
-              variant="secondary"
-              onClick={() => setShowConfirmation(false)}
-            >
+            <Button variant="secondary" onClick={() => setShowConfirmation(false)}>
               Cancel
             </Button>
             <Button variant="danger" onClick={handleInactiveMember}>
@@ -364,14 +305,10 @@ const BoardMemberPages = () => {
             <Modal.Title>Confirm Update Role</Modal.Title>
           </Modal.Header>
           <Modal.Body>
-            Are you sure you want to update the role for{" "}
-            {userDetails[selectedMember.userId]?.name}?
+            Are you sure you want to update the role for {selectedMember.userName}?
           </Modal.Body>
           <Modal.Footer>
-            <Button
-              variant="secondary"
-              onClick={() => setShowRoleUpdateModal(false)}
-            >
+            <Button variant="secondary" onClick={() => setShowRoleUpdateModal(false)}>
               Cancel
             </Button>
             <Button variant="primary" onClick={handleUpdateBoardMember}>
