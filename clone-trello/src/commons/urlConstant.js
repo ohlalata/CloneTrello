@@ -41,11 +41,11 @@ export default {
     },
     task: {
       createTask: "/task/create",
-      getAllTask: "/task/get-all", 
-      getTaskByFilter: "/task/get-by-filter", 
-      updateTask:"/task/update/", 
+      getAllTask: "/task/get-all",
+      getTaskByFilter: "/task/get-by-filter",
+      updateTask: "/task/update/",
       checkTask: "/task/check/",
-      inactiveTask: "/task/change-status/", 
+      inactiveTask: "/task/change-status/",
     },
     boardMember: {
       createBoardMember: "boardMember/create",
@@ -61,18 +61,21 @@ export default {
     },
     comment: {
       getAllComment: "/comment/get-all",
+      createComment: "/comment/create",
+      deleteComment: "/comment/change-status/", // noi duoi id
+      updateComment: "/comment/update/", // noi duoi id
     },
     CardMember: {
       createCardMember: "cardMember/create",
-      getAllCardMember: "/cardMember/get-all?cardId=", 
-      inactiveCardMember: "/cardMember/change-status/", 
+      getAllCardMember: "/cardMember/get-all?cardId=",
+      inactiveCardMember: "/cardMember/change-status/",
     },
     toDo: {
       createTodo: "/toDo/create",
-      getAllTodo: "/toDo/get-all", 
-      getTodoByFilter: "/toDo/get-by-filter", 
-      updateTodo:"/toDo/update/", 
-      inactiveTodo: "/toDo/change-status/", 
+      getAllTodo: "/toDo/get-all",
+      getTodoByFilter: "/toDo/get-by-filter",
+      updateTodo: "/toDo/update/",
+      inactiveTodo: "/toDo/change-status/",
     },
   },
 };

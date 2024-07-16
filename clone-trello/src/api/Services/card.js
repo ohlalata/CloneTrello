@@ -63,12 +63,36 @@ const updateCardDescription = async (query) => {
   let { id, description, title } = query;
   let data;
   let serviceUrl = urlConstant.endpoint.card.updateCard + id;
-  if (id && description) {
+  if (id && title) {
     data = {
       description: description,
       title: title,
     };
   }
+  const response = await axiosLocalHost.normalRequest.put(serviceUrl, data);
+  return response;
+};
+
+const updateCardDates = async (query) => {
+  let { id, description, startDate, endDate, reminderDate, title } = query;
+  let data;
+  let serviceUrl = urlConstant.endpoint.card.updateCard + id;
+  if (id && title) {
+    data = {
+      description: description,
+      title: title,
+    };
+    if (startDate) {
+      data.startDate = startDate;
+    }
+    if (endDate) {
+      data.endDate = endDate;
+    }
+    if (reminderDate) {
+      data.reminderDate = reminderDate;
+    }
+  }
+  //console.log("data", data);
   const response = await axiosLocalHost.normalRequest.put(serviceUrl, data);
   return response;
 };
@@ -93,4 +117,5 @@ export default {
   changeStatus,
   updateCardDescription,
   getCardByFilter,
+  updateCardDates,
 };

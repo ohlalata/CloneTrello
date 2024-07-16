@@ -1,7 +1,13 @@
 import React, { useRef, useState, useEffect } from "react";
 import "./style.scss";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faPen, faX, faListCheck, faTrash, faPenToSquare } from "@fortawesome/free-solid-svg-icons";
+import {
+  faPen,
+  faX,
+  faListCheck,
+  faTrash,
+  faPenToSquare,
+} from "@fortawesome/free-solid-svg-icons";
 import cardServices from "../../api/Services/card";
 import { faPlus } from "@fortawesome/free-solid-svg-icons";
 import { faXmark } from "@fortawesome/free-solid-svg-icons";
@@ -15,13 +21,21 @@ import { faClock } from "@fortawesome/free-regular-svg-icons";
 import { faTrashCan } from "@fortawesome/free-regular-svg-icons";
 import { toast } from "react-toastify";
 import "react-toastify/ReactToastify.css";
-
 import { Popover, Overlay, Button, ButtonGroup } from "react-bootstrap";
-
 import { faArrowRight } from "@fortawesome/free-solid-svg-icons";
-import { DayPicker } from "react-day-picker";
+import {
+  format,
+  addDays,
+  parse,
+  endOfDay,
+  isValid,
+  subMinutes,
+  subDays,
+  subHours,
+} from "date-fns"; /////////////////////////////
+import { DateRange, DayPicker } from "react-day-picker"; /////////////////////////
 import "react-day-picker/dist/style.css";
-import { format, set } from "date-fns";
+import { set } from "date-fns";
 import { faTags } from "@fortawesome/free-solid-svg-icons";
 import cardMemberService from "../../api/Services/cardMember";
 import userService from "../../api/Services/user";
@@ -29,8 +43,12 @@ import boardMemberService from "../../api/Services/boardMember";
 import ReactQuill from "react-quill";
 import "react-quill/dist/quill.snow.css";
 import todoService from "../../api/Services/todo";
+import { useForm } from "react-hook-form";
 import taskService from "../../api/Services/task";
-import TaskForm from '../taskForm';
+import { enUS, vi } from "date-fns/locale";
+//import Connection from "../signalrConnection";
+import Comments from "../comments";
+import TaskForm from "../taskForm";
 
 const Card = (listIdProps, listBoardIdProps) => {
   const textareaRefCardTitle = useRef(null);
@@ -40,7 +58,6 @@ const Card = (listIdProps, listBoardIdProps) => {
   const checklistPopoverRef = useRef(null);
   const assignPopoverRef = useRef(null);
   const dueDatePopoverRef = useRef(null);
-
 
   const [EditingCardTitle, setEditingCardTitle] = useState(null);
   const [inputTitleCard, setInputTitleCard] = useState("");
@@ -53,11 +70,7 @@ const Card = (listIdProps, listBoardIdProps) => {
   const [activityVisible, setActivityVisible] = useState(true);
   const [isCardTitleModal, setIsCardTitleModal] = useState(true);
   const [CardTitleModal, setCardTitleModal] = useState("");
-
-  //------------------------------------------------------------
   //const datePopoverRef = useRef(null);
-  const [datePopover, setDatePopover] = useState(false);
-  const [datePopoverTarget, setDatePopoverTarget] = useState(null);
   const [cardMembers, setCardMembers] = useState([]);
   const [isMemberPopoverOpen, setIsMemberPopoverOpen] = useState(false);
   const [selectedCardId, setSelectedCardId] = useState(null);
@@ -69,9 +82,10 @@ const Card = (listIdProps, listBoardIdProps) => {
   const [todoItems, setTodoItems] = useState([]);
   const [editingId, setEditingId] = useState(null);
   const [newTitle, setNewTitle] = useState("");
-
   const [valueQuill, setValueQuill] = useState("");
   const quillRef = useRef(null);
+  const { register } = useForm();
+  // const onSubmit = (data) => console.log(data);
   //const [DescriptionTemp, setDescriptionTemp] = useState("");
   const [addingItem, setAddingItem] = useState(null);
   const [newTask, setNewTask] = useState({
@@ -87,17 +101,20 @@ const Card = (listIdProps, listBoardIdProps) => {
   const [selectedUser, setSelectedUser] = useState(null);
   const [dueDate, setDueDate] = useState(null);
   const [isDatePickerOpen, setIsDatePickerOpen] = useState(false);
-  const [dueDateLabel, setDueDateLabel] = useState('Due Date');
+  //const [dueDateLabel, setDueDateLabel] = useState("Due Date");
+  const [dueDateLabel, setDueDateLabel] = useState("Due Date");
   const [taskItems, setTaskItems] = useState([]);
   const [editingTask, setEditingTask] = useState(null);
   const [updatedTask, setUpdatedTask] = useState({});
 
+  //------------ DATE PICKER-------------
+  const [datePopover, setDatePopover] = useState(false);
+  const [datePopoverTarget, setDatePopoverTarget] = useState(null);
   const initiallySelectedDate = new Date();
   const [daySelected, setDaySelected] = useState(initiallySelectedDate);
-
   const [isStartDay, setIsStartDay] = useState(true);
   const [isDueDay, setIsDueDay] = useState(false);
-
+  const [checkDueday, setCheckDueDay] = useState(true);
   const formatAMPM = (date) => {
     let hours = date.getHours();
     let minutes = date.getMinutes();
@@ -108,15 +125,23 @@ const Card = (listIdProps, listBoardIdProps) => {
     const strTime = hours + ":" + minutes + " " + ampm;
     return strTime;
   };
-
   const [startDay, setStartDay] = useState("M/D/YYYY");
   const [dueDay, setDueDay] = useState(format(daySelected, "MM/dd/yyyy"));
   const [dueTime, setDueTime] = useState(formatAMPM(initiallySelectedDate));
+  const [dueDateRemind, setDueDateRemind] = useState("None");
+
+  const [labelDay, setLabelDay] = useState("");
+  const [visileLabelDay, setVisileLabelDay] = useState("");
+
+  const pastMonth = new Date();
+  const dayRange = {
+    from: pastMonth,
+    to: addDays(pastMonth, 1),
+  };
+  const [range, setRange] = useState(dayRange);
 
   const handleDatePopoverClick = (event) => {
     if (datePopover) return;
-    // event.preventDefault();
-    // event.stopPropagation();
     setDatePopover(true);
     setDatePopoverTarget(event.target);
     console.log(event);
@@ -134,15 +159,15 @@ const Card = (listIdProps, listBoardIdProps) => {
     console.log("activeModifiers: ", activeModifiers);
     console.log("event: ", e);
     setDaySelected(selectedDay);
+    setDueDay(format(selectedDay, "MM/dd/yyyy"));
   };
-
-  //----------------------------------------------------------------
 
   const handleStartDayDisable = () => {
     setIsStartDay(!isStartDay);
   };
 
   const handleDueDayDisable = () => {
+    setCheckDueDay(!checkDueday);
     setIsDueDay(!isDueDay);
   };
 
@@ -158,8 +183,57 @@ const Card = (listIdProps, listBoardIdProps) => {
     setDueTime(e.target.value);
   };
 
-  //useEffect(() => {}, []);
+  let footer = <p>Please pick the first day.</p>;
+  if (range?.from) {
+    if (!range.to) {
+      footer = <p> From {format(range.from, "PPP")}</p>;
+    }
+  }
+  if (range.to) {
+    footer = (
+      <span>
+        From {format(range.from, "PPP")} To {format(range.to, "PPP")}
+      </span>
+    );
+  }
 
+  const handleSelectRange = (selectedRange) => {
+    console.log("selectedRange", selectedRange);
+    if (!selectedRange) {
+      setRange({
+        from: pastMonth,
+        to: pastMonth,
+      });
+      setStartDay(format(pastMonth, "MM/dd/yyyy"));
+      setDueDay(format(pastMonth, "MM/dd/yyyy"));
+    } else if (!selectedRange.to) {
+      setRange({
+        from: selectedRange.from,
+        to: selectedRange.from,
+      });
+      setStartDay(format(selectedRange.from, "MM/dd/yyyy"));
+      setDueDay(format(selectedRange.from, "MM/dd/yyyy"));
+    } else {
+      setRange({
+        from: selectedRange.from,
+        to: selectedRange.to,
+      });
+      setStartDay(format(selectedRange.from, "MM/dd/yyyy"));
+      setDueDay(format(selectedRange.to, "MM/dd/yyyy"));
+    }
+  };
+
+  useEffect(() => {
+    if (isStartDay == false) {
+      setStartDay(format(initiallySelectedDate, "MM/dd/yyyy"));
+      setDueDay(format(addDays(initiallySelectedDate, 1), "MM/dd/yyyy"));
+    } else {
+      setDueDay(format(daySelected, "MM/dd/yyyy"));
+    }
+  }, [isStartDay]);
+
+  // truong hop range true && range.from < range.to mà set range.to = range.from thì lỗi
+  // truong hop range.from = range.to mà set range.to = range.from thì lỗi
   //-----------------------------------------------------------------
   // QUILL
 
@@ -179,7 +253,6 @@ const Card = (listIdProps, listBoardIdProps) => {
       ["clean"],
     ],
     clipboard: {
-      // toggle to add extra line breaks when pasting HTML:
       matchVisual: false,
     },
   };
@@ -207,6 +280,26 @@ const Card = (listIdProps, listBoardIdProps) => {
 
   //-----------------------------------------------------------------
 
+  const onChangeRemind = (event) => {
+    let rawRemind = parse(
+      dueDay + " " + dueTime,
+      "MM/dd/yyyy h:mm a",
+      new Date(),
+      { locale: vi }
+    );
+    if (event.target.value == "None") {
+      setDueDateRemind("");
+    } else if (event.target.value == "At time") {
+      setDueDateRemind(dueDay + " " + dueTime);
+    } else if (event.target.value == "15 Minutes Before") {
+      setDueDateRemind(format(subMinutes(rawRemind, 15), "MM/dd/yyyy h:mm a"));
+    } else if (event.target.value == "1 Hour Before") {
+      setDueDateRemind(format(subHours(rawRemind, 1), "MM/dd/yyyy h:mm a"));
+    } else if (event.target.value == "1 Day Before") {
+      setDueDateRemind(format(subDays(rawRemind, 1), "MM/dd/yyyy h:mm a"));
+    }
+  };
+
   const handleChangeCardTitleModal = (e) => {
     setCardTitleModal(e.target.value);
   };
@@ -220,16 +313,43 @@ const Card = (listIdProps, listBoardIdProps) => {
     setActivityVisible(!activityVisible);
   };
 
+  const displayLabelDay = (cardDetail) => {
+    console.log("modalCardDetail", cardDetail);
+
+    if (!cardDetail?.startDate && cardDetail?.endDate) {
+      setLabelDay(format(new Date(cardDetail.endDate), "PPP, p"));
+      setVisileLabelDay("Due date");
+    }
+    if (cardDetail?.startDate && !cardDetail?.endDate) {
+      setLabelDay(format(new Date(cardDetail.startDate), "PPP"));
+      setVisileLabelDay("Start date");
+    }
+    if (!cardDetail?.startDate && !cardDetail?.endDate) {
+      setLabelDay("");
+      setVisileLabelDay("");
+    }
+
+    if (cardDetail?.startDate && cardDetail?.endDate) {
+      setLabelDay(
+        format(new Date(cardDetail.startDate), "PPP") +
+          " - " +
+          format(new Date(cardDetail.endDate), "PPP, p")
+      );
+      setVisileLabelDay("Dates");
+    }
+  };
+
   const handleModalCard = (objCardDetail) => {
     setModalCardDetail(objCardDetail);
-
     setIsModalCardShow(!isModalCardShow);
     setDatePopover(false);
-
     setIsMemberPopoverOpen(false);
     //handleGetAllCard();
     handleGetCardByFilter();
+    displayLabelDay(objCardDetail);
   };
+
+  /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
   const handleAddCardTitle = () => {
     setAddCardTitleVisible(true);
@@ -259,17 +379,123 @@ const Card = (listIdProps, listBoardIdProps) => {
     textareaCreateCardTitle.style.height = `${textareaCreateCardTitle.scrollHeight}px`;
   };
 
-  const handleGetAllCard = async () => {
-    let query = { listId: listIdProps.listIdProps };
+  const handleUpdateDates = async (
+    cardID,
+    description,
+    startDay,
+    dueDay,
+    dueTime,
+    reminderDate,
+    title
+  ) => {
+    //parse start day
+    let parseStartDay = parse(
+      startDay + " 08:00 AM",
+      "MM/dd/yyyy h:mm a",
+      new Date(),
+      {
+        locale: vi,
+      }
+    );
+    let isoStartDay = isValid(parseStartDay) ? parseStartDay.toISOString() : "";
+
+    // parse due day
+    let parseDueDay = parse(
+      dueDay + " " + dueTime,
+      "MM/dd/yyyy h:mm a",
+      new Date(),
+      { locale: vi }
+    );
+    let isoDueDay = isValid(parseDueDay) ? parseDueDay.toISOString() : "";
+
+    // parse remind
+    let parseRemind = parse(reminderDate, "MM/dd/yyyy h:mm a", new Date(), {
+      locale: vi,
+    });
+    let isoRemind = isValid(parseRemind) ? parseRemind.toISOString() : "";
+
+    let query = {
+      id: cardID,
+      description: description,
+      startDate: isoStartDay,
+      endDate: isoDueDay,
+      reminderDate: isoRemind,
+      title: title,
+    };
+    console.log("query", query);
     try {
-      const response = await cardServices.getAllCard(query);
+      const response = await cardServices.updateCardDates(query);
       if (response.data.code == 200) {
-        setListCard(response.data.data);
+        // tat popover date
+        // set lai modal card detail
+        // hien thong tin tren description
+        // get card by filter
+        console.log("update day ok");
+        console.log(response.data.data);
+        setModalCardDetail(response.data.data);
+        handleGetCardByFilter();
+        handleHideDatePopover();
       }
     } catch (error) {
-      console.log(error);
+      console.error(error);
     }
   };
+
+  const saveCardDates = (
+    cardID,
+    description,
+    startDay,
+    dueDay,
+    dueTime,
+    reminderDate,
+    title
+  ) => {
+    handleUpdateDates(
+      cardID,
+      description,
+      startDay,
+      dueDay,
+      dueTime,
+      reminderDate,
+      title
+    );
+  };
+
+  const removeDates = (
+    cardID,
+    description,
+    startDay,
+    dueDay,
+    dueTime,
+    reminderDate,
+    title
+  ) => {
+    startDay = "";
+    dueDay = "";
+    dueTime = "";
+    reminderDate = "";
+    handleUpdateDates(
+      cardID,
+      description,
+      startDay,
+      dueDay,
+      dueTime,
+      reminderDate,
+      title
+    );
+  };
+
+  // const handleGetAllCard = async () => {
+  //   let query = { listId: listIdProps.listIdProps };
+  //   try {
+  //     const response = await cardServices.getAllCard(query);
+  //     if (response.data.code == 200) {
+  //       setListCard(response.data.data);
+  //     }
+  //   } catch (error) {
+  //     console.log(error);
+  //   }
+  // };
 
   const handleGetCardByFilter = async () => {
     let query = { listId: listIdProps.listIdProps, isActive: true };
@@ -352,7 +578,8 @@ const Card = (listIdProps, listBoardIdProps) => {
 
         toast.success("Card archived successfully!");
         setIsModalCardShow(false);
-        handleGetAllCard();
+        //handleGetAllCard();
+        handleGetCardByFilter();
       }
     } catch (error) {
       toast.error("Card archived failed!");
@@ -430,7 +657,8 @@ const Card = (listIdProps, listBoardIdProps) => {
   }, [listIdProps.listBoardIdProps]);
 
   useEffect(() => {
-    handleGetAllCard();
+    //handleGetAllCard();
+    handleGetCardByFilter();
     handleGetAllBoardMember();
   }, []);
 
@@ -616,6 +844,7 @@ const Card = (listIdProps, listBoardIdProps) => {
   };
 
   const handleDueDateClick = () => {
+    //setIsDatePickerOpen(!isDatePickerOpen);
     setIsDatePickerOpen((prev) => !prev);
   };
 
@@ -627,15 +856,16 @@ const Card = (listIdProps, listBoardIdProps) => {
 
   const handleSaveDueDate = () => {
     if (newTask.dueDate) {
-      setDueDateLabel(format(newTask.dueDate, 'MMM d'));
+      setDueDateLabel(format(newTask.dueDate, "MMM d"));
     }
     setIsDatePickerOpen(false);
+    console.log("Due Date selected:", newTask.dueDate);
   };
 
   const handleRemoveDueDate = () => {
     setNewTask((prevTask) => ({ ...prevTask, dueDate: null }));
     setUpdatedTask((prevTask) => ({ ...prevTask, dueDate: null }));
-    setDueDateLabel('Due Date');
+    setDueDateLabel("Due Date");
     setIsDatePickerOpen(false);
   };
 
@@ -668,12 +898,12 @@ const Card = (listIdProps, listBoardIdProps) => {
     setIsAssignPopoverOpen(false);
     setAddingItem(todoId);
     setNewTask({
-      name: '',
-      priorityLevel: '',
-      status: '',
-      description: '',
-      assignedUserId: '',
-      dueDate: ''
+      name: "",
+      priorityLevel: "",
+      status: "",
+      description: "",
+      assignedUserId: "",
+      dueDate: "",
     });
   };
 
@@ -681,17 +911,24 @@ const Card = (listIdProps, listBoardIdProps) => {
     setAddingItem(null);
     setSelectedUser(null);
     setDueDate(null);
-    setDueDateLabel('Due Date');
+    setDueDateLabel("Due Date");
     setIsAssignPopoverOpen(false);
   };
 
+  useEffect(() => {
+    displayLabelDay(modalCardDetail);
+  }, [modalCardDetail]);
+  //   setDueDateLabel('Due Date');
+  //   setIsAssignPopoverOpen(false);
+  // };
+
   const userLookup = {};
-  availableUsers.forEach(user => {
+  availableUsers.forEach((user) => {
     userLookup[user.id] = user.name;
   });
 
   const formatDate = (dateString) => {
-    const options = { month: 'short', day: 'numeric' };
+    const options = { month: "short", day: "numeric" };
     return new Date(dateString).toLocaleDateString(undefined, options);
   };
 
@@ -737,19 +974,25 @@ const Card = (listIdProps, listBoardIdProps) => {
 
   const startEditingTask = (taskId, task) => {
     const priorityMapping = {
-      'High': 0,
-      'Medium': 1,
-      'Low': 2
+      High: 0,
+      Medium: 1,
+      Low: 2,
     };
 
     const statusMapping = {
-      'New': 0,
-      'InProgress': 1,
-      'Resolved': 2
+      New: 0,
+      InProgress: 1,
+      Resolved: 2,
     };
 
-    const mappedPriorityLevel = priorityMapping[task.priorityLevel] !== undefined ? priorityMapping[task.priorityLevel] : task.priorityLevel;
-    const mappedStatus = statusMapping[task.status] !== undefined ? statusMapping[task.status] : task.status;
+    const mappedPriorityLevel =
+      priorityMapping[task.priorityLevel] !== undefined
+        ? priorityMapping[task.priorityLevel]
+        : task.priorityLevel;
+    const mappedStatus =
+      statusMapping[task.status] !== undefined
+        ? statusMapping[task.status]
+        : task.status;
 
     setIsAssignPopoverOpen(false);
     setEditingTask(taskId);
@@ -758,8 +1001,8 @@ const Card = (listIdProps, listBoardIdProps) => {
       name: task.name,
       priorityLevel: mappedPriorityLevel,
       status: mappedStatus,
-      description: task.description || '',
-      assignedUserId: task.assignedUserId || '',
+      description: task.description || "",
+      assignedUserId: task.assignedUserId || "",
       dueDate: task.dueDate || null,
     });
   };
@@ -768,13 +1011,13 @@ const Card = (listIdProps, listBoardIdProps) => {
     setIsAssignPopoverOpen(false);
     setEditingTask(null);
     setUpdatedTask({
-      id: '',
-      name: '',
-      priorityLevel: '',
-      status: '',
-      description: '',
-      assignedUserId: '',
-      dueDate: '',
+      id: "",
+      name: "",
+      priorityLevel: "",
+      status: "",
+      description: "",
+      assignedUserId: "",
+      dueDate: "",
     });
   };
 
@@ -782,7 +1025,10 @@ const Card = (listIdProps, listBoardIdProps) => {
     const { name, value } = e.target;
     setUpdatedTask((prevTask) => ({
       ...prevTask,
-      [name]: name === 'priorityLevel' || name === 'status' ? parseInt(value, 10) : value,
+      [name]:
+        name === "priorityLevel" || name === "status"
+          ? parseInt(value, 10)
+          : value,
     }));
   };
 
@@ -933,6 +1179,19 @@ const Card = (listIdProps, listBoardIdProps) => {
                 )}
               </div>
               <span>in list {listIdProps.listNameProps}</span>
+              {/* VISUAL */}
+              <div className="mt-1">
+                {visileLabelDay && labelDay && (
+                  <div className="d-flex flex-column gap-1">
+                    <span className="fw-semibold content__visual-label-day">
+                      {visileLabelDay}
+                    </span>
+                    <div>
+                      <span className="content__label-day p-1">{labelDay}</span>
+                    </div>
+                  </div>
+                )}
+              </div>
             </div>
           </ModalHeader>
           <ModalBody>
@@ -1032,7 +1291,10 @@ const Card = (listIdProps, listBoardIdProps) => {
                       {todoItems.map((todo) => (
                         <div key={todo.id}>
                           <div className="todo-item d-flex justify-content-between align-items-center mt-3">
-                            <div className="d-flex gap-2 align-items-center" style={{ cursor: "pointer" }}>
+                            <div
+                              className="d-flex gap-2 align-items-center"
+                              style={{ cursor: "pointer" }}
+                            >
                               <div>
                                 <FontAwesomeIcon icon={faListCheck} />
                               </div>
@@ -1060,104 +1322,166 @@ const Card = (listIdProps, listBoardIdProps) => {
                               </div>
                             </div>
                             <div>
-                              <button className="custom-button" onClick={() => handleChangeStatusChecklist(todo.id)}>
-                                <FontAwesomeIcon
-                                  icon={faTrash}
-                                />
+                              <button
+                                className="custom-button"
+                                onClick={() =>
+                                  handleChangeStatusChecklist(todo.id)
+                                }
+                              >
+                                <FontAwesomeIcon icon={faTrash} />
                               </button>
                             </div>
                           </div>
                           <div className="mt-2">
-                            {taskItems.filter((task) => task.todoId === todo.id).map((task) => (
-                              <div key={task.id} className="task-item mt-2 p-2 border rounded">
-                                {editingTask === task.id ? (
-                                  <TaskForm
-                                    task={updatedTask}
-                                    onChange={handleInputChange}
-                                    onSave={() => handleSaveTask(task.id, todo.id)}
-                                    onCancel={stopEditingTask}
-                                    handleGetUserByTodoId={() => handleGetUserByTodoId(todo.id)}
-                                    assignPopoverRef={assignPopoverRef}
-                                    isAssignPopoverOpen={isAssignPopoverOpen}
-                                    closeAssignPopover={closeAssignPopover}
-                                    availableUsers={availableUsers}
-                                    handleAssignMemberClick={handleAssignMemberClick}
-                                    dueDatePopoverRef={dueDatePopoverRef}
-                                    handleDueDateClick={handleDueDateClick}
-                                    isDatePickerOpen={isDatePickerOpen}
-                                    setIsDatePickerOpen={setIsDatePickerOpen}
-                                    handleDayClick={handleDayClick}
-                                    handleSaveDueDate={handleSaveDueDate}
-                                    handleRemoveDueDate={handleRemoveDueDate}
-                                    selectedUser={availableUsers.find(user => user.id === updatedTask.assignedUserId)}
-                                    dueDateLabel={updatedTask.dueDate ? formatDate(updatedTask.dueDate) : "Set Due Date"}
-                                  />
-                                ) : (
-                                  <div>
-                                    <div className="task-item-container position-relative">
-                                      <input
-                                        type="checkbox"
-                                        className="task-checkbox"
-                                        checked={task.isChecked}
-                                        onChange={() => handleCheckTask(task.id, task.isChecked, task.todoId)}
-                                      />
-                                      <div onClick={() => startEditingTask(task.id, task)} className="w-100">
-                                        <div className="d-flex justify-content-between">
-                                          <span className="task-name fw-bold">{task.name}</span>
-                                          <div className="d-flex gap-1">
-                                            <span className={`task-priority ${task.priorityLevel === "Low"
-                                              ? "priority-low"
-                                              : task.priorityLevel === "Medium"
-                                                ? "priority-medium"
-                                                : task.priorityLevel === "High"
-                                                  ? "priority-high"
-                                                  : ""
-                                              }`}
-                                            >
-                                              {task.priorityLevel}
+                            {taskItems
+                              .filter((task) => task.todoId === todo.id)
+                              .map((task) => (
+                                <div
+                                  key={task.id}
+                                  className="task-item mt-2 p-2 border rounded"
+                                >
+                                  {editingTask === task.id ? (
+                                    <TaskForm
+                                      task={updatedTask}
+                                      onChange={handleInputChange}
+                                      onSave={() =>
+                                        handleSaveTask(task.id, todo.id)
+                                      }
+                                      onCancel={stopEditingTask}
+                                      handleGetUserByTodoId={() =>
+                                        handleGetUserByTodoId(todo.id)
+                                      }
+                                      assignPopoverRef={assignPopoverRef}
+                                      isAssignPopoverOpen={isAssignPopoverOpen}
+                                      closeAssignPopover={closeAssignPopover}
+                                      availableUsers={availableUsers}
+                                      handleAssignMemberClick={
+                                        handleAssignMemberClick
+                                      }
+                                      dueDatePopoverRef={dueDatePopoverRef}
+                                      handleDueDateClick={handleDueDateClick}
+                                      isDatePickerOpen={isDatePickerOpen}
+                                      setIsDatePickerOpen={setIsDatePickerOpen}
+                                      handleDayClick={handleDayClick}
+                                      handleSaveDueDate={handleSaveDueDate}
+                                      handleRemoveDueDate={handleRemoveDueDate}
+                                      selectedUser={availableUsers.find(
+                                        (user) =>
+                                          user.id === updatedTask.assignedUserId
+                                      )}
+                                      dueDateLabel={
+                                        updatedTask.dueDate
+                                          ? formatDate(updatedTask.dueDate)
+                                          : "Set Due Date"
+                                      }
+                                    />
+                                  ) : (
+                                    <div>
+                                      <div className="task-item-container position-relative">
+                                        <input
+                                          type="checkbox"
+                                          className="task-checkbox"
+                                          checked={task.isChecked}
+                                          onChange={() =>
+                                            handleCheckTask(
+                                              task.id,
+                                              task.isChecked,
+                                              task.todoId
+                                            )
+                                          }
+                                        />
+                                        <div
+                                          onClick={() =>
+                                            startEditingTask(task.id, task)
+                                          }
+                                          className="w-100"
+                                        >
+                                          <div className="d-flex justify-content-between">
+                                            <span className="task-name fw-bold">
+                                              {task.name}
                                             </span>
-                                            <span className={`task-status ${task.status === "New"
-                                              ? "status-new"
-                                              : task.status === "InProgress"
-                                                ? "status-in-progress"
-                                                : task.status === "Resolved"
-                                                  ? "status-resolved"
-                                                  : ""
-                                              }`}
-                                            >
-                                              {task.status}
-                                            </span>
-                                            <span>
-                                              <button
-                                                className="custom-button "
-                                                onClick={() => handleInactiveTask(task.id, task.todoId)}
+                                            <div className="d-flex gap-1">
+                                              <span
+                                                className={`task-priority ${
+                                                  task.priorityLevel === "Low"
+                                                    ? "priority-low"
+                                                    : task.priorityLevel ===
+                                                      "Medium"
+                                                    ? "priority-medium"
+                                                    : task.priorityLevel ===
+                                                      "High"
+                                                    ? "priority-high"
+                                                    : ""
+                                                }`}
                                               >
-                                                <FontAwesomeIcon icon={faTrashCan} />
-                                              </button>
-                                            </span>
+                                                {task.priorityLevel}
+                                              </span>
+                                              <span
+                                                className={`task-status ${
+                                                  task.status === "New"
+                                                    ? "status-new"
+                                                    : task.status ===
+                                                      "InProgress"
+                                                    ? "status-in-progress"
+                                                    : task.status === "Resolved"
+                                                    ? "status-resolved"
+                                                    : ""
+                                                }`}
+                                              >
+                                                {task.status}
+                                              </span>
+                                              <span>
+                                                <button
+                                                  className="custom-button "
+                                                  onClick={() =>
+                                                    handleInactiveTask(
+                                                      task.id,
+                                                      task.todoId
+                                                    )
+                                                  }
+                                                >
+                                                  <FontAwesomeIcon
+                                                    icon={faTrashCan}
+                                                  />
+                                                </button>
+                                              </span>
+                                            </div>
                                           </div>
-                                        </div>
-                                        <div className="task-description mt-1">{task.description}</div>
-                                        <div className="d-flex justify-content-end mt-2">
-                                          <div className="task-assigned-user">
-                                            <FontAwesomeIcon icon={faUser} style={{ marginRight: "5px" }} />
-                                            {availableUsers.length > 0 && task.assignedUserId
-                                              ? userLookup[task.assignedUserId] || "User not found"
-                                              : "Unassigned"}
+                                          <div className="task-description mt-1">
+                                            {task.description}
                                           </div>
-                                          <div className="task-due-date" style={{ marginLeft: "10px" }}>
-                                            <FontAwesomeIcon icon={faClock} style={{ marginRight: "5px" }} />
-                                            {task.dueDate ? formatDate(task.dueDate) : "No due date"}
+                                          <div className="d-flex justify-content-end mt-2">
+                                            <div className="task-assigned-user">
+                                              <FontAwesomeIcon
+                                                icon={faUser}
+                                                style={{ marginRight: "5px" }}
+                                              />
+                                              {availableUsers.length > 0 &&
+                                              task.assignedUserId
+                                                ? userLookup[
+                                                    task.assignedUserId
+                                                  ] || "User not found"
+                                                : "Unassigned"}
+                                            </div>
+                                            <div
+                                              className="task-due-date"
+                                              style={{ marginLeft: "10px" }}
+                                            >
+                                              <FontAwesomeIcon
+                                                icon={faClock}
+                                                style={{ marginRight: "5px" }}
+                                              />
+                                              {task.dueDate
+                                                ? formatDate(task.dueDate)
+                                                : "No due date"}
+                                            </div>
                                           </div>
                                         </div>
                                       </div>
                                     </div>
-
-                                  </div>
-
-                                )}
-                              </div>
-                            ))}
+                                  )}
+                                </div>
+                              ))}
 
                             {addingItem === todo.id ? (
                               <TaskForm
@@ -1166,17 +1490,25 @@ const Card = (listIdProps, listBoardIdProps) => {
                                   const { name, value } = e.target;
                                   setNewTask((prevTask) => ({
                                     ...prevTask,
-                                    [name]: name === 'priorityLevel' || name === 'status' ? parseInt(value, 10) : value,
+                                    [name]:
+                                      name === "priorityLevel" ||
+                                      name === "status"
+                                        ? parseInt(value, 10)
+                                        : value,
                                   }));
                                 }}
                                 onSave={() => handleCreateTask(todo.id)}
                                 onCancel={stopAddingItem}
-                                handleGetUserByTodoId={() => handleGetUserByTodoId(todo.id)}
+                                handleGetUserByTodoId={() =>
+                                  handleGetUserByTodoId(todo.id)
+                                }
                                 assignPopoverRef={assignPopoverRef}
                                 isAssignPopoverOpen={isAssignPopoverOpen}
                                 closeAssignPopover={closeAssignPopover}
                                 availableUsers={availableUsers}
-                                handleAssignMemberClick={handleAssignMemberClick}
+                                handleAssignMemberClick={
+                                  handleAssignMemberClick
+                                }
                                 dueDatePopoverRef={dueDatePopoverRef}
                                 handleDueDateClick={handleDueDateClick}
                                 isDatePickerOpen={isDatePickerOpen}
@@ -1188,12 +1520,14 @@ const Card = (listIdProps, listBoardIdProps) => {
                                 dueDateLabel={dueDateLabel}
                               />
                             ) : (
-                              <button className="custom-button mt-2" onClick={() => startAddingItem(todo.id)}>
+                              <button
+                                className="custom-button mt-2"
+                                onClick={() => startAddingItem(todo.id)}
+                              >
                                 Add an item
                               </button>
                             )}
                           </div>
-
                         </div>
                       ))}
                     </div>
@@ -1201,7 +1535,7 @@ const Card = (listIdProps, listBoardIdProps) => {
                 </div>
                 {/* end todo & task part */}
 
-                {/* <div className="d-flex justify-content-between mt-3">
+                <div className="d-flex justify-content-between mt-3">
                   <div className="d-flex gap-2 align-items-center">
                     <div>
                       <FontAwesomeIcon icon={faListUl} />
@@ -1232,8 +1566,9 @@ const Card = (listIdProps, listBoardIdProps) => {
                       </button>
                     </div>
                   )}
-                </div> */}
-
+                </div>
+                {/* Comment */}
+                <Comments cardId={modalCardDetail.id} />
                 {/* <div>
                   <div className="d-flex gap-2 mt-2 align-items-center">
                     <div className="block__user-comment">
@@ -1267,7 +1602,7 @@ const Card = (listIdProps, listBoardIdProps) => {
                   </div>
                 </div> */}
 
-                {/* {activityVisible && (
+                {activityVisible && (
                   <div className="d-flex gap-2 p-1">
                     <div className="block__user-activity">
                       <img src={constants.USER_UNDEFINE_URL} />
@@ -1281,7 +1616,7 @@ const Card = (listIdProps, listBoardIdProps) => {
                       <span>time</span>
                     </div>
                   </div>
-                )} */}
+                )}
               </div>
               <div className="col-3 px-2">
                 <div className="d-flex flex-column gap-2">
@@ -1388,10 +1723,22 @@ const Card = (listIdProps, listBoardIdProps) => {
                     onClick={(e) => handleDatePopoverClick(e)}
                   >
                     <div className="d-flex align-items-center gap-2 p-2 fw-semibold block__card-action">
-                      <div>
+                      <div
+                        onClick={(e) => {
+                          e.preventDefault();
+                          e.stopPropagation();
+                        }}
+                      >
                         <FontAwesomeIcon icon={faClock} />
                       </div>
-                      <span>Dates</span>
+                      <span
+                        onClick={(e) => {
+                          e.preventDefault();
+                          e.stopPropagation();
+                        }}
+                      >
+                        Dates
+                      </span>
                     </div>
 
                     <Overlay
@@ -1426,19 +1773,34 @@ const Card = (listIdProps, listBoardIdProps) => {
                         </Popover.Header>
                         <Popover.Body>
                           <div className="d-flex justify-content-center">
-                            <DayPicker
-                              mode="single"
-                              selected={daySelected}
-                              //onSelect={setDaySelected}
-                              onSelect={(
-                                day,
-                                selectedDay,
-                                activeModifiers,
-                                e
-                              ) => {
-                                dayChange(day, selectedDay, activeModifiers, e);
-                              }}
-                            />
+                            {isStartDay ? (
+                              <DayPicker
+                                mode="single"
+                                selected={daySelected}
+                                onSelect={(
+                                  day,
+                                  selectedDay,
+                                  activeModifiers,
+                                  e
+                                ) => {
+                                  dayChange(
+                                    day,
+                                    selectedDay,
+                                    activeModifiers,
+                                    e
+                                  );
+                                }}
+                              />
+                            ) : (
+                              <DayPicker
+                                mode="range"
+                                defaultMonth={pastMonth}
+                                selected={range}
+                                footer={footer}
+                                //onSelect={setRange}
+                                onSelect={handleSelectRange}
+                              />
+                            )}
                           </div>
 
                           <div className="d-flex flex-column ">
@@ -1450,10 +1812,12 @@ const Card = (listIdProps, listBoardIdProps) => {
                             </span>
                             <div className="d-flex gap-1">
                               <input
+                                checked={!isStartDay}
                                 name="checkbox-startdate"
                                 type="checkbox"
                                 onChange={handleStartDayDisable}
                               />
+
                               <input
                                 name="input-startday"
                                 disabled={isStartDay}
@@ -1464,6 +1828,7 @@ const Card = (listIdProps, listBoardIdProps) => {
                               />
                             </div>
                           </div>
+
                           <div className="d-flex flex-column mt-2">
                             <span
                               className="fw-semibold label__dates"
@@ -1474,7 +1839,7 @@ const Card = (listIdProps, listBoardIdProps) => {
                             <div className="d-flex gap-1">
                               <input
                                 type="checkbox"
-                                checked
+                                checked={checkDueday}
                                 name="checkbox-dueday"
                                 onChange={handleDueDayDisable}
                               />
@@ -1507,38 +1872,62 @@ const Card = (listIdProps, listBoardIdProps) => {
                             >
                               Set due date reminder
                             </span>
-                            <div className="w-100">
+                            <form className="w-100">
                               <select
                                 className="w-100 select__reminder"
                                 name="select-remind"
                                 defaultValue={"None"}
+                                {...register("select-remind")}
+                                onChange={onChangeRemind}
                               >
                                 <option value={"None"}>None</option>
                                 <option value={"At time"}>
                                   At time of due date
                                 </option>
-                                <option value={"5 Minutes"}>
-                                  5 Minutes before
-                                </option>
-                                <option value={"10 Minutes"}>
-                                  10 Minutes before
-                                </option>
-                                <option value={"15 Minutes"}>
+                                <option value={"15 Minutes Before"}>
                                   15 Minutes before
                                 </option>
-                                <option value={"1 Hour"}>1 Hour before</option>
-                                <option value={"2 Hour"}>2 Hour before</option>
-                                <option value={"1 Day"}>1 Day before</option>
-                                <option value={"2 Day"}>2 Day before</option>
+                                <option value={"1 Hour Before"}>
+                                  1 Hour before
+                                </option>
+                                <option value={"1 Day Before"}>
+                                  1 Day before
+                                </option>
                               </select>
-                            </div>
+                            </form>
                           </div>
 
                           <div className="mt-3 d-flex flex-column w-100 gap-2">
-                            <button className="btn btn-primary fw-semibold">
+                            <button
+                              className="btn btn-primary fw-semibold"
+                              onClick={() =>
+                                saveCardDates(
+                                  modalCardDetail.id,
+                                  modalCardDetail.description,
+                                  startDay,
+                                  dueDay,
+                                  dueTime,
+                                  dueDateRemind,
+                                  modalCardDetail.title
+                                )
+                              }
+                            >
                               Save
                             </button>
-                            <button className="btn btn-light fw-semibold">
+                            <button
+                              className="btn btn-light fw-semibold"
+                              onClick={() =>
+                                removeDates(
+                                  modalCardDetail.id,
+                                  modalCardDetail.description,
+                                  startDay,
+                                  dueDay,
+                                  dueTime,
+                                  dueDateRemind,
+                                  modalCardDetail.title
+                                )
+                              }
+                            >
                               Remove
                             </button>
                           </div>
