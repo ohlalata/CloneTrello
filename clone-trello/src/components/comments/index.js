@@ -29,13 +29,16 @@ const Comments = (cardId) => {
     Connection.start()
       .then(() => {
         console.log("SignalR Connected.");
+        // đăng kí sự kiện bình luận
+
+        Connection.on("ReceiveComment", (comment) => {
+          setComments((prevComments) => [...prevComments, { comment }]);
+        });
       })
       .catch((error) =>
         console.error("Error while starting connection: " + error)
       );
-    Connection.on("ReceiveComment", (message) => {
-      setComments((comments) => [...comments, { message }]);
-    });
+
     return () => {
       console.log("CONNECTION STOP!");
       Connection.stop();
@@ -166,6 +169,12 @@ const Comments = (cardId) => {
         handleGetAllComment();
         setIsRichTextComment(false);
         setCommentContent("");
+
+        // phát hiện sự kiện bình luận mới qua SignalR
+        Connection.invoke("SendComment", response.data.data);
+        // cập nhật bình luận tại tab hiện tại
+        setComments((prevComments) => [...prevComments, response.data.data]);
+
         toast.success("Create comment successful");
       }
     } catch (error) {
@@ -233,7 +242,7 @@ const Comments = (cardId) => {
                   <div className="d-flex gap-2">
                     <span className="fw-bold">{"hehe"}</span>
                     <span style={{ color: "#172b4d" }}>
-                      {format(cataLogComments.createdDate, "PPP")}
+                      {/* {format(cataLogComments.createdDate, "PPP")} */}
                     </span>
                   </div>
                   {editCommentId == cataLogComments.id ? (
