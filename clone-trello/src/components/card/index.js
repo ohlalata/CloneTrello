@@ -1581,10 +1581,22 @@ const Card = (listIdProps, listBoardIdProps) => {
                     onClick={(e) => handleDatePopoverClick(e)}
                   >
                     <div className="d-flex align-items-center gap-2 p-2 fw-semibold block__card-action">
-                      <div>
+                      <div
+                        onClick={(e) => {
+                          e.preventDefault();
+                          e.stopPropagation();
+                        }}
+                      >
                         <FontAwesomeIcon icon={faClock} />
                       </div>
-                      <span>Dates</span>
+                      <span
+                        onClick={(e) => {
+                          e.preventDefault();
+                          e.stopPropagation();
+                        }}
+                      >
+                        Dates
+                      </span>
                     </div>
 
                     <Overlay
