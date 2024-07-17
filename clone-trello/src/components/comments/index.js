@@ -29,15 +29,19 @@ const Comments = (cardId) => {
     Connection.start()
       .then(() => {
         console.log("SignalR Connected.");
+
+        console.log("CONNECTIONID: ", Connection.connectionId);
+        Connection.on("ReceiveComment", (comment) => {
+          setComments((prevComments) => [...prevComments, comment]);
+        });
       })
       .catch((error) =>
         console.error("Error while starting connection: " + error)
       );
-    Connection.on("ReceiveComment", (message) => {
-      setComments((comments) => [...comments, { message }]);
-    });
+
     return () => {
       console.log("CONNECTION STOP!");
+      Connection.off("ReceiveComment");
       Connection.stop();
     };
   }, []);
@@ -163,6 +167,12 @@ const Comments = (cardId) => {
       const response = await commentServices.createComment(query);
       if (response.data.code == 201) {
         console.log("create comment successful");
+
+        // phát hiện sự kiện bình luận mới qua SignalR
+        Connection.invoke("SendComment", response.data.data);
+        // cập nhật bình luận tại tab hiện tại
+        setComments((prevComments) => [...prevComments, response.data.data]);
+        console.log("CONNECTIONID: ", Connection.connectionId);
         handleGetAllComment();
         setIsRichTextComment(false);
         setCommentContent("");
@@ -182,7 +192,7 @@ const Comments = (cardId) => {
     <React.Fragment>
       <div>
         <div className="d-flex gap-2 mt-2 align-items-center">
-          <div className="block__user-comment">
+          <div className="block__user-comment mb-1">
             <img src={constants.USER_UNDEFINE_URL} />
           </div>
           {isRichTextComment ? (
@@ -231,7 +241,7 @@ const Comments = (cardId) => {
               <div className="w-100 d-flex flex-column">
                 <div>
                   <div className="d-flex gap-2">
-                    <span className="fw-bold">{"hehe"}</span>
+                    <span className="fw-bold">{cataLogComments.userName}</span>
                     <span style={{ color: "#172b4d" }}>
                       {format(cataLogComments.createdDate, "PPP")}
                     </span>

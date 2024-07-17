@@ -1567,42 +1567,9 @@ const Card = (listIdProps, listBoardIdProps) => {
                     </div>
                   )}
                 </div>
-                {/* Comment */}
                 <Comments cardId={modalCardDetail.id} />
-                {/* <div>
-                  <div className="d-flex gap-2 mt-2 align-items-center">
-                    <div className="block__user-comment">
-                      <img src={constants.USER_UNDEFINE_URL} />
-                    </div>
-                    <div className="flex-fill p-2 block__input-comment">
-                      <span>Write a comment...</span>
-                    </div>
-                  </div>
 
-                  <div className="d-flex mt-3 gap-2">
-                    <div className="block__user-comment">
-                      <img src={constants.USER_UNDEFINE_URL} />
-                    </div>
-                    <div className="w-100 d-flex flex-column">
-                      <div>
-                        <div className="d-flex gap-2">
-                          <span>Name</span>
-                          <span>Jun 18 at 14:15 PM</span>
-                        </div>
-                        <div className="flex-fill p-2 block__input-comment">
-                          <span>...comment here...</span>
-                        </div>
-                      </div>
-                      <div className="d-flex gap-1 mt-1 ms-2">
-                        <span className="label__comment-action">Edit</span>
-                        <span>•</span>
-                        <span className="label__comment-action">Delete</span>
-                      </div>
-                    </div>
-                  </div>
-                </div> */}
-
-                {activityVisible && (
+                {/* {activityVisible && (
                   <div className="d-flex gap-2 p-1">
                     <div className="block__user-activity">
                       <img src={constants.USER_UNDEFINE_URL} />
@@ -1616,7 +1583,7 @@ const Card = (listIdProps, listBoardIdProps) => {
                       <span>time</span>
                     </div>
                   </div>
-                )}
+                )} */}
               </div>
               <div className="col-3 px-2">
                 <div className="d-flex flex-column gap-2">
