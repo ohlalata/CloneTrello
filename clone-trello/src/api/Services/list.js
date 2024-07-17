@@ -75,10 +75,42 @@ const changeStatus = async (query) => {
   return response;
 };
 
+
+const moveList = async (query) => {
+  let { id, newPosition } = query;
+  if (!id || !newPosition) {
+    return;
+  }
+
+  let serviceUrl = `${urlConstant.endpoint.list.moveList}${id}?newPosition=${newPosition}`;
+
+  try {
+    const response = await axiosLocalHost.normalRequest.put(serviceUrl);
+    return response;
+  } catch (error) {
+    throw error; 
+  }
+};
+
+const swapList = async (query) => {
+  let { id, swappedListId } = query;
+  let data;
+  let serviceUrl = urlConstant.endpoint.list.swapList + id;
+  if (id) {
+    data = {
+      swappedListId: swappedListId,
+    };
+  }
+  const response = await axiosLocalHost.normalRequest.put(serviceUrl, data);
+  return response;
+};
+
 export default {
   getAllList,
   createList,
   updateListName,
   changeStatus,
   getListByFilter,
+  moveList,
+  swapList,
 };
