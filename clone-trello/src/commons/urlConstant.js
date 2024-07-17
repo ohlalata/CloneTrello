@@ -31,6 +31,8 @@ export default {
       createList: "/list/create",
       updateList: "/list/update-name/", // noi duoi id
       archiveList: "/list/change-status/", // noi duoi id
+      moveList: "/list/move-position/",
+      swapList: "/list/swap-position/",
     },
     card: {
       getAllCard: "/card/get-all",

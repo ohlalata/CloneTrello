@@ -1,7 +1,7 @@
 import React, { useRef, useState, useEffect } from "react";
 import "./style.scss";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faEllipsis } from "@fortawesome/free-solid-svg-icons";
+import { faEllipsis, faChevronLeft } from "@fortawesome/free-solid-svg-icons";
 import { faPlus } from "@fortawesome/free-solid-svg-icons";
 import listServices from "../../api/Services/list";
 import { faXmark } from "@fortawesome/free-solid-svg-icons";
@@ -22,6 +22,8 @@ const BoardContentPages = () => {
   const [titleList, setTitleList] = useState("");
   const [isAddListInputVisible, setIsAddListInputVisible] = useState(false);
   const [dropdownVisible, setDropdownVisible] = useState(null);
+  const [isMoveListMode, setIsMoveListMode] = useState(false);
+  const [newPosition, setNewPosition] = useState('');
 
   const handleClickTitleList = (listIdVisible) => {
     setIsEditingTitleList(listIdVisible);
@@ -139,8 +141,36 @@ const BoardContentPages = () => {
     }
   };
 
+  const handleMoveList = async (listID, newPosition) => {
+    let query = {
+      id: listID,
+      newPosition: newPosition,
+    };
+    try {
+      const response = await listServices.moveList(query);
+      if (response.data.code == 200) {
+        toast.success("List moved successfully!");
+        handleGetListByFilter();
+      }
+    } catch (error) {
+      toast.error("List move failed!");
+      console.error(error);
+    }
+  };
+
   const handleDropdownClick = (listID) => {
     setDropdownVisible(dropdownVisible === listID ? null : listID);
+    setIsMoveListMode(false);
+    setNewPosition(''); // Clear the input value when dropdown is toggled
+  };
+
+  const handleMoveListClick = () => {
+    setIsMoveListMode(true);
+  };
+
+  const handleSaveClick = (listID) => {
+    handleMoveList(listID, newPosition);
+    setDropdownVisible(null); // Hide the dropdown after saving
   };
 
   useEffect(() => {
@@ -198,20 +228,55 @@ const BoardContentPages = () => {
                         </button>
                         {dropdownVisible === catalogList.id && (
                           <div className="dropdown-menu dropdown-menu-right show">
-                            <div className="dropdown-header d-flex justify-content-between align-items-center">
-                              <div className="flex-grow-1 text-center">
-                                <span>List actions</span>
-                              </div>
-                            </div>
-                            <button
-                              className="dropdown-item"
-                              onClick={() => handleArchiveList(catalogList.id)}
-                            >
-                              Archive this list
-                            </button>
+                            {!isMoveListMode ? (
+                              <>
+                                <div className="dropdown-header d-flex justify-content-between align-items-center">
+                                  <div className="flex-grow-1 text-center">
+                                    <span>List actions</span>
+                                  </div>
+                                </div>
+                                <button
+                                  className="dropdown-item mt-2"
+                                  onClick={() => handleArchiveList(catalogList.id)}
+                                >
+                                  Archive this list
+                                </button>
+                                <button
+                                  className="dropdown-item"
+                                  onClick={handleMoveListClick}
+                                >
+                                  Move this list
+                                </button>
+                              </>
+                            ) : (
+                              <>
+                                <div className="dropdown-header d-flex align-items-center">
+                                  <div className="flex-grow-1 text-center">
+                                    <span>Move List</span>
+                                  </div>
+                                </div>
+                                <div className="dropdown-body p-2 mt-1">
+                                  <label className="w-100">Position</label>
+                                  <input
+                                    type="text"
+                                    className="form-control mt-1"
+                                    value={newPosition}
+                                    onChange={(e) => setNewPosition(e.target.value)}
+                                  />
+                                </div>
+                                <button
+                                  className="btn btn-primary w-20"
+                                  style={{ marginLeft: '5px' }}
+                                  onClick={() => handleSaveClick(catalogList.id)}
+                                >
+                                  Save
+                                </button>
+                              </>
+                            )}
                           </div>
                         )}
                       </div>
+
                     </div>
                     <Card
                       listIdProps={catalogList.id}
