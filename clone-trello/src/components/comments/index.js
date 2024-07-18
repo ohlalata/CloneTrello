@@ -24,6 +24,7 @@ const Comments = (cardId) => {
   const [commentUpdate, setCommentUpdate] = useState("");
   const [isUpdateComment, setIsUpdateComment] = useState(true);
   const [editCommentId, setEditCommentId] = useState("");
+  let userName = localStorage.getItem("userProfile");
 
   useEffect(() => {
     Connection.start()
@@ -241,7 +242,9 @@ const Comments = (cardId) => {
               <div className="w-100 d-flex flex-column">
                 <div>
                   <div className="d-flex gap-2">
-                    <span className="fw-bold">{cataLogComments.userName}</span>
+                    <span className="fw-bold">
+                      {JSON.parse(userName).data.name}
+                    </span>
                     <span style={{ color: "#172b4d" }}>
                       {format(cataLogComments.createdDate, "PPP")}
                     </span>
