@@ -24,7 +24,8 @@ const Comments = (cardId) => {
   const [commentUpdate, setCommentUpdate] = useState("");
   const [isUpdateComment, setIsUpdateComment] = useState(true);
   const [editCommentId, setEditCommentId] = useState("");
-  let userName = localStorage.getItem("userProfile");
+  //let userName = localStorage.getItem("userProfile");
+  //JSON.parse(userName).data.name
 
   useEffect(() => {
     Connection.start()
@@ -32,9 +33,13 @@ const Comments = (cardId) => {
         console.log("SignalR Connected.");
 
         console.log("CONNECTIONID: ", Connection.connectionId);
-        Connection.on("ReceiveComment", (comment) => {
-          setComments((prevComments) => [...prevComments, comment]);
-        });
+        Connection.on(
+          "ReceiveComment",
+          //   (comment) => {
+          //   setComments((prevComments) => [...prevComments, comment]);
+          // }
+          (comment) => tempComment(comment)
+        );
       })
       .catch((error) =>
         console.error("Error while starting connection: " + error)
@@ -46,6 +51,11 @@ const Comments = (cardId) => {
       Connection.stop();
     };
   }, []);
+
+  const tempComment = (comment) => {
+    setComments((prevComments) => [...prevComments, comment]);
+    handleGetAllComment();
+  };
 
   const modulesComment = {
     toolbar: [
@@ -242,9 +252,7 @@ const Comments = (cardId) => {
               <div className="w-100 d-flex flex-column">
                 <div>
                   <div className="d-flex gap-2">
-                    <span className="fw-bold">
-                      {JSON.parse(userName).data.name}
-                    </span>
+                    <span className="fw-bold">{cataLogComments.userName}</span>
                     <span style={{ color: "#172b4d" }}>
                       {format(cataLogComments.createdDate, "PPP")}
                     </span>
