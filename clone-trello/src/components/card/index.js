@@ -332,8 +332,8 @@ const Card = (listIdProps, listBoardIdProps) => {
     if (cardDetail?.startDate && cardDetail?.endDate) {
       setLabelDay(
         format(new Date(cardDetail.startDate), "PPP") +
-          " - " +
-          format(new Date(cardDetail.endDate), "PPP, p")
+        " - " +
+        format(new Date(cardDetail.endDate), "PPP, p")
       );
       setVisileLabelDay("Dates");
     }
@@ -836,6 +836,10 @@ const Card = (listIdProps, listBoardIdProps) => {
 
   const handleAssignMemberClick = (user) => {
     setUpdatedTask((prevTask) => ({
+      ...prevTask,
+      assignedUserId: user.id,
+    }));
+    setNewTask((prevTask) => ({
       ...prevTask,
       assignedUserId: user.id,
     }));
@@ -1402,31 +1406,29 @@ const Card = (listIdProps, listBoardIdProps) => {
                                             </span>
                                             <div className="d-flex gap-1">
                                               <span
-                                                className={`task-priority ${
-                                                  task.priorityLevel === "Low"
+                                                className={`task-priority ${task.priorityLevel === "Low"
                                                     ? "priority-low"
                                                     : task.priorityLevel ===
                                                       "Medium"
-                                                    ? "priority-medium"
-                                                    : task.priorityLevel ===
-                                                      "High"
-                                                    ? "priority-high"
-                                                    : ""
-                                                }`}
+                                                      ? "priority-medium"
+                                                      : task.priorityLevel ===
+                                                        "High"
+                                                        ? "priority-high"
+                                                        : ""
+                                                  }`}
                                               >
                                                 {task.priorityLevel}
                                               </span>
                                               <span
-                                                className={`task-status ${
-                                                  task.status === "New"
+                                                className={`task-status ${task.status === "New"
                                                     ? "status-new"
                                                     : task.status ===
                                                       "InProgress"
-                                                    ? "status-in-progress"
-                                                    : task.status === "Resolved"
-                                                    ? "status-resolved"
-                                                    : ""
-                                                }`}
+                                                      ? "status-in-progress"
+                                                      : task.status === "Resolved"
+                                                        ? "status-resolved"
+                                                        : ""
+                                                  }`}
                                               >
                                                 {task.status}
                                               </span>
@@ -1457,10 +1459,10 @@ const Card = (listIdProps, listBoardIdProps) => {
                                                 style={{ marginRight: "5px" }}
                                               />
                                               {availableUsers.length > 0 &&
-                                              task.assignedUserId
+                                                task.assignedUserId
                                                 ? userLookup[
-                                                    task.assignedUserId
-                                                  ] || "User not found"
+                                                task.assignedUserId
+                                                ] || "User not found"
                                                 : "Unassigned"}
                                             </div>
                                             <div
@@ -1492,7 +1494,7 @@ const Card = (listIdProps, listBoardIdProps) => {
                                     ...prevTask,
                                     [name]:
                                       name === "priorityLevel" ||
-                                      name === "status"
+                                        name === "status"
                                         ? parseInt(value, 10)
                                         : value,
                                   }));
