@@ -22,17 +22,16 @@
   background-size: cover;
 }
 
-.qwer {
-  position: fixed;
-
+.block__navbar-boardContent-wrapper {
+  position: sticky;
   width: 100%;
   z-index: 1;
-  top: 54px;
+  top: 0px;
   left: 0px;
 }
 
 .block__list-element {
-  padding: 0 6px;
+  padding: 0 5px;
   align-self: flex-start;
   flex-shrink: 0;
   display: block;

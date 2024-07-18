@@ -259,11 +259,11 @@ const NavbarBoardContent = (boardID) => {
                 <span className="fw-semibold fs-6">Share</span>
               </button>
             </div> */}
-            {/* <div className="block__option-wrapper d-flex align-items-center">
+            <div className="block__option-wrapper d-flex align-items-center">
               <span className="d-flex align-items-center justify-content-center block__option-board-content ">
                 <FontAwesomeIcon icon={faEllipsis} size="lg" />
               </span>
-            </div> */}
+            </div>
           </div>
         </div>
       </nav>
