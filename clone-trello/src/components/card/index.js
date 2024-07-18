@@ -678,13 +678,13 @@ const Card = (listIdProps, listBoardIdProps) => {
     try {
       const response = await cardMemberService.createCardMember(query);
       if (response.data.code === 201) {
-        toast.success(`Member ${member.name} added successfully!`);
+        toast.success(`Member added successfully!`);
         handleGetCardMember(selectedCardId);
       } else {
-        toast.error(`Failed to add member ${member.name}`);
+        toast.error(`Failed to add member`);
       }
     } catch (error) {
-      toast.error(`Failed to add member ${member.name}`);
+      toast.error(`Failed to add member`);
       console.error(error);
     }
   };
