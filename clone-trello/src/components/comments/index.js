@@ -24,8 +24,6 @@ const Comments = (cardId) => {
   const [commentUpdate, setCommentUpdate] = useState("");
   const [isUpdateComment, setIsUpdateComment] = useState(true);
   const [editCommentId, setEditCommentId] = useState("");
-  //let userName = localStorage.getItem("userProfile");
-  //JSON.parse(userName).data.name
 
   useEffect(() => {
     Connection.start()

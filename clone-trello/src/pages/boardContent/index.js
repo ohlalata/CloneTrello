@@ -23,7 +23,7 @@ const BoardContentPages = () => {
   const [isAddListInputVisible, setIsAddListInputVisible] = useState(false);
   const [dropdownVisible, setDropdownVisible] = useState(null);
   const [isMoveListMode, setIsMoveListMode] = useState(false);
-  const [newPosition, setNewPosition] = useState('');
+  const [newPosition, setNewPosition] = useState("");
 
   const handleClickTitleList = (listIdVisible) => {
     setIsEditingTitleList(listIdVisible);
@@ -161,7 +161,7 @@ const BoardContentPages = () => {
   const handleDropdownClick = (listID) => {
     setDropdownVisible(dropdownVisible === listID ? null : listID);
     setIsMoveListMode(false);
-    setNewPosition(''); // Clear the input value when dropdown is toggled
+    setNewPosition(""); // Clear the input value when dropdown is toggled
   };
 
   const handleMoveListClick = () => {
@@ -181,11 +181,11 @@ const BoardContentPages = () => {
     <React.Fragment>
       <div className="d-flex block__board-content-container">
         <ol className="block__catalog-list d-flex gap-1 flex-column p-1">
-          <div className="d-flex w-100 qwer">
+          <div className="d-flex w-100 block__navbar-boardContent-wrapper">
             <NavbarBoardContent boardID={id} />
           </div>
 
-          <div className="d-flex" style={{ marginTop: "55px" }}>
+          <div className="d-flex">
             {allList
               .sort((a, b) => a.position - b.position)
               .map((catalogList, key) => (
@@ -237,7 +237,9 @@ const BoardContentPages = () => {
                                 </div>
                                 <button
                                   className="dropdown-item mt-2"
-                                  onClick={() => handleArchiveList(catalogList.id)}
+                                  onClick={() =>
+                                    handleArchiveList(catalogList.id)
+                                  }
                                 >
                                   Archive this list
                                 </button>
@@ -261,13 +263,17 @@ const BoardContentPages = () => {
                                     type="text"
                                     className="form-control mt-1"
                                     value={newPosition}
-                                    onChange={(e) => setNewPosition(e.target.value)}
+                                    onChange={(e) =>
+                                      setNewPosition(e.target.value)
+                                    }
                                   />
                                 </div>
                                 <button
                                   className="btn btn-primary w-20"
-                                  style={{ marginLeft: '5px' }}
-                                  onClick={() => handleSaveClick(catalogList.id)}
+                                  style={{ marginLeft: "5px" }}
+                                  onClick={() =>
+                                    handleSaveClick(catalogList.id)
+                                  }
                                 >
                                   Save
                                 </button>
@@ -276,7 +282,6 @@ const BoardContentPages = () => {
                           </div>
                         )}
                       </div>
-
                     </div>
                     <Card
                       listIdProps={catalogList.id}
