@@ -186,61 +186,69 @@ const BoardMemberPages = () => {
                 </td>
                 <td className="board-member__role-cell" style={{ textAlign: "center", verticalAlign: "middle" }}>
                   {currentUserRole === "Admin" ? (
-                    <OverlayTrigger
-                      trigger="click"
-                      placement="bottom"
-                      show={popoverOpenMap[member.id] || false}
-                      onToggle={() => togglePopover(member.id)}
-                      overlay={
-                        <Popover id={`popover-${member.id}`}>
-                          <Popover.Header as="h3" className="text-center">
-                            Update Role
-                          </Popover.Header>
-                          <Popover.Body>
-                            <div className="popover-options">
-                              {adminRoleId && (
-                                <div
-                                  className="popover-option"
-                                  onClick={() =>
-                                    handleOptionClick(adminRoleId, member)
-                                  }
-                                >
-                                  <FontAwesomeIcon
-                                    icon={faUserShield}
-                                    className="popover-option__icon"
-                                  />
-                                  <span className="popover-option__text">Admin</span>
-                                </div>
-                              )}
-                              {memberRoleId && (
-                                <div
-                                  className="popover-option"
-                                  onClick={() =>
-                                    handleOptionClick(memberRoleId, member)
-                                  }
-                                >
-                                  <FontAwesomeIcon
-                                    icon={faUser}
-                                    className="popover-option__icon"
-                                  />
-                                  <span className="popover-option__text">Member</span>
-                                </div>
-                              )}
-                            </div>
-                          </Popover.Body>
-                        </Popover>
-                      }
-                    >
-                      <div className="board-member__role-wrapper" style={{cursor: "pointer"}} >
+                    member.roleName !== "Admin" ? (
+                      <OverlayTrigger
+                        trigger="click"
+                        placement="bottom"
+                        show={popoverOpenMap[member.id] || false}
+                        onToggle={() => togglePopover(member.id)}
+                        overlay={
+                          <Popover id={`popover-${member.id}`}>
+                            <Popover.Header as="h3" className="text-center">
+                              Update Role
+                            </Popover.Header>
+                            <Popover.Body>
+                              <div className="popover-options">
+                                {adminRoleId && (
+                                  <div
+                                    className="popover-option"
+                                    onClick={() =>
+                                      handleOptionClick(adminRoleId, member)
+                                    }
+                                  >
+                                    <FontAwesomeIcon
+                                      icon={faUserShield}
+                                      className="popover-option__icon"
+                                    />
+                                    <span className="popover-option__text">Admin</span>
+                                  </div>
+                                )}
+                                {memberRoleId && (
+                                  <div
+                                    className="popover-option"
+                                    onClick={() =>
+                                      handleOptionClick(memberRoleId, member)
+                                    }
+                                  >
+                                    <FontAwesomeIcon
+                                      icon={faUser}
+                                      className="popover-option__icon"
+                                    />
+                                    <span className="popover-option__text">Member</span>
+                                  </div>
+                                )}
+                              </div>
+                            </Popover.Body>
+                          </Popover>
+                        }
+                      >
+                        <div className="board-member__role-wrapper" style={{ cursor: "pointer" }}>
+                          <span className="board-member__role">
+                            {member.roleName}
+                          </span>
+                          <FontAwesomeIcon
+                            icon={faPenToSquare}
+                            className="board-member__role-icon"
+                          />
+                        </div>
+                      </OverlayTrigger>
+                    ) : (
+                      <div className="board-member__role-wrapper">
                         <span className="board-member__role">
                           {member.roleName}
                         </span>
-                        <FontAwesomeIcon
-                          icon={faPenToSquare}
-                          className="board-member__role-icon"
-                        />
                       </div>
-                    </OverlayTrigger>
+                    )
                   ) : (
                     <div className="board-member__role-wrapper">
                       <span className="board-member__role">
