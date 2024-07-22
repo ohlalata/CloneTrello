@@ -79,3 +79,46 @@ export const BOARD_THEME_29 =
   "https://firebasestorage.googleapis.com/v0/b/clonetrello-103ad.appspot.com/o/no29.jpg?alt=media&token=db163223-edd5-4438-ad5c-c7dc76b57a2e";
 export const BOARD_THEME_30 =
   "https://firebasestorage.googleapis.com/v0/b/clonetrello-103ad.appspot.com/o/no30.jpg?alt=media&token=a46c5adb-f8a6-444b-a013-90a2664e8185";
+// ===== Create Label Color ======
+export const LABEL_COLOR = [
+  "#baf3db",
+  "#f8e6a0",
+  "#fedec8",
+  "#ffd5d2",
+  "#dfd8fd",
+  "#4bce97",
+  "#f5cd47",
+  "#fea362",
+  "#f87168",
+  "#9f8fef",
+  "#1f845a",
+  "#946f00",
+  "#c25100",
+  "#c9372c",
+  "#6e5dc6",
+  "#cce0ff",
+  "#c6edfb",
+  "#d3f1a7", //
+  "#fdd0ec", //
+  "#dcdfe4", //
+  "#579dff",
+  "#6cc3e0",
+  "#94c748",
+  "#e774bb",
+  "#8590a2",
+  "#0c66e4",
+  "#227d9b",
+  "#5b7f24",
+  "#ae4787",
+  "#626f86",
+];
+
+// ===== Label Color Default ======
+export const LABEL_DEFAULT = [
+  "#4bce97",
+  "#f5cd47",
+  "#fea362",
+  "#f87168",
+  "#9f8fef",
+  "#579dff",
+];

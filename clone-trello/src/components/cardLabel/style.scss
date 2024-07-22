@@ -1,0 +1,54 @@
+.block__popover-card-label-wrapper .block__popover-card-label {
+  --bs-popover-max-width: 500px;
+  width: 320px;
+  --bs-popover-border-color: rgb(203 203 203 / 81%);
+}
+
+.label__caption {
+  font-size: 12px;
+}
+
+.block__create_card-label {
+  background-color: #e8e9ec;
+  padding: 5px;
+  border-radius: 3px;
+}
+
+.block__sample-color-wrapper {
+  background-color: #f7f8f9;
+  width: 100%;
+  height: 70px;
+}
+
+.block__sample-color {
+  width: 75%;
+  height: 30px;
+  border-radius: 3px;
+}
+
+.title__caption {
+  font-size: 13px;
+}
+
+.block__grid-container {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 3px;
+}
+
+.block__color-box {
+  margin-left: 3px;
+  width: 48px;
+  height: 32px;
+  border-radius: 3px;
+}
+
+.block__remove-color {
+  background-color: #e8e9ec;
+  padding: 5px;
+  border-radius: 3px;
+}
+
+.block__color-box.block__selected-color {
+  border: 3px solid rgb(39, 39, 39);
+}

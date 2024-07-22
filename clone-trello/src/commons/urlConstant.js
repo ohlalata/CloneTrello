@@ -79,5 +79,9 @@ export default {
       updateTodo: "/toDo/update/",
       inactiveTodo: "/toDo/change-status/",
     },
+    label: {
+      createLabel: "/label/create",
+    },
+    cardLabel: "/cardLabel/create",
   },
 };
