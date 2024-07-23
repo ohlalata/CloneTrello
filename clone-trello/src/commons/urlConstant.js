@@ -79,5 +79,11 @@ export default {
       updateTodo: "/toDo/update/",
       inactiveTodo: "/toDo/change-status/",
     },
+    userFcmToken:{
+      createUserFcmToken: "/userFcmToken/create",
+      getAllUserFcmToken: "/userFcmToken/get-all",
+      updateUserFcmToken: "/userFcmToken/update/",
+      inactiveUserFcmToken: "/userFcmToken/change-status",
+    }
   },
 };

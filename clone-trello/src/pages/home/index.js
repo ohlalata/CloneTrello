@@ -214,16 +214,14 @@ const HomePages = () => {
         userId: user.id,
         boardId: boardId,
       };
-      const inviteResponse = await boardMemberService.createBoardMember(
-        requestBody
-      );
+      const inviteResponse = await boardMemberService.createBoardMember(requestBody);
       if (inviteResponse.data.code === 201) {
         toast.success("Board member invited successfully!");
         setInviteModalShow(false);
         setError("");
       }
     } catch (error) {
-      toast.error("Board member invited failed!");
+      toast.error("Board member invitation failed!");
       setError("Invite board member failed!");
       console.error(error);
     }
@@ -391,9 +389,8 @@ const HomePages = () => {
                         key={index}
                         className="block__your-board rounded d-flex flex-column justify-content-between"
                         style={{
-                          backgroundImage: `url(${
-                            boardTheme[index % boardTheme.length]
-                          })`,
+                          backgroundImage: `url(${boardTheme[index % boardTheme.length]
+                            })`,
                         }}
                       >
                         <Link
@@ -512,9 +509,8 @@ const HomePages = () => {
                           key={index}
                           className="block__your-board rounded d-flex flex-column justify-content-between"
                           style={{
-                            backgroundImage: `url(${
-                              boardThemePublic[index % boardThemePublic.length]
-                            })`,
+                            backgroundImage: `url(${boardThemePublic[index % boardThemePublic.length]
+                              })`,
                           }}
                         >
                           <Link
