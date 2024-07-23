@@ -10,6 +10,8 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import * as constants from "../../shared/constants";
 import boardService from "../../api/Services/board";
+import userFcmTokenService from '../../api/Services/userFcmToken'; // Adjust the import path as necessary
+import { getFcmToken } from '../../utils/firebase';
 import { debounce } from "lodash";
 
 const NavBar = () => {
@@ -51,6 +53,45 @@ const NavBar = () => {
 
   const handleBoardClick = (boardId) => {
     navigate(`/board/board-content/${boardId}`);
+  };
+
+  const handleInactiveUserFcmToken = async () => {
+    try {
+      // Retrieve the FCM token from Firebase
+      const currentToken = await getFcmToken();
+      if (currentToken) {
+        console.log('FCM Token: ', currentToken);
+  
+        // Get the user ID from local storage
+        const userProfile = JSON.parse(localStorage.getItem('userProfile'));
+        const userId = userProfile?.data?.id;
+  
+        if (userId) {
+          // Create the query with the FCM token and user ID
+          let query = {
+            fcmToken: currentToken,
+            userId: userId,
+            isActive: false,
+          };
+  
+          // Call the service to inactivate the FCM token
+          await userFcmTokenService.changeStatus(query);
+          
+          // Clear user profile from local storage and navigate
+          localStorage.removeItem("userProfile");
+          navigate("/");
+        } else {
+          console.log('User ID not found in local storage.');
+        }
+      } else {
+        console.log('No FCM token found.');
+      }
+    } catch (error) {
+      console.error("Error inactivating FCM token:", error);
+    }
+  };
+  const handleLogout = async () => {
+    await handleInactiveUserFcmToken();
   };
 
   useEffect(() => {
@@ -140,7 +181,7 @@ const NavBar = () => {
                 </Dropdown.Toggle>
                 <Dropdown.Menu align="end" className="custom-dropdown-menu">
                   <Dropdown.Header>Account</Dropdown.Header>
-                  <Dropdown.Item as={Link} to="/">
+                  <Dropdown.Item onClick={handleLogout}>
                     Logout
                   </Dropdown.Item>
                 </Dropdown.Menu>
