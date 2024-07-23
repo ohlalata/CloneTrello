@@ -81,6 +81,7 @@ export default {
     },
     label: {
       createLabel: "/label/create",
+      getAllLabel: "/label/get-all",
     },
     cardLabel: "/cardLabel/create",
   },

@@ -21,6 +21,12 @@ const CardLabel = () => {
   const [colorSelected, setColorSelected] = useState("#579dff");
   const [isDisableCreate, setIsDisableCreate] = useState(false);
 
+  const [isUpdateCardLabel, setIsUpdateCardLabel] = useState(false);
+
+  const handleUpdateCardLabel = () => {
+    setIsUpdateCardLabel(true);
+  };
+
   const handleHideCardLabel = () => {
     setIsShowCardLabel(false);
   };
@@ -45,6 +51,11 @@ const CardLabel = () => {
     setColorSelected("#e9ebee");
     setSelectCardLabel("99");
     setIsDisableCreate(true);
+  };
+
+  const handleBackCardLabel = () => {
+    setIsCreateCardLabel(false);
+    setIsUpdateCardLabel(false);
   };
   return (
     <React.Fragment>
@@ -76,18 +87,22 @@ const CardLabel = () => {
               className="d-flex justify-content-between"
               style={{ backgroundColor: "#ffffff" }}
             >
-              {isCreateCardLabel ? (
-                <div>
-                  <FontAwesomeIcon
-                    icon={faAngleLeft}
-                    onClick={() => setIsCreateCardLabel(false)}
-                  />
+              {isCreateCardLabel || isUpdateCardLabel ? (
+                <div onClick={handleBackCardLabel}>
+                  <FontAwesomeIcon icon={faAngleLeft} />
                 </div>
               ) : (
                 <div></div>
               )}
 
-              <span className="fw-semibold"> Labels </span>
+              {isCreateCardLabel ? (
+                <span className="fw-semibold"> Create Labels </span>
+              ) : isUpdateCardLabel ? (
+                <span className="fw-semibold">Edit Labels </span>
+              ) : (
+                <span className="fw-semibold"> Labels </span>
+              )}
+
               <div>
                 <Button
                   size="sm"
@@ -98,7 +113,7 @@ const CardLabel = () => {
               </div>
             </Popover.Header>
             <Popover.Body>
-              {isCreateCardLabel ? (
+              {isCreateCardLabel || isUpdateCardLabel ? (
                 <div className="d-flex flex-column gap-3">
                   <div className="block__sample-color-wrapper d-flex justify-content-center align-items-center ">
                     <div
@@ -150,13 +165,21 @@ const CardLabel = () => {
                   <div className="w-100 border border-1"></div>
 
                   <div className="d-flex justify-content-between">
-                    <button
-                      className="btn btn-primary btn-sm"
-                      disabled={isDisableCreate}
-                    >
-                      Create
-                    </button>
-                    {/* <button className="btn btn-danger btn-sm">Delete</button> */}
+                    {isCreateCardLabel && (
+                      <button
+                        className="btn btn-primary btn-sm"
+                        disabled={isDisableCreate}
+                      >
+                        Create
+                      </button>
+                    )}
+                    {isUpdateCardLabel && (
+                      <button className="btn btn-primary btn-sm">Save</button>
+                    )}
+
+                    {isUpdateCardLabel && (
+                      <button className="btn btn-danger btn-sm">Delete</button>
+                    )}
                   </div>
                 </div>
               ) : (
@@ -188,7 +211,10 @@ const CardLabel = () => {
                         >
                           <span className="ms-3 fw-semibold">1</span>
                         </div>
-                        <div className="col-1 d-flex justify-content-center align-items-center">
+                        <div
+                          className="col-1 d-flex justify-content-center align-items-center"
+                          onClick={handleUpdateCardLabel}
+                        >
                           <FontAwesomeIcon icon={faPen} />
                         </div>
                       </div>
