@@ -9,8 +9,9 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import { Popover, Overlay, Button } from "react-bootstrap";
 import * as constants from "../../shared/constants";
+import cardLabelService from "../../api/Services/cardLabel";
 
-const CardLabel = () => {
+const CardLabel = (cardId) => {
   const cardLabelRef = useRef(null);
 
   const [cardLabelTarget, setCardLabelTarget] = useState(null);
@@ -57,6 +58,23 @@ const CardLabel = () => {
     setIsCreateCardLabel(false);
     setIsUpdateCardLabel(false);
   };
+
+  const handleGetAllCardLabel = async () => {
+    let query = { cardId: cardId.cardId };
+    try {
+      const response = await cardLabelService.getAllCardLabel(query);
+      if (response.data.code == 200) {
+        setCardLabel(response.data.data);
+        console.log("list card label: ", response.data.data);
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  useEffect(() => {
+    handleGetAllCardLabel();
+  }, []);
   return (
     <React.Fragment>
       <div
@@ -197,27 +215,38 @@ const CardLabel = () => {
                   <div>
                     <span className="fw-semibold label__caption">Labels</span>
 
-                    <div className="mt-2">
-                      <div className="d-flex justify-content-between ">
-                        <div className="col-1 d-flex justify-content-center align-items-center">
-                          <input
-                            type="checkbox"
-                            className="checkbox__card-label"
-                          />
-                        </div>
+                    <div className="mt-2 d-flex flex-column gap-1">
+                      {cardLabel.map((cardLabels, key) => (
                         <div
-                          className="col-9 d-flex justify-content-start align-items-center"
-                          style={{ height: "30px", backgroundColor: "#4bce97" }}
+                          key={key}
+                          className="d-flex justify-content-between "
                         >
-                          <span className="ms-3 fw-semibold">1</span>
+                          <div className="col-1 d-flex justify-content-center align-items-center">
+                            <input
+                              type="checkbox"
+                              className="checkbox__card-label"
+                            />
+                          </div>
+                          <div
+                            className="col-9 d-flex justify-content-start align-items-center"
+                            style={{
+                              height: "30px",
+                              backgroundColor: "#4bce97",
+                              borderRadius: "3px",
+                            }}
+                          >
+                            <span className="ms-3 fw-semibold">
+                              {cardLabels.labelName}
+                            </span>
+                          </div>
+                          <div
+                            className="col-1 d-flex justify-content-center align-items-center"
+                            onClick={handleUpdateCardLabel}
+                          >
+                            <FontAwesomeIcon icon={faPen} />
+                          </div>
                         </div>
-                        <div
-                          className="col-1 d-flex justify-content-center align-items-center"
-                          onClick={handleUpdateCardLabel}
-                        >
-                          <FontAwesomeIcon icon={faPen} />
-                        </div>
-                      </div>
+                      ))}
                     </div>
                     <div
                       className="block__create_card-label d-flex justify-content-center mt-2"

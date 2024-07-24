@@ -1911,7 +1911,7 @@ const Card = (listIdProps, listBoardIdProps) => {
                     <span>Label</span>
                   </div> */}
 
-                  <CardLabel />
+                  <CardLabel cardId={modalCardDetail.id} />
 
                   <div
                     className="d-flex align-items-center gap-2 p-2 fw-semibold block__card-action"

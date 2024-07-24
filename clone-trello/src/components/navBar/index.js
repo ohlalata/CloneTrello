@@ -115,16 +115,6 @@ const NavBar = () => {
             )}
           </form>
           <div className="ms-2 d-flex gap-3">
-            {/* <div>
-              <FontAwesomeIcon icon={faBell} size="lg" color="#909191" />
-            </div>
-            <div>
-              <FontAwesomeIcon
-                icon={faCircleQuestion}
-                size="lg"
-                color="#909191"
-              />
-            </div> */}
             <div>
               <Dropdown>
                 <Dropdown.Toggle

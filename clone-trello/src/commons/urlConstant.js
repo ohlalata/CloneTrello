@@ -82,7 +82,12 @@ export default {
     label: {
       createLabel: "/label/create",
       getAllLabel: "/label/get-all",
+      updateLabel: "/label/update/",
+      deleteLabel: "/label/change-status/", // noi duoi id
     },
-    cardLabel: "/cardLabel/create",
+    cardLabel: {
+      createCardLabel: "/cardLabel/create",
+      getAllCardLabel: "/cardLabel/get-all",
+    },
   },
 };

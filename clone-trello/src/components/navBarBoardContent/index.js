@@ -28,39 +28,49 @@ const NavbarBoardContent = (boardID) => {
   const [isBoardNameVisible, setIsBoardNameVisible] = useState(false);
   const [boardName, setBoardName] = useState("");
   const [boardIsPublic, setBoardIsPublic] = useState("");
-
   const [inputBoardNameTemp, setInputBoardNameTemp] = useState(boardName);
   const inputReff = useRef(null);
   const spanReff = useRef(null);
-
   const [showPopover, setShowPopover] = useState(false);
   const [target, setTarget] = useState(null);
   const PopoverRef = useRef(null);
-
   const [isOffcanvasOpen, setIsOffanvasOpen] = useState(false);
   const [isLabelOffcanvas, setIsLabelOffcanvas] = useState(false);
-
   const boardLabelReff = useRef(null);
   const [boardLabelTarget, setBoardLabelTarget] = useState(null);
-  const [isShowBoardTarget, setIsShowBoardTarget] = useState(false);
-
+  const [isShowBoardLabel, setIsShowBoardLabel] = useState(false);
   const [colorSelected, setColorSelected] = useState("#579dff");
-
   const [selectBoardLabel, setSelectBoardLabel] = useState(20);
   const [isDisableCreate, setIsDisableCreate] = useState(false);
   const [isCreateBoardLabel, setIsCreateBoardLabel] = useState(false);
   const [isUpdateBoardLabel, setIsUpdateBoardLabel] = useState(false);
-
   const [boardLabel, setBoardLabel] = useState([]);
+  const [boardLabelName, setBoardLabelName] = useState("");
+  const [selectBoardLabelId, setSelectBoardLabelId] = useState("");
+
+  const handleBoardLabelName = (e) => {
+    setBoardLabelName(e.target.value);
+  };
 
   const handleCreateBoardLabel = () => {
     setIsCreateBoardLabel(true);
   };
 
-  const handleUpdateBoardLabel = (event) => {
+  const handleUpdateBoardLabel = (event, color, labelName, id) => {
     setIsUpdateBoardLabel(true);
-    setIsShowBoardTarget(true);
+    setIsShowBoardLabel(true);
     setBoardLabelTarget(event.target);
+
+    setBoardLabelName(labelName);
+    setColorSelected(color);
+    setSelectBoardLabelId(id);
+
+    constants.LABEL_COLOR.forEach((element, index) => {
+      if (element == color) {
+        setSelectBoardLabel(index);
+        return;
+      }
+    });
   };
 
   const handleSelectBoardLabel = (color, index) => {
@@ -76,15 +86,19 @@ const NavbarBoardContent = (boardID) => {
   };
 
   const handlePopoverBoardLabel = (event) => {
-    if (isShowBoardTarget) return;
-    setIsShowBoardTarget(true);
+    if (isShowBoardLabel) return;
+    setIsShowBoardLabel(true);
     setBoardLabelTarget(event.target);
   };
 
   const handleHideBoardLabel = () => {
-    setIsShowBoardTarget(false);
+    setIsShowBoardLabel(false);
     setIsCreateBoardLabel(false);
     setIsUpdateBoardLabel(false);
+
+    setBoardLabelName("");
+    setColorSelected("");
+    setSelectBoardLabel(100);
   };
 
   const showLabelOffcanvas = () => {
@@ -139,6 +153,54 @@ const NavbarBoardContent = (boardID) => {
     }
   };
 
+  const handleDeleteExistBoardLabel = async () => {
+    let query = { id: selectBoardLabelId, isActive: false };
+    try {
+      const response = await labelService.deleteLabel(query);
+      if (response.data.code == 200) {
+        console.log("delete ok");
+        handleGetAllLabel();
+        handleHideBoardLabel();
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  const handleUpdateExistBoardLabel = async () => {
+    let requestBody = {
+      id: selectBoardLabelId,
+      name: boardLabelName,
+      color: colorSelected,
+    };
+    try {
+      const response = await labelService.updateLabel(requestBody);
+      if (response.data.code == 200) {
+        handleGetAllLabel();
+        handleHideBoardLabel();
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  const handleCreateNewBoardLabel = async () => {
+    let requestBody = {
+      boardId: boardID.boardID,
+      name: boardLabelName,
+      color: colorSelected,
+    };
+    try {
+      const response = await labelService.createLabel(requestBody);
+      if (response.data.code == 201) {
+        handleGetAllLabel();
+        handleHideBoardLabel();
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
   const handleGetAllLabel = async () => {
     let query = { boardId: boardID.boardID };
     try {
@@ -180,7 +242,6 @@ const NavbarBoardContent = (boardID) => {
         setIsBoardNameVisible(false);
         setInputBoardNameTemp("");
         handleGetAllBoard();
-        console.log("update board name ok");
       }
     } catch (error) {
       console.error(error);
@@ -446,7 +507,7 @@ const NavbarBoardContent = (boardID) => {
                   </div>
                 </div>
               </Offcanvas.Header>
-              <Offcanvas.Body className="pt-0">
+              <Offcanvas.Body className="pt-0 toann">
                 <div className="w-100 border border-1 mb-3"></div>
 
                 <div className="d-flex flex-column gap-2">
@@ -460,7 +521,7 @@ const NavbarBoardContent = (boardID) => {
                       //onChange={}
                     ></input>
                   </div>
-                  <div>
+                  <div className="block__body-offcanvas">
                     <span className="fw-semibold title__board-label">
                       Labels
                     </span>
@@ -473,12 +534,17 @@ const NavbarBoardContent = (boardID) => {
                           <div
                             ref={boardLabelReff}
                             className="col-10 d-flex justify-content-start align-items-center block__board-label-sample"
-                            style={
-                              {
-                                //backgroundColor: `${boardLabels.color}`,
-                              }
+                            style={{
+                              backgroundColor: `${boardLabels.color}`,
+                            }}
+                            onClick={(e) =>
+                              handleUpdateBoardLabel(
+                                e,
+                                boardLabels.color,
+                                boardLabels.name,
+                                boardLabels.id
+                              )
                             }
-                            onClick={(e) => handleUpdateBoardLabel(e)}
                           >
                             <span className="ms-3 fw-semibold">
                               {boardLabels.name}
@@ -508,8 +574,8 @@ const NavbarBoardContent = (boardID) => {
                       </div>
 
                       <Overlay
-                        show={isShowBoardTarget}
-                        target={boardLabelTarget}
+                        show={isShowBoardLabel}
+                        //target={boardLabelTarget}
                         placement="bottom"
                         container={boardLabelReff.current}
                         rootClose={true}
@@ -535,11 +601,15 @@ const NavbarBoardContent = (boardID) => {
                           </Popover.Header>
                           <Popover.Body>
                             <div className="d-flex flex-column gap-3">
-                              <div className="block__sample-color-wrapper d-flex justify-content-center align-items-center ">
+                              <div className="block__sample-color-board-wrapper d-flex justify-content-center align-items-center ">
                                 <div
-                                  className="block__sample-color"
+                                  className="d-flex align-items-center block__sample-color-board"
                                   style={{ backgroundColor: colorSelected }}
-                                ></div>
+                                >
+                                  <span className="fw-semibold ms-2 text__label-name-ellipsis">
+                                    {boardLabelName}
+                                  </span>
+                                </div>
                               </div>
 
                               <div>
@@ -550,8 +620,8 @@ const NavbarBoardContent = (boardID) => {
                                   type="text"
                                   name="title-board-label"
                                   className="w-100 border border-2 p-1 rounded-1 mt-1"
-                                  //value={}
-                                  //onChange={}
+                                  value={boardLabelName}
+                                  onChange={(e) => handleBoardLabelName(e)}
                                 ></input>
                               </div>
 
@@ -594,18 +664,25 @@ const NavbarBoardContent = (boardID) => {
                                   <button
                                     className="btn btn-primary btn-sm"
                                     disabled={isDisableCreate}
+                                    onClick={handleCreateNewBoardLabel}
                                   >
                                     Create
                                   </button>
                                 )}
                                 {isUpdateBoardLabel && (
-                                  <button className="btn btn-primary btn-sm">
+                                  <button
+                                    className="btn btn-primary btn-sm"
+                                    onClick={handleUpdateExistBoardLabel}
+                                  >
                                     Save
                                   </button>
                                 )}
 
                                 {isUpdateBoardLabel && (
-                                  <button className="btn btn-danger btn-sm">
+                                  <button
+                                    className="btn btn-danger btn-sm"
+                                    onClick={handleDeleteExistBoardLabel}
+                                  >
                                     Delete
                                   </button>
                                 )}
