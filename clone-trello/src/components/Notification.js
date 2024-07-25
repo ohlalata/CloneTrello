@@ -12,8 +12,8 @@ function Notification() {
           body: payload?.notification?.body,
         });
         toast.success(`${payload?.notification?.title}: ${payload?.notification?.body}`, {
-          duration: 30000, 
-          position: 'top-right'
+          duration: 15000, 
+          position: 'bottom-right'
         });
       });
       return () => {
