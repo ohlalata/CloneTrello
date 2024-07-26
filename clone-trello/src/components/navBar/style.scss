@@ -142,3 +142,61 @@
 .btn-toggle-read {
   margin-right: 0.5rem;
 }
+
+.scrollable-container {
+  max-height: 600px;
+  overflow-y: auto;
+  position: relative;
+}
+
+.scrollable-container::-webkit-scrollbar {
+  width: 8px;
+}
+
+.scrollable-container::-webkit-scrollbar-thumb {
+  background-color: rgba(0, 0, 0, 0.3);
+  border-radius: 4px;
+}
+
+.scrollable-container::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.scrollable-container::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  right: 0;
+  width: 8px;
+  background: rgba(255, 255, 255, 0.5);
+  backdrop-filter: blur(5px);
+  pointer-events: none;
+}
+
+.mark-all-as-read {
+  cursor: pointer;
+  transition: color 0.3s, text-decoration 0.3s;
+  text-align: right; /* Position to the right */
+}
+
+.mark-all-as-read:hover {
+  color: #000; /* Darker color */
+  text-decoration: underline;
+}
+
+.no-notifications {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%; 
+  color: #999;
+  font-size: 24px;
+  margin-top: 10px; 
+  margin-bottom: 10px; 
+}
+
+.no-notifications .faBell {
+  margin-bottom: 10px; 
+}

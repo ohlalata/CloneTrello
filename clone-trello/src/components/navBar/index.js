@@ -27,7 +27,7 @@ const NavBar = () => {
   const [notifications, setNotifications] = useState([]);
   const [isPopoverOpen, setIsPopoverOpen] = useState(false);
   const [totalNotifications, setTotalNotifications] = useState(0);
-  const [showUnread, setShowUnread] = useState(false);
+  const [showRead, setShowRead] = useState(false);
   const bellRef = useRef(null);
   const navigate = useNavigate();
 
@@ -192,12 +192,12 @@ const NavBar = () => {
   };
 
   const handleToggleShowRead = () => {
-    setShowUnread(!showUnread);
+    setShowRead(!showRead);
     handleGetNotificationByFilter(currentUserId);
-    if (showUnread === true) {
-      handleGetAllNotification(currentUserId)
-    } else {
+    if (showRead === true) {
       handleGetNotificationByFilter(currentUserId);
+    } else {
+      handleGetAllNotification(currentUserId)
     }
   };
 
@@ -305,7 +305,7 @@ const NavBar = () => {
                     Notifications
                     <div className="notifications-controls">
                       <Button onClick={handleToggleShowRead} className="btn-toggle-read">
-                        {showUnread ? <FontAwesomeIcon icon={faEyeSlash} /> : <FontAwesomeIcon icon={faEye} />}
+                        {showRead ? <FontAwesomeIcon icon={faEyeSlash} /> : <FontAwesomeIcon icon={faEye} />}
                       </Button>
                       <Button onClick={closePopover} className="btn-close-noti">
                         <FontAwesomeIcon icon={faXmark} />
@@ -313,12 +313,14 @@ const NavBar = () => {
                     </div>
                   </Popover.Header>
 
-                  <Popover.Body>
+                  <Popover.Body className="scrollable-container">
                     {notifications.length > 0 ? (
                       <>
-                        <div className="mark-all-as-read" onClick={handleMarkAllAsRead}>
-                          Mark all as read
-                        </div>
+                        {showRead && (
+                          <div className="mark-all-as-read mb-1" onClick={handleMarkAllAsRead}>
+                            Mark all as read
+                          </div>
+                        )}
                         {notifications.map((notification, index) => (
                           <div key={index} className="notification-item">
                             <strong>{notification.title}</strong>
@@ -334,7 +336,10 @@ const NavBar = () => {
                         ))}
                       </>
                     ) : (
-                      <div>No notifications found</div>
+                      <div className="no-notifications">
+                        <FontAwesomeIcon icon={faBell} />
+                        <div>No notifications found</div>
+                      </div>
                     )}
                   </Popover.Body>
                 </Popover>
