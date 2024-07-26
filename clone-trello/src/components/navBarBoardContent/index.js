@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef } from "react";
+import React, { useEffect, useState, useRef, useContext } from "react";
 import "./style.scss";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faArrowLeft, faUserPlus } from "@fortawesome/free-solid-svg-icons";
@@ -23,6 +23,7 @@ import { Offcanvas, OffcanvasHeader, OffcanvasBody } from "react-bootstrap";
 import { constructFrom } from "date-fns";
 import * as constants from "../../shared/constants";
 import labelService from "../../api/Services/label";
+import { AuthContext } from "../authContext";
 
 const NavbarBoardContent = (boardID) => {
   const [isBoardNameVisible, setIsBoardNameVisible] = useState(false);
@@ -47,6 +48,8 @@ const NavbarBoardContent = (boardID) => {
   const [boardLabel, setBoardLabel] = useState([]);
   const [boardLabelName, setBoardLabelName] = useState("");
   const [selectBoardLabelId, setSelectBoardLabelId] = useState("");
+
+  const { labelMiddle, setLabelMiddle } = useContext(AuthContext);
 
   const handleBoardLabelName = (e) => {
     setBoardLabelName(e.target.value);
@@ -208,6 +211,7 @@ const NavbarBoardContent = (boardID) => {
       if (response.data.code == 200) {
         console.log(response.data.data);
         setBoardLabel(response.data.data);
+        setLabelMiddle(response.data.data);
       }
     } catch (error) {
       console.error(error);

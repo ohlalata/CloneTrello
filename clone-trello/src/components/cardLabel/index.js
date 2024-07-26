@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef } from "react";
+import React, { useEffect, useState, useRef, useContext } from "react";
 import "./style.scss";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
@@ -10,6 +10,7 @@ import {
 import { Popover, Overlay, Button } from "react-bootstrap";
 import * as constants from "../../shared/constants";
 import cardLabelService from "../../api/Services/cardLabel";
+import { AuthContext } from "../authContext";
 
 const CardLabel = (cardId) => {
   const cardLabelRef = useRef(null);
@@ -23,6 +24,8 @@ const CardLabel = (cardId) => {
   const [isDisableCreate, setIsDisableCreate] = useState(false);
 
   const [isUpdateCardLabel, setIsUpdateCardLabel] = useState(false);
+
+  const { labelMiddle } = useContext(AuthContext);
 
   const handleUpdateCardLabel = () => {
     setIsUpdateCardLabel(true);
@@ -65,7 +68,6 @@ const CardLabel = (cardId) => {
       const response = await cardLabelService.getAllCardLabel(query);
       if (response.data.code == 200) {
         setCardLabel(response.data.data);
-        console.log("list card label: ", response.data.data);
       }
     } catch (error) {
       console.error(error);
@@ -74,6 +76,7 @@ const CardLabel = (cardId) => {
 
   useEffect(() => {
     handleGetAllCardLabel();
+    console.log("LABEL MIDDLE", labelMiddle);
   }, []);
   return (
     <React.Fragment>
@@ -231,7 +234,7 @@ const CardLabel = (cardId) => {
                             className="col-9 d-flex justify-content-start align-items-center"
                             style={{
                               height: "30px",
-                              backgroundColor: "#4bce97",
+                              backgroundColor: `${cardLabels.labelColor}`,
                               borderRadius: "3px",
                             }}
                           >

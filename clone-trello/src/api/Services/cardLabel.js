@@ -16,4 +16,8 @@ const getAllCardLabel = async (query) => {
   return response;
 };
 
+const createCardLabel = async (query) => {
+  let { cardId, labelId } = query;
+};
+
 export default { getAllCardLabel };
