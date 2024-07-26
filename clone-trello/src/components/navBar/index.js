@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback, useRef } from "react";
 import { Dropdown, Overlay, Popover, Button } from "react-bootstrap";
-import { Link, useParams, useNavigate } from "react-router-dom"; // Import Link component from react-router-dom
+import { Link, useParams, useNavigate, Await } from "react-router-dom"; // Import Link component from react-router-dom
 import "./style.scss";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
@@ -109,6 +109,20 @@ const NavBar = () => {
     await handleInactiveUserFcmToken();
   };
 
+  const handleGetTotalNotification = async (userId) => {
+    try {
+      const response = await notificationService.countNotification({ userId });
+      if (response.data.code === 200) {
+        console.log("Initial total notifications fetched:", response.data.data);
+        setTotalNotifications(response.data.data);
+      } else {
+        console.error("Failed to fetch total notifications.");
+      }
+    } catch (error) {
+      console.error("Error fetching total notifications:", error);
+    }
+  };
+  
   ////////
   useEffect(() => {
     // Start the SignalR connection
@@ -117,13 +131,22 @@ const NavBar = () => {
         console.log("SignalR Connected.");
 
         // Get initial notification count
-        handleGetTotalNotification(currentUserId);
+        handleGetTotalNotification(currentUserId)
 
         // Listen for real-time notification count updates
-        Connection.on("ReceiveTotalNotification", (data) => {
-          setTotalNotifications(data);
+        Connection.on("ReceiveTotalNotification", (totalNotifications) => {
+          console.log("Received total notifications from SignalR:", totalNotifications);
+          setTotalNotifications(totalNotifications);
         });
 
+        // Invoke the server method to get total notifications
+        Connection.invoke("GetTotalNotification", totalNotifications)
+          .then((result) => {
+            console.log("GetTotalNotification invoked, result:", result);
+          })
+          .catch((err) => {
+            console.error("Error invoking GetTotalNotification: ", err);
+          });
       })
       .catch((err) => {
         console.error("SignalR Connection Error: ", err);
@@ -135,19 +158,7 @@ const NavBar = () => {
     };
   }, [currentUserId]);
 
-  const handleGetTotalNotification = async (userId) => {
-    try {
-      const response = await notificationService.countNotification({ userId });
-      if (response.data.code === 200) {
-        Connection.invoke("GetTotalNotification", currentUserId, response.data.data)
-        setTotalNotifications(response.data.data);
-      } else {
-        console.error("Failed to fetch total notifications.");
-      }
-    } catch (error) {
-      console.error("Error fetching total notifications:", error);
-    }
-  };
+  
 
   const handleGetAllNotification = async (userId) => {
     let query = {
