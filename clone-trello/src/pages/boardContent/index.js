@@ -260,20 +260,24 @@ const BoardContentPages = () => {
                                 <div className="dropdown-body p-2 mt-1">
                                   <label className="w-100">Position</label>
                                   <input
-                                    type="text"
+                                    type="number"
                                     className="form-control mt-1"
                                     value={newPosition}
-                                    onChange={(e) =>
-                                      setNewPosition(e.target.value)
-                                    }
+                                    onChange={(e) => {
+                                      const value = e.target.value;
+                                      // Only allow integer values
+                                      if ((Number.isInteger(Number(value)) && Number(value) >= 0) || value === "") {
+                                        setNewPosition(value);
+                                      }
+                                    }}
+                                    step="1"
+                                    min="1"
                                   />
                                 </div>
                                 <button
                                   className="btn btn-primary w-20"
                                   style={{ marginLeft: "5px" }}
-                                  onClick={() =>
-                                    handleSaveClick(catalogList.id)
-                                  }
+                                  onClick={() => handleSaveClick(catalogList.id)}
                                 >
                                   Save
                                 </button>

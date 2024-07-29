@@ -92,5 +92,18 @@ export default {
       deleteCardLabel: "/cardLabel/change-status/", // noi duoi id
       updateCardLabel: "/cardLabel/update/", // noi duoi id
     },
+    userFcmToken: {
+      createUserFcmToken: "/userFcmToken/create",
+      getAllUserFcmToken: "/userFcmToken/get-all",
+      updateUserFcmToken: "/userFcmToken/update/",
+      inactiveUserFcmToken: "/userFcmToken/change-status",
+    },
+    notification: {
+      createNotification: "/notification/create",
+      getAllNotification: "/notification/get-all",
+      getNotificationByFilter: "/notification/get-by-filter",
+      countNotification: "/notification/get-notification-count",
+      readNotification: "/notification/change-status/",
+    },
   },
 };
