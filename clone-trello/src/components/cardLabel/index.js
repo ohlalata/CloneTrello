@@ -91,8 +91,6 @@ const CardLabel = (cardId) => {
     try {
       const responseLabel = await labelService.createLabel(queryLabel);
       if (responseLabel.data.code == 201) {
-        console.log("Create Label OKKKKKKKKKKKKKK");
-
         try {
           let queryCardLabel = {
             cardId: cardId.cardId,
@@ -199,8 +197,8 @@ const CardLabel = (cardId) => {
                       type="text"
                       name="title-card-label"
                       className="w-100 border border-2 p-1 rounded-1 mt-1"
-                      //value={}
-                      //onChange={}
+                      value={titleCardLabel}
+                      onChange={handleCardLabelTitle}
                     ></input>
                   </div>
 
@@ -262,8 +260,8 @@ const CardLabel = (cardId) => {
                       name="search-label"
                       type="text"
                       placeholder="Search labels..."
-                      value={titleCardLabel}
-                      onChange={(e) => handleCardLabelTitle(e)}
+                      // value={}
+                      // onChange={}
                     ></input>
                   </div>
                   <div>
