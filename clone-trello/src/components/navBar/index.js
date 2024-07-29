@@ -109,12 +109,16 @@ const NavBar = () => {
     await handleInactiveUserFcmToken();
   };
 
+  ////////
   const handleGetTotalNotification = async (userId) => {
     try {
       const response = await notificationService.countNotification({ userId });
       if (response.data.code === 200) {
-        console.log("Initial total notifications fetched:", response.data.data);
-        setTotalNotifications(response.data.data);
+        const tempTotalNotifications = response.data.data;
+        console.log("Initial total notifications fetched:", tempTotalNotifications);
+        setTotalNotifications(tempTotalNotifications);
+        const result = await Connection.invoke("GetTotalNotification", currentUserId);
+        console.log("GetTotalNotification invoked, result:", result);
       } else {
         console.error("Failed to fetch total notifications.");
       }
@@ -122,16 +126,15 @@ const NavBar = () => {
       console.error("Error fetching total notifications:", error);
     }
   };
-  
-  ////////
+
   useEffect(() => {
-    // Start the SignalR connection
-    Connection.start()
-      .then(() => {
+    const startSignalRConnection = async () => {
+      try {
+        await Connection.start();
         console.log("SignalR Connected.");
 
         // Get initial notification count
-        handleGetTotalNotification(currentUserId)
+        handleGetTotalNotification(currentUserId);
 
         // Listen for real-time notification count updates
         Connection.on("ReceiveTotalNotification", (totalNotifications) => {
@@ -140,17 +143,15 @@ const NavBar = () => {
         });
 
         // Invoke the server method to get total notifications
-        Connection.invoke("GetTotalNotification", totalNotifications)
-          .then((result) => {
-            console.log("GetTotalNotification invoked, result:", result);
-          })
-          .catch((err) => {
-            console.error("Error invoking GetTotalNotification: ", err);
-          });
-      })
-      .catch((err) => {
+        const result = await Connection.invoke("GetTotalNotification", currentUserId);
+        console.log("GetTotalNotification invoked, result:", result);
+      } catch (err) {
         console.error("SignalR Connection Error: ", err);
-      });
+      }
+    };
+
+    startSignalRConnection();
+
     return () => {
       Connection.stop()
         .then(() => console.log("SignalR Disconnected"))
@@ -158,7 +159,7 @@ const NavBar = () => {
     };
   }, [currentUserId]);
 
-  
+
 
   const handleGetAllNotification = async (userId) => {
     let query = {
@@ -179,6 +180,7 @@ const NavBar = () => {
   const togglePopover = () => {
     handleGetAllNotification(currentUserId);
     setIsPopoverOpen(!isPopoverOpen);
+    setShowRead(false);
   };
 
   const closePopover = () => {
@@ -204,11 +206,10 @@ const NavBar = () => {
 
   const handleToggleShowRead = () => {
     setShowRead(!showRead);
-    handleGetNotificationByFilter(currentUserId);
-    if (showRead === true) {
+    if (!showRead) {
       handleGetNotificationByFilter(currentUserId);
     } else {
-      handleGetAllNotification(currentUserId)
+      handleGetAllNotification(currentUserId);
     }
   };
 
@@ -327,8 +328,8 @@ const NavBar = () => {
                   <Popover.Body className="scrollable-container">
                     {notifications.length > 0 ? (
                       <>
-                        {showRead && (
-                          <div className="mark-all-as-read mb-1" onClick={handleMarkAllAsRead}>
+                        {!showRead && (
+                          <div className="mark-all-as-read mb-2" onClick={handleMarkAllAsRead}>
                             Mark all as read
                           </div>
                         )}
