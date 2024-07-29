@@ -84,6 +84,13 @@ export default {
       getAllUserFcmToken: "/userFcmToken/get-all",
       updateUserFcmToken: "/userFcmToken/update/",
       inactiveUserFcmToken: "/userFcmToken/change-status",
+    },
+    notification:{
+      createNotification: "/notification/create",
+      getAllNotification: "/notification/get-all",
+      getNotificationByFilter: "/notification/get-by-filter",
+      countNotification: "/notification/get-notification-count",
+      readNotification: "/notification/change-status/",
     }
   },
 };

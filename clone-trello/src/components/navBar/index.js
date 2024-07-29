@@ -1,16 +1,21 @@
-import React, { useState, useEffect, useCallback } from "react";
-import { Dropdown } from "react-bootstrap";
-import { Link, useParams, useNavigate } from "react-router-dom"; // Import Link component from react-router-dom
+import React, { useState, useEffect, useCallback, useRef } from "react";
+import { Dropdown, Overlay, Popover, Button } from "react-bootstrap";
+import { Link, useParams, useNavigate, Await } from "react-router-dom"; // Import Link component from react-router-dom
 import "./style.scss";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faBell,
   faCircleQuestion,
   faSearch,
+  faEye,
+  faEyeSlash,
+  faXmark
 } from "@fortawesome/free-solid-svg-icons";
 import * as constants from "../../shared/constants";
 import boardService from "../../api/Services/board";
 import userFcmTokenService from '../../api/Services/userFcmToken'; // Adjust the import path as necessary
+import notificationService from '../../api/Services/notification';
+import Connection from "../signalrConnection";
 import { getFcmToken } from '../../utils/firebase';
 import { debounce } from "lodash";
 
@@ -19,6 +24,11 @@ const NavBar = () => {
   const [boardByName, setBoardByName] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [isFocused, setIsFocused] = useState(false);
+  const [notifications, setNotifications] = useState([]);
+  const [isPopoverOpen, setIsPopoverOpen] = useState(false);
+  const [totalNotifications, setTotalNotifications] = useState(0);
+  const [showRead, setShowRead] = useState(false);
+  const bellRef = useRef(null);
   const navigate = useNavigate();
 
   const handleGetBoardByName = async (searchTerm) => {
@@ -51,9 +61,18 @@ const NavBar = () => {
     event.preventDefault();
   };
 
+  useEffect(() => {
+    handleGetBoardByName(name);
+  }, [name]);
+
+
   const handleBoardClick = (boardId) => {
     navigate(`/board/board-content/${boardId}`);
   };
+
+  // Get the user ID from local storage
+  const userProfile = JSON.parse(localStorage.getItem('userProfile'));
+  const currentUserId = userProfile?.data?.id;
 
   const handleInactiveUserFcmToken = async () => {
     try {
@@ -61,22 +80,18 @@ const NavBar = () => {
       const currentToken = await getFcmToken();
       if (currentToken) {
         console.log('FCM Token: ', currentToken);
-  
-        // Get the user ID from local storage
-        const userProfile = JSON.parse(localStorage.getItem('userProfile'));
-        const userId = userProfile?.data?.id;
-  
-        if (userId) {
+
+        if (currentUserId) {
           // Create the query with the FCM token and user ID
           let query = {
             fcmToken: currentToken,
-            userId: userId,
+            userId: currentUserId,
             isActive: false,
           };
-  
+
           // Call the service to inactivate the FCM token
           await userFcmTokenService.changeStatus(query);
-          
+
           // Clear user profile from local storage and navigate
           localStorage.removeItem("userProfile");
           navigate("/");
@@ -94,9 +109,138 @@ const NavBar = () => {
     await handleInactiveUserFcmToken();
   };
 
+  ////////
+  const handleGetTotalNotification = async (userId) => {
+    try {
+      const response = await notificationService.countNotification({ userId });
+      if (response.data.code === 200) {
+        const tempTotalNotifications = response.data.data;
+        console.log("Initial total notifications fetched:", tempTotalNotifications);
+        setTotalNotifications(tempTotalNotifications);
+        const result = await Connection.invoke("GetTotalNotification", currentUserId);
+        console.log("GetTotalNotification invoked, result:", result);
+      } else {
+        console.error("Failed to fetch total notifications.");
+      }
+    } catch (error) {
+      console.error("Error fetching total notifications:", error);
+    }
+  };
+
   useEffect(() => {
-    handleGetBoardByName(name);
-  }, [name]);
+    const startSignalRConnection = async () => {
+      try {
+        await Connection.start();
+        console.log("SignalR Connected.");
+
+        // Get initial notification count
+        handleGetTotalNotification(currentUserId);
+
+        // Listen for real-time notification count updates
+        Connection.on("ReceiveTotalNotification", (totalNotifications) => {
+          console.log("Received total notifications from SignalR:", totalNotifications);
+          setTotalNotifications(totalNotifications);
+        });
+
+        // Invoke the server method to get total notifications
+        const result = await Connection.invoke("GetTotalNotification", currentUserId);
+        console.log("GetTotalNotification invoked, result:", result);
+      } catch (err) {
+        console.error("SignalR Connection Error: ", err);
+      }
+    };
+
+    startSignalRConnection();
+
+    return () => {
+      Connection.stop()
+        .then(() => console.log("SignalR Disconnected"))
+        .catch((err) => console.error("SignalR Disconnection Error: ", err));
+    };
+  }, [currentUserId]);
+
+
+
+  const handleGetAllNotification = async (userId) => {
+    let query = {
+      userId: userId,
+    };
+    try {
+      const response = await notificationService.getAllNotification(query);
+      if (response.data.code === 200) {
+        setNotifications(response.data.data);
+      } else {
+        console.error("Failed to fetch notifications.");
+      }
+    } catch (error) {
+      console.error("Error fetching notifications:", error);
+    }
+  };
+
+  const togglePopover = () => {
+    handleGetAllNotification(currentUserId);
+    setIsPopoverOpen(!isPopoverOpen);
+    setShowRead(false);
+  };
+
+  const closePopover = () => {
+    setIsPopoverOpen(false);
+  };
+
+  const handleGetNotificationByFilter = async (userId) => {
+    let query = {
+      userId: userId,
+      isRead: null
+    };
+    try {
+      const response = await notificationService.getNotificationByFilter(query);
+      if (response.data.code === 200) {
+        setNotifications(response.data.data);
+      } else {
+        console.error("Failed to fetch notifications.");
+      }
+    } catch (error) {
+      console.error("Error fetching notifications:", error);
+    }
+  };
+
+  const handleToggleShowRead = () => {
+    setShowRead(!showRead);
+    if (!showRead) {
+      handleGetNotificationByFilter(currentUserId);
+    } else {
+      handleGetAllNotification(currentUserId);
+    }
+  };
+
+  const handleChangeStatus = async (id, isRead) => {
+    let query = {
+      id: id,
+      isRead: isRead,
+    };
+    try {
+      const response = await notificationService.changeStatus(query);
+      if (response.data.code === 200) {
+        handleGetAllNotification(currentUserId)
+        handleGetTotalNotification(currentUserId)
+      } else {
+        console.log("Error updating task check status:");
+      }
+    } catch (error) {
+      console.error("Error updating task check status:", error);
+    }
+  };
+
+  const handleMarkAllAsRead = async () => {
+    const unreadNotifications = notifications.filter(notification => !notification.isRead);
+    for (const notification of unreadNotifications) {
+      await handleChangeStatus(notification.id, true);
+    }
+  };
+
+  useEffect(() => {
+    handleGetAllNotification(currentUserId);
+  }, []);
 
   return (
     <React.Fragment>
@@ -121,9 +265,8 @@ const NavBar = () => {
           </div>
 
           <form
-            className={`d-flex align-items-center position-relative ${
-              isFocused ? "focused" : ""
-            }`}
+            className={`d-flex align-items-center position-relative ${isFocused ? "focused" : ""
+              }`}
             role="search"
             onSubmit={handleSearchSubmit}
           >
@@ -156,10 +299,66 @@ const NavBar = () => {
             )}
           </form>
           <div className="ms-2 d-flex gap-3">
-            {/* <div>
-              <FontAwesomeIcon icon={faBell} size="lg" color="#909191" />
-            </div>
             <div>
+              <div className="notification-bell" onClick={togglePopover} ref={bellRef}>
+                <FontAwesomeIcon icon={faBell} size="lg" color="#909191" />
+                {totalNotifications > 0 && (
+                  <span className="notification-count">{totalNotifications}</span>
+                )}
+              </div>
+              <Overlay
+                target={bellRef.current}
+                show={isPopoverOpen}
+                placement="bottom"
+                containerPadding={20}
+              >
+                <Popover id="popover-basic">
+                  <Popover.Header as="h3" className="notifications-header">
+                    Notifications
+                    <div className="notifications-controls">
+                      <Button onClick={handleToggleShowRead} className="btn-toggle-read">
+                        {showRead ? <FontAwesomeIcon icon={faEyeSlash} /> : <FontAwesomeIcon icon={faEye} />}
+                      </Button>
+                      <Button onClick={closePopover} className="btn-close-noti">
+                        <FontAwesomeIcon icon={faXmark} />
+                      </Button>
+                    </div>
+                  </Popover.Header>
+
+                  <Popover.Body className="scrollable-container">
+                    {notifications.length > 0 ? (
+                      <>
+                        {!showRead && (
+                          <div className="mark-all-as-read mb-2" onClick={handleMarkAllAsRead}>
+                            Mark all as read
+                          </div>
+                        )}
+                        {notifications.map((notification, index) => (
+                          <div key={index} className="notification-item">
+                            <strong>{notification.title}</strong>
+                            <p>{notification.body}</p>
+                            <div
+                              className="faEye-container"
+                              onClick={() => handleChangeStatus(notification.id, true)}
+                            >
+                              <FontAwesomeIcon icon={faEye} />
+                              <span className="hover-text">Mark as read</span>
+                            </div>
+                          </div>
+                        ))}
+                      </>
+                    ) : (
+                      <div className="no-notifications">
+                        <FontAwesomeIcon icon={faBell} />
+                        <div>No notifications found</div>
+                      </div>
+                    )}
+                  </Popover.Body>
+                </Popover>
+              </Overlay>
+            </div>
+
+            {/* <div>
               <FontAwesomeIcon
                 icon={faCircleQuestion}
                 size="lg"
