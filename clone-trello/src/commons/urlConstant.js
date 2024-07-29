@@ -88,6 +88,9 @@ export default {
     cardLabel: {
       createCardLabel: "/cardLabel/create",
       getAllCardLabel: "/cardLabel/get-all",
+      getCardLabelByFilter: "/cardLabel/get-by-filter",
+      deleteCardLabel: "/cardLabel/change-status/", // noi duoi id
+      updateCardLabel: "/cardLabel/update/", // noi duoi id
     },
   },
 };

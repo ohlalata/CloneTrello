@@ -11,6 +11,7 @@ import { Popover, Overlay, Button } from "react-bootstrap";
 import * as constants from "../../shared/constants";
 import cardLabelService from "../../api/Services/cardLabel";
 import { AuthContext } from "../authContext";
+import labelService from "../../api/Services/label";
 
 const CardLabel = (cardId) => {
   const cardLabelRef = useRef(null);
@@ -25,7 +26,14 @@ const CardLabel = (cardId) => {
 
   const [isUpdateCardLabel, setIsUpdateCardLabel] = useState(false);
 
+  const [titleCardLabel, setTitleCardLabel] = useState("");
+
   const { labelMiddle } = useContext(AuthContext);
+
+  const handleCardLabelTitle = (e) => {
+    setTitleCardLabel(e.target.value);
+    console.log("HAAAA", e.target.value);
+  };
 
   const handleUpdateCardLabel = () => {
     setIsUpdateCardLabel(true);
@@ -72,6 +80,48 @@ const CardLabel = (cardId) => {
     } catch (error) {
       console.error(error);
     }
+  };
+
+  const handleCreateNewCardLabel = async () => {
+    let queryLabel = {
+      boardId: cardId.boardId,
+      name: titleCardLabel,
+      color: colorSelected,
+    };
+    try {
+      const responseLabel = await labelService.createLabel(queryLabel);
+      if (responseLabel.data.code == 201) {
+        console.log("Create Label OKKKKKKKKKKKKKK");
+
+        try {
+          let queryCardLabel = {
+            cardId: cardId.cardId,
+            labelId: responseLabel.data.data.id,
+          };
+          const responseCardLabel = await cardLabelService.createCardLabel(
+            queryCardLabel
+          );
+          if (responseCardLabel.data.code == 201) {
+            console.log("Create Card Label OKKKKKKKKKKKKKK");
+          }
+        } catch (error) {
+          console.error(error);
+        }
+      }
+    } catch (error) {
+      console.error(error);
+    }
+
+    // let query = { cardId: "", labelId: "" };
+    // try {
+    //   const response = await cardLabelService.createCardLabel(query);
+    //   if (response.data.code == 201) {
+    //     console.log("create card label ok");
+    //     //handleGetAllCardLabel();
+    //   }
+    // } catch (error) {
+    //   console.error(error);
+    // }
   };
 
   useEffect(() => {
@@ -190,6 +240,7 @@ const CardLabel = (cardId) => {
                       <button
                         className="btn btn-primary btn-sm"
                         disabled={isDisableCreate}
+                        onClick={handleCreateNewCardLabel}
                       >
                         Create
                       </button>
@@ -211,8 +262,8 @@ const CardLabel = (cardId) => {
                       name="search-label"
                       type="text"
                       placeholder="Search labels..."
-                      //value={}
-                      //onChange={}
+                      value={titleCardLabel}
+                      onChange={(e) => handleCardLabelTitle(e)}
                     ></input>
                   </div>
                   <div>
