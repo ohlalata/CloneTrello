@@ -333,8 +333,8 @@ const Card = (listIdProps, listBoardIdProps) => {
     if (cardDetail?.startDate && cardDetail?.endDate) {
       setLabelDay(
         format(new Date(cardDetail.startDate), "PPP") +
-        " - " +
-        format(new Date(cardDetail.endDate), "PPP, p")
+          " - " +
+          format(new Date(cardDetail.endDate), "PPP, p")
       );
       setVisileLabelDay("Dates");
     }
@@ -1407,29 +1407,31 @@ const Card = (listIdProps, listBoardIdProps) => {
                                             </span>
                                             <div className="d-flex gap-1">
                                               <span
-                                                className={`task-priority ${task.priorityLevel === "Low"
+                                                className={`task-priority ${
+                                                  task.priorityLevel === "Low"
                                                     ? "priority-low"
                                                     : task.priorityLevel ===
                                                       "Medium"
-                                                      ? "priority-medium"
-                                                      : task.priorityLevel ===
-                                                        "High"
-                                                        ? "priority-high"
-                                                        : ""
-                                                  }`}
+                                                    ? "priority-medium"
+                                                    : task.priorityLevel ===
+                                                      "High"
+                                                    ? "priority-high"
+                                                    : ""
+                                                }`}
                                               >
                                                 {task.priorityLevel}
                                               </span>
                                               <span
-                                                className={`task-status ${task.status === "New"
+                                                className={`task-status ${
+                                                  task.status === "New"
                                                     ? "status-new"
                                                     : task.status ===
                                                       "InProgress"
-                                                      ? "status-in-progress"
-                                                      : task.status === "Resolved"
-                                                        ? "status-resolved"
-                                                        : ""
-                                                  }`}
+                                                    ? "status-in-progress"
+                                                    : task.status === "Resolved"
+                                                    ? "status-resolved"
+                                                    : ""
+                                                }`}
                                               >
                                                 {task.status}
                                               </span>
@@ -1460,10 +1462,10 @@ const Card = (listIdProps, listBoardIdProps) => {
                                                 style={{ marginRight: "5px" }}
                                               />
                                               {availableUsers.length > 0 &&
-                                                task.assignedUserId
+                                              task.assignedUserId
                                                 ? userLookup[
-                                                task.assignedUserId
-                                                ] || "User not found"
+                                                    task.assignedUserId
+                                                  ] || "User not found"
                                                 : "Unassigned"}
                                             </div>
                                             <div
@@ -1495,7 +1497,7 @@ const Card = (listIdProps, listBoardIdProps) => {
                                     ...prevTask,
                                     [name]:
                                       name === "priorityLevel" ||
-                                        name === "status"
+                                      name === "status"
                                         ? parseInt(value, 10)
                                         : value,
                                   }));
@@ -1572,7 +1574,7 @@ const Card = (listIdProps, listBoardIdProps) => {
                 </div>
                 <Comments cardId={modalCardDetail.id} />
 
-                {/* {activityVisible && (
+                {activityVisible && (
                   <div className="d-flex gap-2 p-1">
                     <div className="block__user-activity">
                       <img src={constants.USER_UNDEFINE_URL} />
@@ -1586,7 +1588,7 @@ const Card = (listIdProps, listBoardIdProps) => {
                       <span>time</span>
                     </div>
                   </div>
-                )} */}
+                )}
               </div>
               <div className="col-3 px-2">
                 <div className="d-flex flex-column gap-2">
@@ -1905,13 +1907,6 @@ const Card = (listIdProps, listBoardIdProps) => {
                       </Popover>
                     </Overlay>
                   </div>
-
-                  {/* <div className="d-flex align-items-center gap-2 p-2 fw-semibold block__card-action">
-                    <div>
-                      <FontAwesomeIcon icon={faTags} />
-                    </div>
-                    <span>Label</span>
-                  </div> */}
 
                   <CardLabel
                     cardId={modalCardDetail.id}

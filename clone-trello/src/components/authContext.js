@@ -2,7 +2,7 @@ import React, { createContext, useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import axiosLocalHost from "../utils/customAxios";
 import userService from "../api/Services/user";
-import { requestPermission } from '../utils/firebase';
+import { requestPermission } from "../utils/firebase";
 
 const AuthContext = createContext();
 
@@ -10,7 +10,6 @@ const AuthProvider = ({ children }) => {
   const navigate = useNavigate();
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [navigateHot, setNavigateHot] = useState();
-  const [labelMiddle, setLabelMiddle] = useState([]);
 
   const loginContext = (Token) => {
     if (Token) {
@@ -62,9 +61,7 @@ const AuthProvider = ({ children }) => {
   });
 
   return (
-    <AuthContext.Provider
-      value={{ isAuthenticated, loginContext, labelMiddle, setLabelMiddle }}
-    >
+    <AuthContext.Provider value={{ isAuthenticated, loginContext }}>
       {children}
     </AuthContext.Provider>
   );

@@ -26,28 +26,24 @@ const Comments = (cardId) => {
   const [editCommentId, setEditCommentId] = useState("");
 
   useEffect(() => {
-    Connection.start()
-      .then(() => {
-        console.log("SignalR Connected.");
+    if (Connection.state == "Disconnected") {
+      Connection.start()
+        .then(() => {
+          console.log("SignalR Connected.");
 
-        console.log("CONNECTIONID: ", Connection.connectionId);
-        Connection.on(
-          "ReceiveComment",
-          //   (comment) => {
-          //   setComments((prevComments) => [...prevComments, comment]);
-          // }
-          (comment) => tempComment(comment)
+          console.log("CONNECTIONID: ", Connection.connectionId);
+          Connection.on("ReceiveComment", (comment) => tempComment(comment));
+        })
+        .catch((error) =>
+          console.error("Error while starting connection: " + error)
         );
-      })
-      .catch((error) =>
-        console.error("Error while starting connection: " + error)
-      );
 
-    return () => {
-      console.log("CONNECTION STOP!");
-      Connection.off("ReceiveComment");
-      Connection.stop();
-    };
+      return () => {
+        console.log("CONNECTION STOP!");
+        Connection.off("ReceiveComment");
+        Connection.stop();
+      };
+    }
   }, []);
 
   const tempComment = (comment) => {

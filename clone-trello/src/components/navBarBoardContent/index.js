@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef, useContext } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import "./style.scss";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faArrowLeft, faUserPlus } from "@fortawesome/free-solid-svg-icons";
@@ -23,7 +23,6 @@ import { Offcanvas, OffcanvasHeader, OffcanvasBody } from "react-bootstrap";
 import { constructFrom } from "date-fns";
 import * as constants from "../../shared/constants";
 import labelService from "../../api/Services/label";
-import { AuthContext } from "../authContext";
 
 const NavbarBoardContent = (boardID) => {
   const [isBoardNameVisible, setIsBoardNameVisible] = useState(false);
@@ -49,8 +48,6 @@ const NavbarBoardContent = (boardID) => {
   const [boardLabelName, setBoardLabelName] = useState("");
   const [selectBoardLabelId, setSelectBoardLabelId] = useState("");
 
-  const { labelMiddle, setLabelMiddle } = useContext(AuthContext);
-
   const handleBoardLabelName = (e) => {
     setBoardLabelName(e.target.value);
   };
@@ -62,7 +59,7 @@ const NavbarBoardContent = (boardID) => {
   const handleUpdateBoardLabel = (event, color, labelName, id) => {
     setIsUpdateBoardLabel(true);
     setIsShowBoardLabel(true);
-    setBoardLabelTarget(event.target);
+    //setBoardLabelTarget(event.target);
 
     setBoardLabelName(labelName);
     setColorSelected(color);
@@ -91,7 +88,7 @@ const NavbarBoardContent = (boardID) => {
   const handlePopoverBoardLabel = (event) => {
     if (isShowBoardLabel) return;
     setIsShowBoardLabel(true);
-    setBoardLabelTarget(event.target);
+    //setBoardLabelTarget(event.target);
   };
 
   const handleHideBoardLabel = () => {
@@ -211,7 +208,6 @@ const NavbarBoardContent = (boardID) => {
       if (response.data.code == 200) {
         console.log(response.data.data);
         setBoardLabel(response.data.data);
-        setLabelMiddle(response.data.data);
       }
     } catch (error) {
       console.error(error);
@@ -526,9 +522,12 @@ const NavbarBoardContent = (boardID) => {
                     ></input>
                   </div>
                   <div className="block__body-offcanvas">
-                    <span className="fw-semibold title__board-label">
-                      Labels
-                    </span>
+                    <div className="w-100" ref={boardLabelReff}>
+                      <span className="fw-semibold title__board-label">
+                        Labels
+                      </span>
+                    </div>
+
                     <div className="mt-2 d-flex flex-column gap-1">
                       {boardLabel.map((boardLabels, key) => (
                         <div
@@ -536,7 +535,7 @@ const NavbarBoardContent = (boardID) => {
                           key={key}
                         >
                           <div
-                            ref={boardLabelReff}
+                            //ref={boardLabelReff}
                             className="col-10 d-flex justify-content-start align-items-center block__board-label-sample"
                             style={{
                               backgroundColor: `${boardLabels.color}`,
@@ -555,9 +554,16 @@ const NavbarBoardContent = (boardID) => {
                             </span>
                           </div>
                           <div
-                            ref={boardLabelReff}
+                            //ref={boardLabelReff}
                             className="col-2 d-flex justify-content-center align-items-center"
-                            onClick={(e) => handleUpdateBoardLabel(e)}
+                            onClick={(e) =>
+                              handleUpdateBoardLabel(
+                                e,
+                                boardLabels.color,
+                                boardLabels.name,
+                                boardLabels.id
+                              )
+                            }
                           >
                             <FontAwesomeIcon icon={faPen} />
                           </div>
@@ -566,7 +572,7 @@ const NavbarBoardContent = (boardID) => {
                     </div>
 
                     <div
-                      ref={boardLabelReff}
+                      //ref={boardLabelReff}
                       onClick={(e) => handlePopoverBoardLabel(e)}
                       className="block__popover-board-label-wrapper"
                     >
@@ -579,7 +585,7 @@ const NavbarBoardContent = (boardID) => {
 
                       <Overlay
                         show={isShowBoardLabel}
-                        //target={boardLabelTarget}
+                        target={boardLabelReff.current}
                         placement="bottom"
                         container={boardLabelReff.current}
                         rootClose={true}
