@@ -49,6 +49,7 @@ import { enUS, vi } from "date-fns/locale";
 //import Connection from "../signalrConnection";
 import Comments from "../comments";
 import TaskForm from "../taskForm";
+import CardLabel from "../cardLabel";
 
 const Card = (listIdProps, listBoardIdProps) => {
   const textareaRefCardTitle = useRef(null);
@@ -1905,12 +1906,17 @@ const Card = (listIdProps, listBoardIdProps) => {
                     </Overlay>
                   </div>
 
-                  <div className="d-flex align-items-center gap-2 p-2 fw-semibold block__card-action">
+                  {/* <div className="d-flex align-items-center gap-2 p-2 fw-semibold block__card-action">
                     <div>
                       <FontAwesomeIcon icon={faTags} />
                     </div>
                     <span>Label</span>
-                  </div>
+                  </div> */}
+
+                  <CardLabel
+                    cardId={modalCardDetail.id}
+                    boardId={listIdProps.listBoardIdProps}
+                  />
 
                   <div
                     className="d-flex align-items-center gap-2 p-2 fw-semibold block__card-action"

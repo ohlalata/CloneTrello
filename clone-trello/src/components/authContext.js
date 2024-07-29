@@ -10,6 +10,7 @@ const AuthProvider = ({ children }) => {
   const navigate = useNavigate();
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [navigateHot, setNavigateHot] = useState();
+  const [labelMiddle, setLabelMiddle] = useState([]);
 
   const loginContext = (Token) => {
     if (Token) {
@@ -40,6 +41,8 @@ const AuthProvider = ({ children }) => {
     }
   };
 
+  //
+
   useEffect(() => {
     const checkAuth = localStorage.getItem("checkAuth") === "true";
     setIsAuthenticated(checkAuth);
@@ -59,7 +62,9 @@ const AuthProvider = ({ children }) => {
   });
 
   return (
-    <AuthContext.Provider value={{ isAuthenticated, loginContext }}>
+    <AuthContext.Provider
+      value={{ isAuthenticated, loginContext, labelMiddle, setLabelMiddle }}
+    >
       {children}
     </AuthContext.Provider>
   );

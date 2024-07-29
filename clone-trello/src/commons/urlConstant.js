@@ -79,18 +79,31 @@ export default {
       updateTodo: "/toDo/update/",
       inactiveTodo: "/toDo/change-status/",
     },
-    userFcmToken:{
+    label: {
+      createLabel: "/label/create",
+      getAllLabel: "/label/get-all",
+      updateLabel: "/label/update/",
+      deleteLabel: "/label/change-status/", // noi duoi id
+    },
+    cardLabel: {
+      createCardLabel: "/cardLabel/create",
+      getAllCardLabel: "/cardLabel/get-all",
+      getCardLabelByFilter: "/cardLabel/get-by-filter",
+      deleteCardLabel: "/cardLabel/change-status/", // noi duoi id
+      updateCardLabel: "/cardLabel/update/", // noi duoi id
+    },
+    userFcmToken: {
       createUserFcmToken: "/userFcmToken/create",
       getAllUserFcmToken: "/userFcmToken/get-all",
       updateUserFcmToken: "/userFcmToken/update/",
       inactiveUserFcmToken: "/userFcmToken/change-status",
     },
-    notification:{
+    notification: {
       createNotification: "/notification/create",
       getAllNotification: "/notification/get-all",
       getNotificationByFilter: "/notification/get-by-filter",
       countNotification: "/notification/get-notification-count",
       readNotification: "/notification/change-status/",
-    }
+    },
   },
 };

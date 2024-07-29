@@ -9,14 +9,14 @@ import {
   faSearch,
   faEye,
   faEyeSlash,
-  faXmark
+  faXmark,
 } from "@fortawesome/free-solid-svg-icons";
 import * as constants from "../../shared/constants";
 import boardService from "../../api/Services/board";
-import userFcmTokenService from '../../api/Services/userFcmToken'; // Adjust the import path as necessary
-import notificationService from '../../api/Services/notification';
+import userFcmTokenService from "../../api/Services/userFcmToken"; // Adjust the import path as necessary
+import notificationService from "../../api/Services/notification";
 import Connection from "../signalrConnection";
-import { getFcmToken } from '../../utils/firebase';
+import { getFcmToken } from "../../utils/firebase";
 import { debounce } from "lodash";
 
 const NavBar = () => {
@@ -65,13 +65,12 @@ const NavBar = () => {
     handleGetBoardByName(name);
   }, [name]);
 
-
   const handleBoardClick = (boardId) => {
     navigate(`/board/board-content/${boardId}`);
   };
 
   // Get the user ID from local storage
-  const userProfile = JSON.parse(localStorage.getItem('userProfile'));
+  const userProfile = JSON.parse(localStorage.getItem("userProfile"));
   const currentUserId = userProfile?.data?.id;
 
   const handleInactiveUserFcmToken = async () => {
@@ -79,7 +78,7 @@ const NavBar = () => {
       // Retrieve the FCM token from Firebase
       const currentToken = await getFcmToken();
       if (currentToken) {
-        console.log('FCM Token: ', currentToken);
+        console.log("FCM Token: ", currentToken);
 
         if (currentUserId) {
           // Create the query with the FCM token and user ID
@@ -96,10 +95,10 @@ const NavBar = () => {
           localStorage.removeItem("userProfile");
           navigate("/");
         } else {
-          console.log('User ID not found in local storage.');
+          console.log("User ID not found in local storage.");
         }
       } else {
-        console.log('No FCM token found.');
+        console.log("No FCM token found.");
       }
     } catch (error) {
       console.error("Error inactivating FCM token:", error);
@@ -115,9 +114,15 @@ const NavBar = () => {
       const response = await notificationService.countNotification({ userId });
       if (response.data.code === 200) {
         const tempTotalNotifications = response.data.data;
-        console.log("Initial total notifications fetched:", tempTotalNotifications);
+        console.log(
+          "Initial total notifications fetched:",
+          tempTotalNotifications
+        );
         setTotalNotifications(tempTotalNotifications);
-        const result = await Connection.invoke("GetTotalNotification", currentUserId);
+        const result = await Connection.invoke(
+          "GetTotalNotification",
+          currentUserId
+        );
         console.log("GetTotalNotification invoked, result:", result);
       } else {
         console.error("Failed to fetch total notifications.");
@@ -138,12 +143,18 @@ const NavBar = () => {
 
         // Listen for real-time notification count updates
         Connection.on("ReceiveTotalNotification", (totalNotifications) => {
-          console.log("Received total notifications from SignalR:", totalNotifications);
+          console.log(
+            "Received total notifications from SignalR:",
+            totalNotifications
+          );
           setTotalNotifications(totalNotifications);
         });
 
         // Invoke the server method to get total notifications
-        const result = await Connection.invoke("GetTotalNotification", currentUserId);
+        const result = await Connection.invoke(
+          "GetTotalNotification",
+          currentUserId
+        );
         console.log("GetTotalNotification invoked, result:", result);
       } catch (err) {
         console.error("SignalR Connection Error: ", err);
@@ -158,8 +169,6 @@ const NavBar = () => {
         .catch((err) => console.error("SignalR Disconnection Error: ", err));
     };
   }, [currentUserId]);
-
-
 
   const handleGetAllNotification = async (userId) => {
     let query = {
@@ -190,7 +199,7 @@ const NavBar = () => {
   const handleGetNotificationByFilter = async (userId) => {
     let query = {
       userId: userId,
-      isRead: null
+      isRead: null,
     };
     try {
       const response = await notificationService.getNotificationByFilter(query);
@@ -221,8 +230,8 @@ const NavBar = () => {
     try {
       const response = await notificationService.changeStatus(query);
       if (response.data.code === 200) {
-        handleGetAllNotification(currentUserId)
-        handleGetTotalNotification(currentUserId)
+        handleGetAllNotification(currentUserId);
+        handleGetTotalNotification(currentUserId);
       } else {
         console.log("Error updating task check status:");
       }
@@ -232,7 +241,9 @@ const NavBar = () => {
   };
 
   const handleMarkAllAsRead = async () => {
-    const unreadNotifications = notifications.filter(notification => !notification.isRead);
+    const unreadNotifications = notifications.filter(
+      (notification) => !notification.isRead
+    );
     for (const notification of unreadNotifications) {
       await handleChangeStatus(notification.id, true);
     }
@@ -265,8 +276,9 @@ const NavBar = () => {
           </div>
 
           <form
-            className={`d-flex align-items-center position-relative ${isFocused ? "focused" : ""
-              }`}
+            className={`d-flex align-items-center position-relative ${
+              isFocused ? "focused" : ""
+            }`}
             role="search"
             onSubmit={handleSearchSubmit}
           >
@@ -300,10 +312,16 @@ const NavBar = () => {
           </form>
           <div className="ms-2 d-flex gap-3">
             <div>
-              <div className="notification-bell" onClick={togglePopover} ref={bellRef}>
+              <div
+                className="notification-bell"
+                onClick={togglePopover}
+                ref={bellRef}
+              >
                 <FontAwesomeIcon icon={faBell} size="lg" color="#909191" />
                 {totalNotifications > 0 && (
-                  <span className="notification-count">{totalNotifications}</span>
+                  <span className="notification-count">
+                    {totalNotifications}
+                  </span>
                 )}
               </div>
               <Overlay
@@ -316,8 +334,15 @@ const NavBar = () => {
                   <Popover.Header as="h3" className="notifications-header">
                     Notifications
                     <div className="notifications-controls">
-                      <Button onClick={handleToggleShowRead} className="btn-toggle-read">
-                        {showRead ? <FontAwesomeIcon icon={faEyeSlash} /> : <FontAwesomeIcon icon={faEye} />}
+                      <Button
+                        onClick={handleToggleShowRead}
+                        className="btn-toggle-read"
+                      >
+                        {showRead ? (
+                          <FontAwesomeIcon icon={faEyeSlash} />
+                        ) : (
+                          <FontAwesomeIcon icon={faEye} />
+                        )}
                       </Button>
                       <Button onClick={closePopover} className="btn-close-noti">
                         <FontAwesomeIcon icon={faXmark} />
@@ -329,7 +354,10 @@ const NavBar = () => {
                     {notifications.length > 0 ? (
                       <>
                         {!showRead && (
-                          <div className="mark-all-as-read mb-2" onClick={handleMarkAllAsRead}>
+                          <div
+                            className="mark-all-as-read mb-2"
+                            onClick={handleMarkAllAsRead}
+                          >
                             Mark all as read
                           </div>
                         )}
@@ -339,7 +367,9 @@ const NavBar = () => {
                             <p>{notification.body}</p>
                             <div
                               className="faEye-container"
-                              onClick={() => handleChangeStatus(notification.id, true)}
+                              onClick={() =>
+                                handleChangeStatus(notification.id, true)
+                              }
                             >
                               <FontAwesomeIcon icon={faEye} />
                               <span className="hover-text">Mark as read</span>
@@ -380,9 +410,7 @@ const NavBar = () => {
                 </Dropdown.Toggle>
                 <Dropdown.Menu align="end" className="custom-dropdown-menu">
                   <Dropdown.Header>Account</Dropdown.Header>
-                  <Dropdown.Item onClick={handleLogout}>
-                    Logout
-                  </Dropdown.Item>
+                  <Dropdown.Item onClick={handleLogout}>Logout</Dropdown.Item>
                 </Dropdown.Menu>
               </Dropdown>
             </div>
