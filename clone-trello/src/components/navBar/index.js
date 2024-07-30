@@ -114,16 +114,13 @@ const NavBar = () => {
       const response = await notificationService.countNotification({ userId });
       if (response.data.code === 200) {
         const tempTotalNotifications = response.data.data;
+        console.log(tempTotalNotifications)
         console.log(
           "Initial total notifications fetched:",
           tempTotalNotifications
         );
         setTotalNotifications(tempTotalNotifications);
-        const result = await Connection.invoke(
-          "GetTotalNotification",
-          currentUserId
-        );
-        console.log("GetTotalNotification invoked, result:", result);
+
       } else {
         console.error("Failed to fetch total notifications.");
       }
@@ -139,23 +136,29 @@ const NavBar = () => {
         console.log("SignalR Connected.");
 
         // Get initial notification count
-        handleGetTotalNotification(currentUserId);
+        await handleGetAllNotification(currentUserId);
 
         // Listen for real-time notification count updates
         Connection.on("ReceiveTotalNotification", (totalNotifications) => {
-          console.log(
-            "Received total notifications from SignalR:",
-            totalNotifications
+          // console.log("Real-time notification update received:", totalNotifications);
+          // setTotalNotifications(totalNotifications);
+          Connection.invoke(
+            "ReceiveTotalNotification", 
+            currentUserId
           );
+          console.log("GetTotalNotification invoked, result:", totalNotifications);
           setTotalNotifications(totalNotifications);
+  
         });
 
         // Invoke the server method to get total notifications
-        const result = await Connection.invoke(
-          "GetTotalNotification",
-          currentUserId
-        );
-        console.log("GetTotalNotification invoked, result:", result);
+        // const result = await Connection.invoke(
+        //   "ReceiveTotalNotification",  // Correct method name
+        //   currentUserId
+        // );
+        // console.log("GetTotalNotification invoked, result:", result);
+        // setTotalNotifications(result);
+
       } catch (err) {
         console.error("SignalR Connection Error: ", err);
       }
@@ -170,6 +173,7 @@ const NavBar = () => {
     };
   }, [currentUserId]);
 
+
   const handleGetAllNotification = async (userId) => {
     let query = {
       userId: userId,
@@ -178,6 +182,9 @@ const NavBar = () => {
       const response = await notificationService.getAllNotification(query);
       if (response.data.code === 200) {
         setNotifications(response.data.data);
+        const totalCount = response.data.totalCount;
+        console.log("Initial total notifications fetched:", totalCount);
+        setTotalNotifications(totalCount);
       } else {
         console.error("Failed to fetch notifications.");
       }
@@ -276,9 +283,8 @@ const NavBar = () => {
           </div>
 
           <form
-            className={`d-flex align-items-center position-relative ${
-              isFocused ? "focused" : ""
-            }`}
+            className={`d-flex align-items-center position-relative ${isFocused ? "focused" : ""
+              }`}
             role="search"
             onSubmit={handleSearchSubmit}
           >
