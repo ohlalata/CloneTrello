@@ -40,7 +40,7 @@ const Comments = (cardId) => {
       return () => {
         console.log("CONNECTION STOP!");
         Connection.off("ReceiveComment");
-        Connection.stop();
+        // Connection.stop();
       };
     }
   }, []);

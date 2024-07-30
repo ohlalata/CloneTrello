@@ -107,7 +107,7 @@ export default {
     },
     cardActivity: {
       getAllCardActivity: "/cardActivity/get-all",
-      createActivity: "/cardActivity/create",
+      createCardActivity: "/cardActivity/create",
     },
   },
 };

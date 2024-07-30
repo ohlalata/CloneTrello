@@ -51,6 +51,7 @@ import Comments from "../comments";
 import TaskForm from "../taskForm";
 import CardLabel from "../cardLabel";
 import cardLabelService from "../../api/Services/cardLabel";
+import cardActivityService from "../../api/Services/cardActivity";
 
 const Card = (listIdProps, listBoardIdProps) => {
   const textareaRefCardTitle = useRef(null);
@@ -497,6 +498,18 @@ const Card = (listIdProps, listBoardIdProps) => {
   //     }
   //   } catch (error) {
   //     console.log(error);
+  //   }
+  // };
+
+  // const handleCreateCardActivity = async () => {
+  //   let query = {};
+  //   try {
+  //     const response = await cardActivityService.createCardActivity(query);
+  //     if (response.data.data == 201) {
+  //       console.log("create card activity ok");
+  //     }
+  //   } catch (error) {
+  //     console.error(error);
   //   }
   // };
 
