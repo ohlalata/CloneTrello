@@ -50,6 +50,7 @@ import { enUS, vi } from "date-fns/locale";
 import Comments from "../comments";
 import TaskForm from "../taskForm";
 import CardLabel from "../cardLabel";
+import cardLabelService from "../../api/Services/cardLabel";
 
 const Card = (listIdProps, listBoardIdProps) => {
   const textareaRefCardTitle = useRef(null);
@@ -133,6 +134,7 @@ const Card = (listIdProps, listBoardIdProps) => {
 
   const [labelDay, setLabelDay] = useState("");
   const [visileLabelDay, setVisileLabelDay] = useState("");
+  const [cardLabels, setCardLabels] = useState([]);
 
   const pastMonth = new Date();
   const dayRange = {
@@ -1087,6 +1089,24 @@ const Card = (listIdProps, listBoardIdProps) => {
     }
   }, [todoItems]);
 
+  const handleGetAllCardLabel = async () => {
+    let query = { cardId: modalCardDetail.id };
+    try {
+      const response = await cardLabelService.getAllCardLabel(query);
+      if (response.data.code == 200) {
+        setCardLabels(response.data.data);
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  useEffect(() => {
+    if (isModalCardShow && modalCardDetail.id) {
+      handleGetAllCardLabel();
+    }
+  }, [isModalCardShow, modalCardDetail]);
+
   return (
     <React.Fragment>
       <ol className="block__list-card">
@@ -1185,6 +1205,19 @@ const Card = (listIdProps, listBoardIdProps) => {
               </div>
               <span>in list {listIdProps.listNameProps}</span>
               {/* VISUAL */}
+              <div className="mt-1">
+                <div className="label-container">
+                  {cardLabels.map((label) => (
+                    <span
+                      key={label.id}
+                      className="label-name"
+                      style={{ backgroundColor: label.labelColor }}
+                    >
+                      {label.labelName}
+                    </span>
+                  ))}
+                </div>
+              </div>
               <div className="mt-1">
                 {visileLabelDay && labelDay && (
                   <div className="d-flex flex-column gap-1">
