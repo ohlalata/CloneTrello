@@ -28,6 +28,7 @@ import { jwtDecode } from "jwt-decode";
 import { toast } from "react-toastify";
 import "react-toastify/ReactToastify.css";
 import { debounce } from "lodash";
+import Connection from "../../components/signalrConnection";
 
 const HomePages = () => {
   const [activeKey, setActiveKey] = useState("/home");
@@ -217,6 +218,10 @@ const HomePages = () => {
       const inviteResponse = await boardMemberService.createBoardMember(requestBody);
       if (inviteResponse.data.code === 201) {
         toast.success("Board member invited successfully!");
+        Connection.invoke(
+          "ReceiveTotalNotification",
+          requestBody.userId
+        );
         setInviteModalShow(false);
         setError("");
       }
