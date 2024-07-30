@@ -30,7 +30,6 @@ const Comments = (cardId) => {
       Connection.start()
         .then(() => {
           console.log("SignalR Connected.");
-
           console.log("CONNECTIONID: ", Connection.connectionId);
           Connection.on("ReceiveComment", (comment) => tempComment(comment));
         })
