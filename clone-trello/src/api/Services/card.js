@@ -110,6 +110,22 @@ const changeStatus = async (query) => {
   return response;
 };
 
+const moveCard = async (query) => {
+  let { id, newListId } = query;
+  if (!id || !newListId) {
+    return;
+  }
+
+  let serviceUrl = `${urlConstant.endpoint.card.moveCard}${id}?newListId=${newListId}`;
+
+  try {
+    const response = await axiosLocalHost.normalRequest.put(serviceUrl);
+    return response;
+  } catch (error) {
+    throw error; 
+  }
+};
+
 export default {
   getAllCard,
   createCard,
@@ -118,4 +134,5 @@ export default {
   updateCardDescription,
   getCardByFilter,
   updateCardDates,
+  moveCard,
 };

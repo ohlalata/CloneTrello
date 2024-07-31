@@ -28,7 +28,8 @@ import { jwtDecode } from "jwt-decode";
 import { toast } from "react-toastify";
 import "react-toastify/ReactToastify.css";
 import { debounce } from "lodash";
-import Connection from "../../components/signalrConnection";
+// import Connection from "../../components/signalrConnection";
+import { motion } from 'framer-motion';
 
 const HomePages = () => {
   const [activeKey, setActiveKey] = useState("/home");
@@ -218,10 +219,10 @@ const HomePages = () => {
       const inviteResponse = await boardMemberService.createBoardMember(requestBody);
       if (inviteResponse.data.code === 201) {
         toast.success("Board member invited successfully!");
-        Connection.invoke(
-          "ReceiveTotalNotification",
-          requestBody.userId
-        );
+        // Connection.invoke(
+        //   "ReceiveTotalNotification",
+        //   requestBody.userId
+        // );
         setInviteModalShow(false);
         setError("");
       }
@@ -288,11 +289,16 @@ const HomePages = () => {
   ];
 
   return (
-    <React.Fragment>
+<React.Fragment>
       <NavBar />
       <div style={{ display: "block" }}>
         <div className="d-flex align-items-start flex-row justify-content-center">
-          <nav className="block__nav-list-board">
+          <motion.nav
+            className="block__nav-list-board"
+            initial={{ x: -100, opacity: 0 }}
+            animate={{ x: 0, opacity: 1 }}
+            transition={{ duration: 1, delay: 0.2 }}
+          >
             <div>
               <Nav
                 variant="pills"
@@ -309,7 +315,7 @@ const HomePages = () => {
             </div>
             <div
               style={{ width: "100%" }}
-              className="border boder-1 my-3"
+              className="border border-1 my-3"
             ></div>
 
             <div>
@@ -320,7 +326,12 @@ const HomePages = () => {
                     (a, b) => new Date(b.createdDate) - new Date(a.createdDate)
                   )
                   .map((listBoardSide, index) => (
-                    <div key={index}>
+                    <motion.div
+                      key={index}
+                      initial={{ opacity: 0, y: -20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ duration: 1, delay: 0.2 + index * 0.1 }}
+                    >
                       <Button
                         className="d-flex btn__collapse-board justify-content-between"
                         onClick={() => handleToggle(index)}
@@ -373,12 +384,17 @@ const HomePages = () => {
                           </div>
                         </div>
                       </Collapse>
-                    </div>
+                    </motion.div>
                   ))}
               </div>
             </div>
-          </nav>
-          <div className="block__list-board d-flex flex-column gap-3">
+          </motion.nav>
+          <motion.div
+            className="block__list-board d-flex flex-column gap-3"
+            initial={{ x: 100, opacity: 0 }}
+            animate={{ x: 0, opacity: 1 }}
+            transition={{ duration: 1, delay: 0.4 }}
+          >
             <div className="block__your-workspaces">
               <div className="block__board-content d-flex flex-column gap-3">
                 <div className="d-flex justify-content-between">
@@ -390,13 +406,16 @@ const HomePages = () => {
                 <div>
                   <div className="d-flex gap-3 flex-wrap">
                     {yourBoard.map((yourBoards, index) => (
-                      <div
+                      <motion.div
                         key={index}
                         className="block__your-board rounded d-flex flex-column justify-content-between"
                         style={{
                           backgroundImage: `url(${boardTheme[index % boardTheme.length]
                             })`,
                         }}
+                        initial={{ scale: 0.9, opacity: 0 }}
+                        animate={{ scale: 1, opacity: 1 }}
+                        transition={{ duration: 1}}
                       >
                         <Link
                           to={`/board/board-content/${yourBoards.id}`}
@@ -421,7 +440,7 @@ const HomePages = () => {
                             <FontAwesomeIcon icon={faTrashCan} />
                           </span>
                         </div>
-                      </div>
+                      </motion.div>
                     ))}
 
                     <Modal
@@ -429,15 +448,15 @@ const HomePages = () => {
                       centered
                       onHide={() => setModalShowDelete(false)}
                     >
-                      <ModalHeader closeButton>
-                        <ModalTitle>Confirm</ModalTitle>
-                      </ModalHeader>
-                      <ModalBody className="d-flex justify-content-start">
+                      <Modal.Header closeButton>
+                        <Modal.Title>Confirm</Modal.Title>
+                      </Modal.Header>
+                      <Modal.Body className="d-flex justify-content-start">
                         <span className="fs-5 fw-bold">
                           Are you sure delete {deleteBoardName} board?{" "}
                         </span>
-                      </ModalBody>
-                      <ModalFooter>
+                      </Modal.Body>
+                      <Modal.Footer>
                         <div className="d-flex justify-content-end gap-3 w-100">
                           <button
                             className="btn btn-secondary"
@@ -454,21 +473,24 @@ const HomePages = () => {
                             Delete
                           </button>
                         </div>
-                      </ModalFooter>
+                      </Modal.Footer>
                     </Modal>
 
                     <div>
-                      <div
+                      <motion.div
                         onClick={handleModal}
                         className="block__create-new-board p-2 bg-body-secondary d-flex justify-content-center align-items-center border-opacity-10 rounded"
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        transition={{ duration: 1 }}
                       >
                         <p className="mb-0 ">Create new board</p>
-                      </div>
+                      </motion.div>
                       <Modal show={modalShow} onHide={handleModal} centered>
-                        <ModalHeader closeButton>
-                          <ModalTitle>Create Board</ModalTitle>
-                        </ModalHeader>
-                        <ModalBody>
+                        <Modal.Header closeButton>
+                          <Modal.Title>Create Board</Modal.Title>
+                        </Modal.Header>
+                        <Modal.Body>
                           <div>
                             <Form.Label>Board Name</Form.Label>
                             <Form.Control
@@ -478,15 +500,15 @@ const HomePages = () => {
                               onChange={(e) => setBoardName(e.target.value)}
                             />
                           </div>
-                        </ModalBody>
-                        <ModalFooter>
+                        </Modal.Body>
+                        <Modal.Footer>
                           <button
                             className="btn btn-primary"
                             onClick={submitCreateBoard}
                           >
                             Create
                           </button>
-                        </ModalFooter>
+                        </Modal.Footer>
                       </Modal>
                     </div>
                   </div>
@@ -498,45 +520,42 @@ const HomePages = () => {
                 <div className="d-flex justify-content-between">
                   <div className="d-flex gap-2 align-items-center">
                     <FontAwesomeIcon icon={faTableList} size="xl" />
-                    <h6 className="fw-bold my-1 fs-5">Public Boards</h6>
+                    <h6 className="fw-bold my-1 fs-5">Workspace</h6>
                   </div>
                 </div>
                 <div>
                   <div className="d-flex gap-3 flex-wrap">
-                    {listBoard
-                      .filter((board) => board.isPublic == true)
-                      .sort(
-                        (a, b) =>
-                          new Date(b.createdDate) - new Date(a.createdDate)
-                      )
-                      .map((listBoards, index) => (
-                        <div
-                          key={index}
-                          className="block__your-board rounded d-flex flex-column justify-content-between"
-                          style={{
-                            backgroundImage: `url(${boardThemePublic[index % boardThemePublic.length]
-                              })`,
-                          }}
+                    {listBoard.map((board, index) => (
+                      <motion.div
+                        key={index}
+                        className="block__your-board rounded d-flex flex-column justify-content-between"
+                        style={{
+                          backgroundImage: `url(${boardTheme[index % boardTheme.length]
+                            })`,
+                        }}
+                        initial={{ scale: 0.9, opacity: 0 }}
+                        animate={{ scale: 1, opacity: 1 }}
+                        transition={{ duration: 1, delay: 0.2 + index * 0.1 }}
+                      >
+                        <Link
+                          to={`/board/board-content/${board.id}`}
+                          style={{ textDecoration: "none" }}
                         >
-                          <Link
-                            to={`/board/board-content/${listBoards.id}`}
-                            style={{ textDecoration: "none" }}
-                          >
-                            <div className="p-2 ">
-                              <div className="d-flex">
-                                <p className="text-white fw-bold mb-0">
-                                  {listBoards.name}
-                                </p>
-                              </div>
+                          <div className="p-2">
+                            <div className="d-flex justify-content-between">
+                              <p className="text-white fw-bold mb-0">
+                                {board.name}
+                              </p>
                             </div>
-                          </Link>
-                        </div>
-                      ))}
+                          </div>
+                        </Link>
+                      </motion.div>
+                    ))}
                   </div>
                 </div>
               </div>
             </div>
-          </div>
+          </motion.div>
         </div>
         {selectedBoardIndex !== null && (
           <Modal show={inviteModalShow} onHide={handleInviteModal} centered>

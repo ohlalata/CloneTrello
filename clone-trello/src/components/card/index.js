@@ -21,7 +21,7 @@ import { faClock } from "@fortawesome/free-regular-svg-icons";
 import { faTrashCan } from "@fortawesome/free-regular-svg-icons";
 import { toast } from "react-toastify";
 import "react-toastify/ReactToastify.css";
-import { Popover, Overlay, Button, ButtonGroup } from "react-bootstrap";
+import { Popover, Overlay, Button, ButtonGroup, Form } from "react-bootstrap";
 import { faArrowRight } from "@fortawesome/free-solid-svg-icons";
 import {
   format,
@@ -51,6 +51,8 @@ import Comments from "../comments";
 import TaskForm from "../taskForm";
 import CardLabel from "../cardLabel";
 import cardLabelService from "../../api/Services/cardLabel";
+import listServices from "../../api/Services/list";
+
 
 const Card = (listIdProps, listBoardIdProps) => {
   const textareaRefCardTitle = useRef(null);
@@ -142,6 +144,10 @@ const Card = (listIdProps, listBoardIdProps) => {
     to: addDays(pastMonth, 1),
   };
   const [range, setRange] = useState(dayRange);
+  const [allList, setAllList] = useState([]);
+  const [selectedListId, setSelectedListId] = useState('');
+  const [isMovePopoverOpen, setIsMovePopoverOpen] = useState(false);
+  const movePopoverRef = useRef(null);
 
   const handleDatePopoverClick = (event) => {
     if (datePopover) return;
@@ -1107,6 +1113,48 @@ const Card = (listIdProps, listBoardIdProps) => {
     }
   }, [isModalCardShow, modalCardDetail]);
 
+  const handleMoveCard = async (id, newListId) => {
+    let query = {
+      id: id,
+      newListId: newListId,
+    };
+    try {
+      const response = await cardServices.moveCard(query);
+      if (response.data.code === 200) {
+        toast.success("Card moved successfully!");
+        setIsMovePopoverOpen(false);
+        setIsModalCardShow(false);
+      }
+    } catch (error) {
+      toast.error("Card move failed!");
+      console.error(error);
+    }
+  };
+
+  const handleGetListByFilter = async () => {
+    let query = { boardId: listIdProps.listBoardIdProps, isActive: true };
+    try {
+      const response = await listServices.getListByFilter(query);
+      if (response.data.code === 200) {
+        setAllList(response.data.data);
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  useEffect(() => {
+    handleGetListByFilter();
+  }, []);
+
+  const handleListChange = (e) => {
+    setSelectedListId(e.target.value);
+  };
+
+  const handleMove = () => {
+    handleMoveCard(modalCardDetail.id, selectedListId);
+  };
+
   return (
     <React.Fragment>
       <ol className="block__list-card">
@@ -1985,11 +2033,72 @@ const Card = (listIdProps, listBoardIdProps) => {
                       </Popover>
                     </Overlay>
                   </div>
-                  <div className="d-flex align-items-center gap-2 p-2 fw-semibold block__card-action">
+
+                  <div
+                    className="d-flex align-items-center gap-2 p-2 fw-semibold block__card-action"
+                    onClick={() => setIsMovePopoverOpen(!isMovePopoverOpen)}
+                    ref={movePopoverRef}
+                  >
                     <div>
                       <FontAwesomeIcon icon={faArrowRight} />
                     </div>
                     <span>Move</span>
+                    <Overlay
+                      target={movePopoverRef.current}
+                      container={movePopoverRef}
+                      show={isMovePopoverOpen}
+                      placement="bottom"
+                      rootClose
+                      onHide={() => setIsMovePopoverOpen(false)}
+                    >
+                      <Popover id="popover-basic" onClick={(e) => e.stopPropagation()}>
+                        <Popover.Header as="h3" className="d-flex justify-content-between align-items-center">
+                          Move Card
+                          <Button
+                            onClick={() => setIsMovePopoverOpen(false)}
+                            className="btn-close"
+                          ></Button>
+                        </Popover.Header>
+                        <Popover.Body>
+                          <Form>
+                            <Form.Group controlId="formListSelect">
+                              <div className="d-flex flex-column">
+                                <span className="fw-semibold label__destination" style={{ fontSize: "15px" }}>
+                                  Select Destination
+                                </span>
+                                <form className="w-100">
+                                  <select
+                                    className="w-100 select__list large-select"
+                                    value={selectedListId}
+                                    onChange={handleListChange}
+                                    onClick={(e) => e.stopPropagation()}
+                                  >
+                                    <option value="" disabled>
+                                      Select a list
+                                    </option>
+                                    {allList.map((list) => (
+                                      <option key={list.id} value={list.id}>
+                                        {list.name}
+                                      </option>
+                                    ))}
+                                  </select>
+                                </form>
+                              </div>
+                            </Form.Group>
+                            <Button
+                              variant="primary"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                handleMove();
+                              }}
+                              className="mt-2"
+                            >
+                              Move
+                            </Button>
+                          </Form>
+                        </Popover.Body>
+                      </Popover>
+                    </Overlay>
                   </div>
 
                   <div className="d-flex align-items-center gap-2 p-2 fw-semibold block__card-action">
