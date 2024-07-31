@@ -40,6 +40,7 @@ export default {
       createCard: "/card/create",
       updateCard: "/card/update/", // noi duoi id
       archiveCard: "/card/change-status/", // noi duoi id
+      moveCard: "/card/move-card/",
     },
     task: {
       createTask: "/task/create",
