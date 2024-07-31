@@ -9,14 +9,6 @@ import "react-quill/dist/quill.snow.css";
 import { Popover, Overlay, Button } from "react-bootstrap";
 import { toast } from "react-toastify";
 import "react-toastify/ReactToastify.css";
-
-import {
-  startConnection,
-  stopConnection,
-  onReceiveComment,
-  offReceiveComment,
-} from "../signalrConnection";
-
 import signalR from "../../utils/signalR";
 
 const Comments = (cardId) => {
@@ -51,11 +43,6 @@ const Comments = (cardId) => {
       signalR.signalREventEmitter.off("ReceiveComment", handleReceiveComment);
     };
   }, []);
-
-  const tempComment = (comment) => {
-    setComments((prevComments) => [...prevComments, comment]);
-    handleGetAllComment();
-  };
 
   const modulesComment = {
     toolbar: [

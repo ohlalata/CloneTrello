@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import "./style.scss";
 import * as constants from "../../shared/constants";
 import CardActivityService from "../../api/Services/cardActivity";
+import signalR from "../../utils/signalR";
 
 const CardActivity = (cardId) => {
   const [cardActivity, setCardActivity] = useState([]);
@@ -18,6 +19,29 @@ const CardActivity = (cardId) => {
       console.error(error);
     }
   };
+
+  useEffect(() => {
+    const handleReceiveCardActivity = (cardActivity) => {
+      setCardActivity((preCardActivity) => {
+        if (!preCardActivity.find((a) => a.id === cardActivity.id)) {
+          return [...preCardActivity, cardActivity];
+        }
+        return preCardActivity;
+      });
+    };
+
+    signalR.signalREventEmitter.on(
+      "ReceiveActivity",
+      handleReceiveCardActivity
+    );
+
+    return () => {
+      signalR.signalREventEmitter.off(
+        "ReceiveActivity",
+        handleReceiveCardActivity
+      );
+    };
+  }, []);
 
   useEffect(() => {
     handleGetCardActivity();
