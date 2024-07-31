@@ -32,8 +32,8 @@ import {
   subMinutes,
   subDays,
   subHours,
-} from "date-fns"; /////////////////////////////
-import { DateRange, DayPicker } from "react-day-picker"; /////////////////////////
+} from "date-fns";
+import { DateRange, DayPicker } from "react-day-picker";
 import "react-day-picker/dist/style.css";
 import { set } from "date-fns";
 import { faTags } from "@fortawesome/free-solid-svg-icons";
@@ -51,9 +51,13 @@ import Comments from "../comments";
 import TaskForm from "../taskForm";
 import CardLabel from "../cardLabel";
 import cardLabelService from "../../api/Services/cardLabel";
-import cardActivityService from "../../api/Services/cardActivity";
+import CardActivity from "../cardActivity";
+import Connection from "../signalrConnection";
 
 const Card = (listIdProps, listBoardIdProps) => {
+  let userProfile = JSON.parse(localStorage.getItem("userProfile")).data.id;
+  console.log("userProfile", userProfile);
+
   const textareaRefCardTitle = useRef(null);
   const textAreaRefCreateCardTitle = useRef(null);
   const datePopoverRef = useRef(null);
@@ -353,7 +357,7 @@ const Card = (listIdProps, listBoardIdProps) => {
     displayLabelDay(objCardDetail);
   };
 
-  /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+  /////////////////////////////////////////////////////////////////
 
   const handleAddCardTitle = () => {
     setAddCardTitleVisible(true);
@@ -498,18 +502,6 @@ const Card = (listIdProps, listBoardIdProps) => {
   //     }
   //   } catch (error) {
   //     console.log(error);
-  //   }
-  // };
-
-  // const handleCreateCardActivity = async () => {
-  //   let query = {};
-  //   try {
-  //     const response = await cardActivityService.createCardActivity(query);
-  //     if (response.data.data == 201) {
-  //       console.log("create card activity ok");
-  //     }
-  //   } catch (error) {
-  //     console.error(error);
   //   }
   // };
 
@@ -1621,19 +1613,7 @@ const Card = (listIdProps, listBoardIdProps) => {
                 <Comments cardId={modalCardDetail.id} />
 
                 {activityVisible && (
-                  <div className="d-flex gap-2 p-1">
-                    <div className="block__user-activity">
-                      <img src={constants.USER_UNDEFINE_URL} />
-                    </div>
-                    <div className="d-flex flex-column">
-                      <div className="d-flex gap-1">
-                        <span>name</span>
-                        <span>activity</span>
-                      </div>
-
-                      <span>time</span>
-                    </div>
-                  </div>
+                  <CardActivity cardId={modalCardDetail.id} />
                 )}
               </div>
               <div className="col-3 px-2">

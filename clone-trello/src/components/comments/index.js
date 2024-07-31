@@ -43,6 +43,7 @@ const Comments = (cardId) => {
         // Connection.stop();
       };
     }
+    //Connection.on("ReceiveComment", (comment) => tempComment(comment));
   }, []);
 
   const tempComment = (comment) => {
