@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useRef } from "react";
 import "./style.scss";
-import Connection from "../signalrConnection";
+// import Connection from "../signalrConnection";
 import * as constants from "../../shared/constants";
 import commentServices from "../../api/Services/comment";
 import { format } from "date-fns";
@@ -9,6 +9,15 @@ import "react-quill/dist/quill.snow.css";
 import { Popover, Overlay, Button } from "react-bootstrap";
 import { toast } from "react-toastify";
 import "react-toastify/ReactToastify.css";
+
+import {
+  startConnection,
+  stopConnection,
+  onReceiveComment,
+  offReceiveComment,
+} from "../signalrConnection";
+
+import signalR from "../../utils/signalR";
 
 const Comments = (cardId) => {
   const quillCommentRef = useRef(null);
@@ -26,24 +35,21 @@ const Comments = (cardId) => {
   const [editCommentId, setEditCommentId] = useState("");
 
   useEffect(() => {
-    if (Connection.state == "Disconnected") {
-      Connection.start()
-        .then(() => {
-          console.log("SignalR Connected.");
-          console.log("CONNECTIONID: ", Connection.connectionId);
-          Connection.on("ReceiveComment", (comment) => tempComment(comment));
-        })
-        .catch((error) =>
-          console.error("Error while starting connection: " + error)
-        );
+    const handleReceiveComment = (comment) => {
+      setComments((prevComments) => {
+        // Prevent duplicate comments
+        if (!prevComments.find((c) => c.id === comment.id)) {
+          return [...prevComments, comment];
+        }
+        return prevComments;
+      });
+    };
 
-      return () => {
-        console.log("CONNECTION STOP!");
-        Connection.off("ReceiveComment");
-        // Connection.stop();
-      };
-    }
-    //Connection.on("ReceiveComment", (comment) => tempComment(comment));
+    signalR.signalREventEmitter.on("ReceiveComment", handleReceiveComment);
+
+    return () => {
+      signalR.signalREventEmitter.off("ReceiveComment", handleReceiveComment);
+    };
   }, []);
 
   const tempComment = (comment) => {
@@ -173,11 +179,11 @@ const Comments = (cardId) => {
       if (response.data.code == 201) {
         console.log("create comment successful");
 
-        // phát hiện sự kiện bình luận mới qua SignalR
-        Connection.invoke("SendComment", response.data.data);
-        // cập nhật bình luận tại tab hiện tại
+        // // phát hiện sự kiện bình luận mới qua SignalR
+        // Connection.invoke("SendComment", response.data.data);
+        // // cập nhật bình luận tại tab hiện tại
         setComments((prevComments) => [...prevComments, response.data.data]);
-        console.log("CONNECTIONID: ", Connection.connectionId);
+        // console.log("CONNECTIONID: ", Connection.connectionId);
         handleGetAllComment();
         setIsRichTextComment(false);
         setCommentContent("");

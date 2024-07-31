@@ -15,9 +15,11 @@ import * as constants from "../../shared/constants";
 import boardService from "../../api/Services/board";
 import userFcmTokenService from "../../api/Services/userFcmToken"; // Adjust the import path as necessary
 import notificationService from "../../api/Services/notification";
-import Connection from "../signalrConnection";
+// import Connection from "../signalrConnection";
 import { getFcmToken } from "../../utils/firebase";
 import { debounce } from "lodash";
+
+import signalR from '../../utils/signalR';
 
 const NavBar = () => {
   const { name } = useParams();
@@ -130,49 +132,19 @@ const NavBar = () => {
   };
 
   useEffect(() => {
-    const startSignalRConnection = async () => {
-      try {
-        await Connection.start();
-        console.log("SignalR Connected.");
+    handleGetAllNotification(currentUserId);
 
-        // Get initial notification count
-        await handleGetAllNotification(currentUserId);
-
-        // Listen for real-time notification count updates
-        Connection.on("ReceiveTotalNotification", (totalNotifications) => {
-          // console.log("Real-time notification update received:", totalNotifications);
-          // setTotalNotifications(totalNotifications);
-          Connection.invoke(
-            "ReceiveTotalNotification", 
-            currentUserId
-          );
-          console.log("GetTotalNotification invoked, result:", totalNotifications);
-          setTotalNotifications(totalNotifications);
-  
-        });
-
-        // Invoke the server method to get total notifications
-        // const result = await Connection.invoke(
-        //   "ReceiveTotalNotification",  // Correct method name
-        //   currentUserId
-        // );
-        // console.log("GetTotalNotification invoked, result:", result);
-        // setTotalNotifications(result);
-
-      } catch (err) {
-        console.error("SignalR Connection Error: ", err);
-      }
+    const handleReceiveTotalNotification = (totalCount) => {
+      console.log("Real-time notification update received:", totalCount);
+      setTotalNotifications(totalCount);
     };
 
-    startSignalRConnection();
+    signalR.signalREventEmitter.on("ReceiveTotalNotification", handleReceiveTotalNotification);
 
     return () => {
-      Connection.stop()
-        .then(() => console.log("SignalR Disconnected"))
-        .catch((err) => console.error("SignalR Disconnection Error: ", err));
+      signalR.signalREventEmitter.off("ReceiveTotalNotification", handleReceiveTotalNotification);
     };
   }, [currentUserId]);
-
 
   const handleGetAllNotification = async (userId) => {
     let query = {
