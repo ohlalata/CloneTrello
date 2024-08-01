@@ -56,8 +56,8 @@ import Connection from "../signalrConnection";
 import listServices from "../../api/Services/list";
 
 const Card = (listIdProps, listBoardIdProps) => {
-  let userProfile = JSON.parse(localStorage.getItem("userProfile")).data.id;
-  console.log("userProfile", userProfile);
+  // let userProfile = JSON.parse(localStorage.getItem("userProfile")).data.id;
+  // console.log("userProfile", userProfile);
 
   const textareaRefCardTitle = useRef(null);
   const textAreaRefCreateCardTitle = useRef(null);
@@ -140,7 +140,7 @@ const Card = (listIdProps, listBoardIdProps) => {
 
   const [labelDay, setLabelDay] = useState("");
   const [visileLabelDay, setVisileLabelDay] = useState("");
-  const [cardLabels, setCardLabels] = useState([]);
+  //const [cardLabels, setCardLabels] = useState([]);
 
   const pastMonth = new Date();
   const dayRange = {
@@ -1099,23 +1099,30 @@ const Card = (listIdProps, listBoardIdProps) => {
     }
   }, [todoItems]);
 
-  const handleGetAllCardLabel = async () => {
-    let query = { cardId: modalCardDetail.id };
-    try {
-      const response = await cardLabelService.getAllCardLabel(query);
-      if (response.data.code == 200) {
-        setCardLabels(response.data.data);
-      }
-    } catch (error) {
-      console.error(error);
-    }
+  //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+  const [cardLabelChild, setCardLabelChild] = useState([]);
+  const handleCardLabelChild = (newItems) => {
+    setCardLabelChild(newItems);
   };
 
-  useEffect(() => {
-    if (isModalCardShow && modalCardDetail.id) {
-      handleGetAllCardLabel();
-    }
-  }, [isModalCardShow, modalCardDetail]);
+  // const handleGetAllCardLabel = async () => {
+  //   let query = { cardId: modalCardDetail.id };
+  //   try {
+  //     const response = await cardLabelService.getAllCardLabel(query);
+  //     if (response.data.code == 200) {
+  //       setCardLabels(response.data.data);
+  //     }
+  //   } catch (error) {
+  //     console.error(error);
+  //   }
+  // };
+
+  // useEffect(() => {
+  //   if (isModalCardShow && modalCardDetail.id) {
+  //     handleGetAllCardLabel();
+  //   }
+  // }, [isModalCardShow, modalCardDetail]);
 
   const handleMoveCard = async (id, newListId) => {
     let query = {
@@ -1259,11 +1266,13 @@ const Card = (listIdProps, listBoardIdProps) => {
               {/* VISUAL */}
               <div className="mt-1">
                 <div className="label-container">
-                  {cardLabels.map((label) => (
+                  {cardLabelChild.map((label) => (
                     <span
                       key={label.id}
                       className="label-name"
-                      style={{ backgroundColor: label.labelColor }}
+                      style={{
+                        backgroundColor: label.labelColor,
+                      }}
                     >
                       {label.labelName}
                     </span>
@@ -1984,6 +1993,7 @@ const Card = (listIdProps, listBoardIdProps) => {
                   <CardLabel
                     cardId={modalCardDetail.id}
                     boardId={listIdProps.listBoardIdProps}
+                    onItemsUpdate={handleCardLabelChild}
                   />
 
                   <div

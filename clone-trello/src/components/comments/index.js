@@ -35,6 +35,7 @@ const Comments = (cardId) => {
         }
         return prevComments;
       });
+      handleGetAllComment();
     };
 
     signalR.signalREventEmitter.on("ReceiveComment", handleReceiveComment);
@@ -43,6 +44,10 @@ const Comments = (cardId) => {
       signalR.signalREventEmitter.off("ReceiveComment", handleReceiveComment);
     };
   }, []);
+
+  // const tempComment = () => {
+
+  // }
 
   const modulesComment = {
     toolbar: [

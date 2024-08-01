@@ -141,7 +141,10 @@ const NavbarBoardContent = (boardID) => {
   const handleChangeBoardName = (e) => {
     if (!e.target.value) {
       toast.warn("Board name is required!");
-      setInputBoardNameTemp(boardName);
+      e.preventDefault();
+      e.stopPropagation();
+      return;
+      //setInputBoardNameTemp(boardName);
     }
     setInputBoardNameTemp(e.target.value);
   };
@@ -230,8 +233,13 @@ const NavbarBoardContent = (boardID) => {
   };
 
   const handleUpdateBoardName = async (id) => {
-    // const formData = new FormData();
-    // formData.append("Name", inputBoardNameTemp);
+    if (inputBoardNameTemp == boardName) {
+      toast.warn("Board name is not change!");
+      setIsBoardNameVisible(false);
+      setInputBoardNameTemp("");
+      handleGetAllBoard();
+      return;
+    }
     let query = {
       id: id,
       name: inputBoardNameTemp,

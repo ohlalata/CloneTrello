@@ -44,10 +44,8 @@ const CardLabel = (cardId) => {
     ////////////////////////////////////////////////////////////////////////////////////
     if (event.target.checked) {
       handleCreateExistCardLabel(id);
-      console.log("YAHHHHH");
     } else {
       handleGetCardLabelByFilter(name);
-      console.log("NOOOO");
     }
   };
 
@@ -218,9 +216,23 @@ const CardLabel = (cardId) => {
     try {
       const responseLabel = await labelService.createLabel(queryLabel);
       if (responseLabel.data.code == 201) {
-        setIsCreateCardLabel(false);
-        setTitleCardLabel("");
-        handleGetAllLabel();
+        try {
+          let queryCardLabel = {
+            cardId: cardId.cardId,
+            labelId: responseLabel.data.data.id,
+          };
+          const responseCardLabel = await cardLabelService.createCardLabel(
+            queryCardLabel
+          );
+          if (responseCardLabel.data.code == 201) {
+            setIsCreateCardLabel(false);
+            setTitleCardLabel("");
+            handleGetAllLabel();
+            handleGetAllExistCardLabel();
+          }
+        } catch (error) {
+          console.error(error);
+        }
       }
     } catch (error) {
       console.error(error);
@@ -231,6 +243,10 @@ const CardLabel = (cardId) => {
     handleGetAllExistCardLabel();
     handleGetAllLabel();
   }, []);
+
+  useEffect(() => {
+    cardId.onItemsUpdate(cardLabel);
+  }, [cardLabel]);
   return (
     <React.Fragment>
       <div
