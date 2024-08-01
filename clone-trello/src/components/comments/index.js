@@ -9,15 +9,7 @@ import "react-quill/dist/quill.snow.css";
 import { Popover, Overlay, Button } from "react-bootstrap";
 import { toast } from "react-toastify";
 import "react-toastify/ReactToastify.css";
-
-import {
-  startConnection,
-  stopConnection,
-  onReceiveComment,
-  offReceiveComment,
-} from "../signalrConnection";
-
-import signalR from '../../utils/signalR';
+import signalR from "../../utils/signalR";
 
 const Comments = (cardId) => {
   const quillCommentRef = useRef(null);
@@ -38,24 +30,19 @@ const Comments = (cardId) => {
     const handleReceiveComment = (comment) => {
       setComments((prevComments) => {
         // Prevent duplicate comments
-        if (!prevComments.find(c => c.id === comment.id)) {
+        if (!prevComments.find((c) => c.id === comment.id)) {
           return [...prevComments, comment];
         }
         return prevComments;
       });
     };
 
-    signalR.signalREventEmitter.on('ReceiveComment', handleReceiveComment);
+    signalR.signalREventEmitter.on("ReceiveComment", handleReceiveComment);
 
     return () => {
-      signalR.signalREventEmitter.off('ReceiveComment', handleReceiveComment);
+      signalR.signalREventEmitter.off("ReceiveComment", handleReceiveComment);
     };
   }, []);
-  
-  const tempComment = (comment) => {
-    setComments((prevComments) => [...prevComments, comment]);
-    handleGetAllComment();
-  };
 
   const modulesComment = {
     toolbar: [

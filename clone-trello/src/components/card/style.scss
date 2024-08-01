@@ -210,16 +210,16 @@
 //   text-decoration: underline;
 // }
 
-.block__user-activity {
-  width: 32px;
-  height: 100%;
-}
+// .block__user-activity {
+//   width: 32px;
+//   height: 100%;
+// }
 
-.block__user-activity img {
-  height: 100%;
-  width: 100%;
-  object-fit: cover;
-}
+// .block__user-activity img {
+//   height: 100%;
+//   width: 100%;
+//   object-fit: cover;
+// }
 
 .block__datePopover-visibility {
   --bs-popover-max-width: 500px !important;
@@ -527,7 +527,6 @@
   border-radius: 7px;
   text-align: center;
   color: black;
-
 }
 
 .label-container {
@@ -538,8 +537,8 @@
 }
 
 .select__list {
-  padding: 10px; 
-  font-size: 16px; 
+  padding: 10px;
+  font-size: 16px;
   border-radius: 7px;
 }
 

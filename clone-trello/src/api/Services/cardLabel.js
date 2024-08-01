@@ -58,9 +58,27 @@ const updateCardLabel = async (query) => {
   return response;
 };
 
+const getCardLabelByFilter = async (query) => {
+  let { cardId, labelName, isActive } = query;
+  let params;
+  const serviceUrl = urlConstant.endpoint.cardLabel.getCardLabelByFilter;
+  if (cardId) {
+    params = {
+      params: {
+        cardId: cardId,
+        labelName: labelName,
+        isActive: isActive,
+      },
+    };
+  }
+  const response = await axiosLocalHost.normalRequest.get(serviceUrl, params);
+  return response;
+};
+
 export default {
   getAllCardLabel,
   createCardLabel,
   deleteCardLabel,
   updateCardLabel,
+  getCardLabelByFilter,
 };

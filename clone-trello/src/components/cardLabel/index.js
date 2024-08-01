@@ -10,7 +10,7 @@ import {
 import { Popover, Overlay, Button } from "react-bootstrap";
 import * as constants from "../../shared/constants";
 import cardLabelService from "../../api/Services/cardLabel";
-import { AuthContext } from "../authContext";
+
 import labelService from "../../api/Services/label";
 
 const CardLabel = (cardId) => {
@@ -18,6 +18,8 @@ const CardLabel = (cardId) => {
 
   const [cardLabelTarget, setCardLabelTarget] = useState(null);
   const [cardLabel, setCardLabel] = useState([]);
+  const [labelExist, setLabelExist] = useState([]);
+
   const [isShowCardLabel, setIsShowCardLabel] = useState(false);
   const [isCreateCardLabel, setIsCreateCardLabel] = useState(false);
   const [selectCardLabel, setSelectCardLabel] = useState(20);
@@ -28,15 +30,43 @@ const CardLabel = (cardId) => {
 
   const [titleCardLabel, setTitleCardLabel] = useState("");
 
-  const { labelMiddle } = useContext(AuthContext);
+  const [labelCardId, setLabelCardId] = useState("");
+
+  const [isCardLabelChecked, setIsCardLabelChecked] = useState(false);
+
+  const handleCheckboxChange = (event, id, name) => {
+    setIsCardLabelChecked(event.target.checked);
+    console.log(event.target.checked);
+    console.log(event.target);
+    console.log("iddd", id);
+    console.log("name name, ", name);
+
+    ////////////////////////////////////////////////////////////////////////////////////
+    if (event.target.checked) {
+      handleCreateExistCardLabel(id);
+      console.log("YAHHHHH");
+    } else {
+      handleGetCardLabelByFilter(name);
+      console.log("NOOOO");
+    }
+  };
 
   const handleCardLabelTitle = (e) => {
     setTitleCardLabel(e.target.value);
-    console.log("HAAAA", e.target.value);
   };
 
-  const handleUpdateCardLabel = () => {
+  const handleUpdateCardLabel = (name, color, id) => {
     setIsUpdateCardLabel(true);
+    setTitleCardLabel(name);
+    setColorSelected(color);
+    setLabelCardId(id);
+
+    constants.LABEL_COLOR.forEach((element, index) => {
+      if (element == color) {
+        setSelectCardLabel(index);
+        return;
+      }
+    });
   };
 
   const handleHideCardLabel = () => {
@@ -70,37 +100,19 @@ const CardLabel = (cardId) => {
     setIsUpdateCardLabel(false);
   };
 
-  const handleGetAllCardLabel = async () => {
-    let query = { cardId: cardId.cardId };
+  const handleGetCardLabelByFilter = async (name) => {
+    let query = { cardId: cardId.cardId, labelName: name, isActive: true };
     try {
-      const response = await cardLabelService.getAllCardLabel(query);
+      const response = await cardLabelService.getCardLabelByFilter(query);
       if (response.data.code == 200) {
-        setCardLabel(response.data.data);
-      }
-    } catch (error) {
-      console.error(error);
-    }
-  };
-
-  const handleCreateNewCardLabel = async () => {
-    let queryLabel = {
-      boardId: cardId.boardId,
-      name: titleCardLabel,
-      color: colorSelected,
-    };
-    try {
-      const responseLabel = await labelService.createLabel(queryLabel);
-      if (responseLabel.data.code == 201) {
         try {
-          let queryCardLabel = {
-            cardId: cardId.cardId,
-            labelId: responseLabel.data.data.id,
-          };
-          const responseCardLabel = await cardLabelService.createCardLabel(
-            queryCardLabel
+          let queryDelete = { id: response.data.data[0].id, isActive: false };
+          const responseDelete = await cardLabelService.deleteCardLabel(
+            queryDelete
           );
-          if (responseCardLabel.data.code == 201) {
-            console.log("Create Card Label OKKKKKKKKKKKKKK");
+          if (responseDelete.data.code == 200) {
+            console.log("delete card label ok");
+            handleGetAllExistCardLabel();
           }
         } catch (error) {
           console.error(error);
@@ -109,22 +121,115 @@ const CardLabel = (cardId) => {
     } catch (error) {
       console.error(error);
     }
+  };
 
-    // let query = { cardId: "", labelId: "" };
-    // try {
-    //   const response = await cardLabelService.createCardLabel(query);
-    //   if (response.data.code == 201) {
-    //     console.log("create card label ok");
-    //     //handleGetAllCardLabel();
-    //   }
-    // } catch (error) {
-    //   console.error(error);
-    // }
+  // const handleChangeStatusCardLabel = async (id, isActive) => {
+  //   let query = { id: id, isActive: isActive };
+  //   try {
+  //     const response = await cardLabelService.deleteCardLabel(query);
+  //     if (response.data.code == 200) {
+  //       console.log("delete card label ok");
+  //       handleGetAllExistCardLabel();
+  //     }
+  //   } catch (error) {
+  //     console.error(error);
+  //   }
+  // };
+
+  const handleGetAllExistCardLabel = async () => {
+    let query = { cardId: cardId.cardId };
+    try {
+      const response = await cardLabelService.getAllCardLabel(query);
+      if (response.data.code == 200) {
+        setCardLabel(response.data.data);
+        console.log("CARD LABEL: ", response.data.data);
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  const handleCreateExistCardLabel = async (labelId) => {
+    let query = { cardId: cardId.cardId, labelId: labelId };
+    try {
+      const response = await cardLabelService.createCardLabel(query);
+      if (response.data.code == 201) {
+        // setCardLabel(response.data.data);
+        console.log("create card label ok");
+        handleGetAllExistCardLabel();
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  const handleDeleteExistLabel = async () => {
+    let query = { id: labelCardId, isActive: false };
+    try {
+      const response = await labelService.deleteLabel(query);
+      if (response.data.code == 200) {
+        console.log("delete card label ok");
+        setIsUpdateCardLabel(false);
+        handleGetAllLabel();
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  const handleUpdateExistLabel = async () => {
+    let requestBody = {
+      id: labelCardId,
+      name: titleCardLabel,
+      color: colorSelected,
+    };
+    try {
+      const response = await labelService.updateLabel(requestBody);
+      if (response.data.code == 200) {
+        setIsUpdateCardLabel(false);
+        setTitleCardLabel("");
+        handleGetAllLabel();
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  const handleGetAllLabel = async () => {
+    let query = { boardId: cardId.boardId };
+    try {
+      const response = await labelService.getAllLabel(query);
+      if (response.data.code == 200) {
+        //setCardLabel(response.data.data);
+        setLabelExist(response.data.data);
+        console.log("new Labell", response.data.data);
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const handleCreateNewLabel = async () => {
+    let queryLabel = {
+      boardId: cardId.boardId,
+      name: titleCardLabel,
+      color: colorSelected,
+    };
+    try {
+      const responseLabel = await labelService.createLabel(queryLabel);
+      if (responseLabel.data.code == 201) {
+        setIsCreateCardLabel(false);
+        setTitleCardLabel("");
+        handleGetAllLabel();
+      }
+    } catch (error) {
+      console.error(error);
+    }
   };
 
   useEffect(() => {
-    handleGetAllCardLabel();
-    console.log("LABEL MIDDLE", labelMiddle);
+    handleGetAllExistCardLabel();
+    handleGetAllLabel();
   }, []);
   return (
     <React.Fragment>
@@ -238,17 +343,27 @@ const CardLabel = (cardId) => {
                       <button
                         className="btn btn-primary btn-sm"
                         disabled={isDisableCreate}
-                        onClick={handleCreateNewCardLabel}
+                        onClick={handleCreateNewLabel}
                       >
                         Create
                       </button>
                     )}
                     {isUpdateCardLabel && (
-                      <button className="btn btn-primary btn-sm">Save</button>
+                      <button
+                        className="btn btn-primary btn-sm"
+                        onClick={handleUpdateExistLabel}
+                      >
+                        Save
+                      </button>
                     )}
 
                     {isUpdateCardLabel && (
-                      <button className="btn btn-danger btn-sm">Delete</button>
+                      <button
+                        className="btn btn-danger btn-sm"
+                        onClick={handleDeleteExistLabel}
+                      >
+                        Delete
+                      </button>
                     )}
                   </div>
                 </div>
@@ -268,32 +383,48 @@ const CardLabel = (cardId) => {
                     <span className="fw-semibold label__caption">Labels</span>
 
                     <div className="mt-2 d-flex flex-column gap-1">
-                      {cardLabel.map((cardLabels, key) => (
+                      {labelExist.map((cardLabels, key) => (
                         <div
                           key={key}
                           className="d-flex justify-content-between "
                         >
                           <div className="col-1 d-flex justify-content-center align-items-center">
                             <input
+                              checked={cardLabel
+                                .map((a) => a.labelId)
+                                .includes(cardLabels.id)}
                               type="checkbox"
                               className="checkbox__card-label"
+                              onChange={(e) =>
+                                handleCheckboxChange(
+                                  e,
+                                  cardLabels.id,
+                                  cardLabels.name
+                                )
+                              }
                             />
                           </div>
                           <div
                             className="col-9 d-flex justify-content-start align-items-center"
                             style={{
                               height: "30px",
-                              backgroundColor: `${cardLabels.labelColor}`,
+                              backgroundColor: `${cardLabels.color}`,
                               borderRadius: "3px",
                             }}
                           >
                             <span className="ms-3 fw-semibold">
-                              {cardLabels.labelName}
+                              {cardLabels.name}
                             </span>
                           </div>
                           <div
                             className="col-1 d-flex justify-content-center align-items-center"
-                            onClick={handleUpdateCardLabel}
+                            onClick={() =>
+                              handleUpdateCardLabel(
+                                cardLabels.name,
+                                cardLabels.color,
+                                cardLabels.id
+                              )
+                            }
                           >
                             <FontAwesomeIcon icon={faPen} />
                           </div>

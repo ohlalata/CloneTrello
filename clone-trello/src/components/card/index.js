@@ -32,8 +32,8 @@ import {
   subMinutes,
   subDays,
   subHours,
-} from "date-fns"; /////////////////////////////
-import { DateRange, DayPicker } from "react-day-picker"; /////////////////////////
+} from "date-fns";
+import { DateRange, DayPicker } from "react-day-picker";
 import "react-day-picker/dist/style.css";
 import { set } from "date-fns";
 import { faTags } from "@fortawesome/free-solid-svg-icons";
@@ -51,10 +51,14 @@ import Comments from "../comments";
 import TaskForm from "../taskForm";
 import CardLabel from "../cardLabel";
 import cardLabelService from "../../api/Services/cardLabel";
+import CardActivity from "../cardActivity";
+import Connection from "../signalrConnection";
 import listServices from "../../api/Services/list";
 
-
 const Card = (listIdProps, listBoardIdProps) => {
+  let userProfile = JSON.parse(localStorage.getItem("userProfile")).data.id;
+  console.log("userProfile", userProfile);
+
   const textareaRefCardTitle = useRef(null);
   const textAreaRefCreateCardTitle = useRef(null);
   const datePopoverRef = useRef(null);
@@ -145,7 +149,7 @@ const Card = (listIdProps, listBoardIdProps) => {
   };
   const [range, setRange] = useState(dayRange);
   const [allList, setAllList] = useState([]);
-  const [selectedListId, setSelectedListId] = useState('');
+  const [selectedListId, setSelectedListId] = useState("");
   const [isMovePopoverOpen, setIsMovePopoverOpen] = useState(false);
   const movePopoverRef = useRef(null);
 
@@ -341,8 +345,8 @@ const Card = (listIdProps, listBoardIdProps) => {
     if (cardDetail?.startDate && cardDetail?.endDate) {
       setLabelDay(
         format(new Date(cardDetail.startDate), "PPP") +
-        " - " +
-        format(new Date(cardDetail.endDate), "PPP, p")
+          " - " +
+          format(new Date(cardDetail.endDate), "PPP, p")
       );
       setVisileLabelDay("Dates");
     }
@@ -358,7 +362,7 @@ const Card = (listIdProps, listBoardIdProps) => {
     displayLabelDay(objCardDetail);
   };
 
-  /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+  /////////////////////////////////////////////////////////////////
 
   const handleAddCardTitle = () => {
     setAddCardTitleVisible(true);
@@ -1256,7 +1260,11 @@ const Card = (listIdProps, listBoardIdProps) => {
               <div className="mt-1">
                 <div className="label-container">
                   {cardLabels.map((label) => (
-                    <span key={label.id} className="label-name" style={{ backgroundColor: label.labelColor }}>
+                    <span
+                      key={label.id}
+                      className="label-name"
+                      style={{ backgroundColor: label.labelColor }}
+                    >
                       {label.labelName}
                     </span>
                   ))}
@@ -1484,29 +1492,31 @@ const Card = (listIdProps, listBoardIdProps) => {
                                             </span>
                                             <div className="d-flex gap-1">
                                               <span
-                                                className={`task-priority ${task.priorityLevel === "Low"
-                                                  ? "priority-low"
-                                                  : task.priorityLevel ===
-                                                    "Medium"
+                                                className={`task-priority ${
+                                                  task.priorityLevel === "Low"
+                                                    ? "priority-low"
+                                                    : task.priorityLevel ===
+                                                      "Medium"
                                                     ? "priority-medium"
                                                     : task.priorityLevel ===
                                                       "High"
-                                                      ? "priority-high"
-                                                      : ""
-                                                  }`}
+                                                    ? "priority-high"
+                                                    : ""
+                                                }`}
                                               >
                                                 {task.priorityLevel}
                                               </span>
                                               <span
-                                                className={`task-status ${task.status === "New"
-                                                  ? "status-new"
-                                                  : task.status ===
-                                                    "InProgress"
+                                                className={`task-status ${
+                                                  task.status === "New"
+                                                    ? "status-new"
+                                                    : task.status ===
+                                                      "InProgress"
                                                     ? "status-in-progress"
                                                     : task.status === "Resolved"
-                                                      ? "status-resolved"
-                                                      : ""
-                                                  }`}
+                                                    ? "status-resolved"
+                                                    : ""
+                                                }`}
                                               >
                                                 {task.status}
                                               </span>
@@ -1537,10 +1547,10 @@ const Card = (listIdProps, listBoardIdProps) => {
                                                 style={{ marginRight: "5px" }}
                                               />
                                               {availableUsers.length > 0 &&
-                                                task.assignedUserId
+                                              task.assignedUserId
                                                 ? userLookup[
-                                                task.assignedUserId
-                                                ] || "User not found"
+                                                    task.assignedUserId
+                                                  ] || "User not found"
                                                 : "Unassigned"}
                                             </div>
                                             <div
@@ -1572,7 +1582,7 @@ const Card = (listIdProps, listBoardIdProps) => {
                                     ...prevTask,
                                     [name]:
                                       name === "priorityLevel" ||
-                                        name === "status"
+                                      name === "status"
                                         ? parseInt(value, 10)
                                         : value,
                                   }));
@@ -1649,21 +1659,9 @@ const Card = (listIdProps, listBoardIdProps) => {
                 </div>
                 <Comments cardId={modalCardDetail.id} />
 
-                {/* {activityVisible && (
-                  <div className="d-flex gap-2 p-1">
-                    <div className="block__user-activity">
-                      <img src={constants.USER_UNDEFINE_URL} />
-                    </div>
-                    <div className="d-flex flex-column">
-                      <div className="d-flex gap-1">
-                        <span>name</span>
-                        <span>activity</span>
-                      </div>
-
-                      <span>time</span>
-                    </div>
-                  </div>
-                )} */}
+                {activityVisible && (
+                  <CardActivity cardId={modalCardDetail.id} />
+                )}
               </div>
               <div className="col-3 px-2">
                 <div className="d-flex flex-column gap-2">
@@ -1983,13 +1981,6 @@ const Card = (listIdProps, listBoardIdProps) => {
                     </Overlay>
                   </div>
 
-                  {/* <div className="d-flex align-items-center gap-2 p-2 fw-semibold block__card-action">
-                    <div>
-                      <FontAwesomeIcon icon={faTags} />
-                    </div>
-                    <span>Label</span>
-                  </div> */}
-
                   <CardLabel
                     cardId={modalCardDetail.id}
                     boardId={listIdProps.listBoardIdProps}
@@ -2051,8 +2042,14 @@ const Card = (listIdProps, listBoardIdProps) => {
                       rootClose
                       onHide={() => setIsMovePopoverOpen(false)}
                     >
-                      <Popover id="popover-basic" onClick={(e) => e.stopPropagation()}>
-                        <Popover.Header as="h3" className="d-flex justify-content-between align-items-center">
+                      <Popover
+                        id="popover-basic"
+                        onClick={(e) => e.stopPropagation()}
+                      >
+                        <Popover.Header
+                          as="h3"
+                          className="d-flex justify-content-between align-items-center"
+                        >
                           Move Card
                           <Button
                             onClick={() => setIsMovePopoverOpen(false)}
@@ -2063,7 +2060,10 @@ const Card = (listIdProps, listBoardIdProps) => {
                           <Form>
                             <Form.Group controlId="formListSelect">
                               <div className="d-flex flex-column">
-                                <span className="fw-semibold label__destination" style={{ fontSize: "15px" }}>
+                                <span
+                                  className="fw-semibold label__destination"
+                                  style={{ fontSize: "15px" }}
+                                >
                                   Select Destination
                                 </span>
                                 <form className="w-100">

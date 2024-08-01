@@ -106,5 +106,9 @@ export default {
       countNotification: "/notification/get-notification-count",
       readNotification: "/notification/change-status/",
     },
+    cardActivity: {
+      getAllCardActivity: "/cardActivity/get-all",
+      createCardActivity: "/cardActivity/create",
+    },
   },
 };
