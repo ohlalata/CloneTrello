@@ -29,7 +29,7 @@ import { toast } from "react-toastify";
 import "react-toastify/ReactToastify.css";
 import { debounce } from "lodash";
 // import Connection from "../../components/signalrConnection";
-import { motion } from 'framer-motion';
+import { motion } from "framer-motion";
 
 const HomePages = () => {
   const [activeKey, setActiveKey] = useState("/home");
@@ -103,7 +103,9 @@ const HomePages = () => {
     try {
       const response = await boardService.getAllBoard();
       if (response.data.code == 200) {
-        const result = response.data.data;
+        const result = response.data.data.filter(
+          (board) => board.isActive == true
+        );
         setListBoard(result);
       }
     } catch (error) {
@@ -216,7 +218,9 @@ const HomePages = () => {
         userId: user.id,
         boardId: boardId,
       };
-      const inviteResponse = await boardMemberService.createBoardMember(requestBody);
+      const inviteResponse = await boardMemberService.createBoardMember(
+        requestBody
+      );
       if (inviteResponse.data.code === 201) {
         toast.success("Board member invited successfully!");
         // Connection.invoke(
@@ -289,7 +293,7 @@ const HomePages = () => {
   ];
 
   return (
-<React.Fragment>
+    <React.Fragment>
       <NavBar />
       <div style={{ display: "block" }}>
         <div className="d-flex align-items-start flex-row justify-content-center">
@@ -410,12 +414,13 @@ const HomePages = () => {
                         key={index}
                         className="block__your-board rounded d-flex flex-column justify-content-between"
                         style={{
-                          backgroundImage: `url(${boardTheme[index % boardTheme.length]
-                            })`,
+                          backgroundImage: `url(${
+                            boardTheme[index % boardTheme.length]
+                          })`,
                         }}
                         initial={{ scale: 0.9, opacity: 0 }}
                         animate={{ scale: 1, opacity: 1 }}
-                        transition={{ duration: 1}}
+                        transition={{ duration: 1 }}
                       >
                         <Link
                           to={`/board/board-content/${yourBoards.id}`}
@@ -530,8 +535,9 @@ const HomePages = () => {
                         key={index}
                         className="block__your-board rounded d-flex flex-column justify-content-between"
                         style={{
-                          backgroundImage: `url(${boardTheme[index % boardTheme.length]
-                            })`,
+                          backgroundImage: `url(${
+                            boardTheme[index % boardTheme.length]
+                          })`,
                         }}
                         initial={{ scale: 0.9, opacity: 0 }}
                         animate={{ scale: 1, opacity: 1 }}
