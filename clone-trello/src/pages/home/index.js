@@ -24,39 +24,26 @@ import { faUserGroup, faAngleRight } from "@fortawesome/free-solid-svg-icons";
 import { faPlus } from "@fortawesome/free-solid-svg-icons";
 import { faTable } from "@fortawesome/free-solid-svg-icons";
 import { faTableList } from "@fortawesome/free-solid-svg-icons";
-import { jwtDecode } from "jwt-decode";
 import { toast } from "react-toastify";
 import "react-toastify/ReactToastify.css";
 import { debounce } from "lodash";
-// import Connection from "../../components/signalrConnection";
 import { motion } from "framer-motion";
 
 const HomePages = () => {
   const [activeKey, setActiveKey] = useState("/home");
-
   const [openItems, setOpenItems] = useState({});
-
   const [listBoard, setListBoard] = useState([]);
-
   const [modalShow, setModalShow] = useState(false);
-
   const [boardName, setBoardName] = useState("");
-
   const [createUser, setCreateUser] = useState("");
-
   const [yourBoard, setYourBoard] = useState([]);
-
   const [deleteBoardId, setDeleteBoardId] = useState("");
-
   const [deleteBoardName, setDeleteBoardName] = useState("");
-
   const [inviteModalShow, setInviteModalShow] = useState(false);
-
   const [searchKeyword, setSearchKeyword] = useState("");
   const [searchResults, setSearchResults] = useState([]);
   const [error, setError] = useState("");
   const [selectedBoardIndex, setSelectedBoardIndex] = useState(null);
-
   const [modalShowDelete, setModalShowDelete] = useState(false);
   const navigate = useNavigate();
 
@@ -104,7 +91,10 @@ const HomePages = () => {
       const response = await boardService.getAllBoard();
       if (response.data.code == 200) {
         const result = response.data.data.filter(
-          (board) => board.isActive == true
+          (board) =>
+            board.isActive == true &&
+            board.isPublic == true &&
+            !yourBoard.includes(board)
         );
         setListBoard(result);
       }
@@ -223,10 +213,6 @@ const HomePages = () => {
       );
       if (inviteResponse.data.code === 201) {
         toast.success("Board member invited successfully!");
-        // Connection.invoke(
-        //   "ReceiveTotalNotification",
-        //   requestBody.userId
-        // );
         setInviteModalShow(false);
         setError("");
       }
@@ -291,6 +277,22 @@ const HomePages = () => {
     constants.BOARD_THEME_29,
     constants.BOARD_THEME_30,
   ];
+
+  //convert UUID to num
+  const hashCode = (str) => {
+    return str?.split("").reduce((acc, char) => {
+      return char.charCodeAt(0) + ((acc << 5) - acc);
+    }, 0);
+  };
+
+  // id item to image
+  const getImageForItem = (itemId) => {
+    const hash = hashCode(itemId);
+    const index = Math.abs(hash) % boardTheme.length;
+    console.log("HASH: ", hash);
+    console.log("INDEX: ", index);
+    return boardTheme[index];
+  };
 
   return (
     <React.Fragment>
@@ -411,12 +413,12 @@ const HomePages = () => {
                   <div className="d-flex gap-3 flex-wrap">
                     {yourBoard.map((yourBoards, index) => (
                       <motion.div
-                        key={index}
+                        key={yourBoards.id}
                         className="block__your-board rounded d-flex flex-column justify-content-between"
                         style={{
-                          backgroundImage: `url(${
-                            boardTheme[index % boardTheme.length]
-                          })`,
+                          backgroundImage: `url(${getImageForItem(
+                            yourBoards.id
+                          )})`,
                         }}
                         initial={{ scale: 0.9, opacity: 0 }}
                         animate={{ scale: 1, opacity: 1 }}
@@ -525,7 +527,7 @@ const HomePages = () => {
                 <div className="d-flex justify-content-between">
                   <div className="d-flex gap-2 align-items-center">
                     <FontAwesomeIcon icon={faTableList} size="xl" />
-                    <h6 className="fw-bold my-1 fs-5">Workspace</h6>
+                    <h6 className="fw-bold my-1 fs-5">Workspaceeeee</h6>
                   </div>
                 </div>
                 <div>
@@ -536,7 +538,7 @@ const HomePages = () => {
                         className="block__your-board rounded d-flex flex-column justify-content-between"
                         style={{
                           backgroundImage: `url(${
-                            boardTheme[index % boardTheme.length]
+                            boardThemePublic[index % boardThemePublic.length]
                           })`,
                         }}
                         initial={{ scale: 0.9, opacity: 0 }}
