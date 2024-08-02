@@ -139,10 +139,16 @@ const NavBar = () => {
       setTotalNotifications(totalCount);
     };
 
-    signalR.signalREventEmitter.on("ReceiveTotalNotification", handleReceiveTotalNotification);
+    signalR.signalREventEmitter.on(
+      "ReceiveTotalNotification",
+      handleReceiveTotalNotification
+    );
 
     return () => {
-      signalR.signalREventEmitter.off("ReceiveTotalNotification", handleReceiveTotalNotification);
+      signalR.signalREventEmitter.off(
+        "ReceiveTotalNotification",
+        handleReceiveTotalNotification
+      );
     };
   }, [currentUserId]);
 
