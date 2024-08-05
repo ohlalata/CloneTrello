@@ -245,8 +245,6 @@ const Card = (listIdProps, listBoardIdProps) => {
     }
   }, [isStartDay]);
 
-  // truong hop range true && range.from < range.to mà set range.to = range.from thì lỗi
-  // truong hop range.from = range.to mà set range.to = range.from thì lỗi
   //-----------------------------------------------------------------
   // QUILL
 
@@ -1156,7 +1154,7 @@ const Card = (listIdProps, listBoardIdProps) => {
 
   useEffect(() => {
     handleGetListByFilter();
-  }, [listIdProps,  listBoardIdProps]); // Add dependencies here
+  }, [listIdProps, listBoardIdProps]); // Add dependencies here
 
   const handleListChange = (e) => {
     setSelectedListId(e.target.value);

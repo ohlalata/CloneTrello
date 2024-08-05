@@ -258,9 +258,6 @@ const HomePages = () => {
     constants.BOARD_THEME_13,
     constants.BOARD_THEME_14,
     constants.BOARD_THEME_15,
-  ];
-
-  const boardThemePublic = [
     constants.BOARD_THEME_16,
     constants.BOARD_THEME_17,
     constants.BOARD_THEME_18,
@@ -277,6 +274,8 @@ const HomePages = () => {
     constants.BOARD_THEME_29,
     constants.BOARD_THEME_30,
   ];
+
+  //const boardThemePublic = [];
 
   //convert UUID to num
   const hashCode = (str) => {
@@ -525,7 +524,7 @@ const HomePages = () => {
                 <div className="d-flex justify-content-between">
                   <div className="d-flex gap-2 align-items-center">
                     <FontAwesomeIcon icon={faTableList} size="xl" />
-                    <h6 className="fw-bold my-1 fs-5">Workspaceeeee</h6>
+                    <h6 className="fw-bold my-1 fs-5">Workspace</h6>
                   </div>
                 </div>
                 <div>
@@ -535,9 +534,7 @@ const HomePages = () => {
                         key={index}
                         className="block__your-board rounded d-flex flex-column justify-content-between"
                         style={{
-                          backgroundImage: `url(${
-                            boardThemePublic[index % boardThemePublic.length]
-                          })`,
+                          backgroundImage: `url(${getImageForItem(board.id)})`,
                         }}
                         initial={{ scale: 0.9, opacity: 0 }}
                         animate={{ scale: 1, opacity: 1 }}
