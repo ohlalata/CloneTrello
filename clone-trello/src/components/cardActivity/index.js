@@ -38,7 +38,11 @@ const CardActivity = (cardId) => {
       const response = await CardActivityService.getAllCardActivity(query);
       if (response.data.code == 200) {
         console.log("get activity ok!");
-        setCardActivity(response.data.data);
+        let result = response.data.data;
+        result.sort(
+          (a, b) => new Date(b.createdDate) - new Date(a.createdDate)
+        );
+        setCardActivity(result);
       }
     } catch (error) {
       console.error(error);

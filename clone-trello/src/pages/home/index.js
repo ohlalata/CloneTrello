@@ -289,8 +289,6 @@ const HomePages = () => {
   const getImageForItem = (itemId) => {
     const hash = hashCode(itemId);
     const index = Math.abs(hash) % boardTheme.length;
-    console.log("HASH: ", hash);
-    console.log("INDEX: ", index);
     return boardTheme[index];
   };
 
