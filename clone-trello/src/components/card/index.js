@@ -1156,7 +1156,7 @@ const Card = (listIdProps, listBoardIdProps) => {
 
   useEffect(() => {
     handleGetListByFilter();
-  }, []);
+  }, [listIdProps,  listBoardIdProps]); // Add dependencies here
 
   const handleListChange = (e) => {
     setSelectedListId(e.target.value);

@@ -32,6 +32,11 @@ const initHubConnection = (userId) => {
     signalREventEmitter.emit("ReceiveActivity", cardActivity);
   });
 
+  // hubConnection.on("ReceiveNotification", (notification) => {
+  //   console.log("ReceiveNotification:", notification);
+  //   signalREventEmitter.emit("ReceiveNotification", notification);
+  // });
+
   return hubConnection;
 };
 

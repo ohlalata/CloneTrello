@@ -11,6 +11,7 @@ import { toast } from "react-toastify";
 import "react-toastify/ReactToastify.css";
 import NavbarBoardContent from "../../components/navBarBoardContent";
 import board from "../../api/Services/board";
+import { motion } from 'framer-motion';
 
 const BoardContentPages = () => {
   const { id } = useParams();
@@ -189,10 +190,13 @@ const BoardContentPages = () => {
             {allList
               .sort((a, b) => a.position - b.position)
               .map((catalogList, key) => (
-                <li
+                <motion.li
                   key={key}
                   className="block__list-element"
                   data-testid="list-wrapper"
+                  initial={{ opacity: 0, y: -10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.5, delay: key * 0.1 }}
                 >
                   <div className="block__list-element-wraper">
                     <div className="block__list-title-wraper">
@@ -203,7 +207,7 @@ const BoardContentPages = () => {
                               rows={1}
                               ref={textareaRef}
                               placeholder={catalogList.name}
-                              value={inputTitleList}
+                              value={titleList}
                               onChange={handleChangeListTitle}
                               autoFocus
                               onBlur={() => handleBlurListTitle(catalogList.id)}
@@ -293,14 +297,24 @@ const BoardContentPages = () => {
                       listBoardIdProps={catalogList.boardId}
                     />
                   </div>
-                </li>
+                </motion.li>
               ))}
 
-            <li>
+            <motion.li
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, delay: allList.length * 0.1 }}
+            >
               <div>
                 <div className="block__add-list">
                   {isAddListInputVisible ? (
-                    <div className="d-flex p-2" ref={inputAddList}>
+                    <motion.div
+                      className="d-flex p-2"
+                      ref={inputAddList}
+                      initial={{ opacity: 0, scale: 0.8 }}
+                      animate={{ opacity: 1, scale: 1 }}
+                      transition={{ duration: 0.3 }}
+                    >
                       <div className="w-100 d-flex flex-column gap-2 ">
                         <input
                           className="w-100 border border-1 border-primary rounded-1"
@@ -324,20 +338,25 @@ const BoardContentPages = () => {
                           </button>
                         </div>
                       </div>
-                    </div>
+                    </motion.div>
                   ) : (
-                    <div className="d-flex justify-content-start gap-2 p-2 block__label-add-list">
+                    <motion.div
+                      className="d-flex justify-content-start gap-2 p-2 block__label-add-list"
+                      initial={{ opacity: 0, scale: 0.8 }}
+                      animate={{ opacity: 1, scale: 1 }}
+                      transition={{ duration: 0.3 }}
+                    >
                       <div>
                         <FontAwesomeIcon icon={faPlus} />
                       </div>
                       <div onClick={handleInputAddList} className="w-100">
                         <p className="mb-0 fw-semibold">Add another list</p>
                       </div>
-                    </div>
+                    </motion.div>
                   )}
                 </div>
               </div>
-            </li>
+            </motion.li>
           </div>
         </ol>
       </div>
