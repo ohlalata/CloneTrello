@@ -345,8 +345,8 @@ const Card = (listIdProps, listBoardIdProps) => {
     if (cardDetail?.startDate && cardDetail?.endDate) {
       setLabelDay(
         format(new Date(cardDetail.startDate), "PPP") +
-          " - " +
-          format(new Date(cardDetail.endDate), "PPP, p")
+        " - " +
+        format(new Date(cardDetail.endDate), "PPP, p")
       );
       setVisileLabelDay("Dates");
     }
@@ -534,7 +534,12 @@ const Card = (listIdProps, listBoardIdProps) => {
         handleGetCardByFilter();
       }
     } catch (error) {
-      console.error(error);
+      if (error.response && error.response.data) {
+        toast.error(`${error.response.data.data}`);
+      } else {
+        toast.error("Error updating description: An unexpected error occurred");
+      }
+      console.error("Error updating description:", error);
     }
   };
 
@@ -548,7 +553,12 @@ const Card = (listIdProps, listBoardIdProps) => {
         handleGetCardByFilter();
       }
     } catch (error) {
-      console.error(error);
+      if (error.response && error.response.data) {
+        toast.error(`${error.response.data.data}`);
+      } else {
+        toast.error("Error updating title: An unexpected error occurred");
+      }
+      console.error("Error updating title:", error);
     }
   };
 
@@ -563,7 +573,12 @@ const Card = (listIdProps, listBoardIdProps) => {
         handleGetCardByFilter();
       }
     } catch (error) {
-      console.error(error);
+      if (error.response && error.response.data) {
+        toast.error(`${error.response.data.data}`);
+      } else {
+        toast.error("Error updating title: An unexpected error occurred");
+      }
+      console.error("Error updating title:", error);
     }
   };
 
@@ -578,7 +593,12 @@ const Card = (listIdProps, listBoardIdProps) => {
         handleGetCardByFilter();
       }
     } catch (error) {
-      console.error(error);
+      if (error.response && error.response.data) {
+        toast.error(`${error.response.data.data}`);
+      } else {
+        toast.error("Error creating card: An unexpected error occurred");
+      }
+      console.error("Error creating card:", error);
     }
   };
 
@@ -595,8 +615,12 @@ const Card = (listIdProps, listBoardIdProps) => {
         handleGetCardByFilter();
       }
     } catch (error) {
-      toast.error("Card archived failed!");
-      console.error(error);
+      if (error.response && error.response.data) {
+        toast.error(`${error.response.data.data}`);
+      } else {
+        toast.error("Error archiving card: An unexpected error occurred");
+      }
+      console.error("Error archiving card:", error);
     }
   };
 
@@ -697,8 +721,12 @@ const Card = (listIdProps, listBoardIdProps) => {
         toast.error(`Failed to add member`);
       }
     } catch (error) {
-      toast.error(`Failed to add member`);
-      console.error(error);
+      if (error.response && error.response.data) {
+        toast.error(`${error.response.data.data}`);
+      } else {
+        toast.error("Error assigning card member: An unexpected error occurred");
+      }
+      console.error("Error assigning card member:", error);
     }
   };
 
@@ -720,8 +748,12 @@ const Card = (listIdProps, listBoardIdProps) => {
         toast.error("Remove member Failed!");
       }
     } catch (error) {
-      toast.error("Remove member Failed!");
-      console.error(error);
+      if (error.response && error.response.data) {
+        toast.error(`${error.response.data.data}`);
+      } else {
+        toast.error("Error archiving card: An unexpected error occurred");
+      }
+      console.error("Error archiving card:", error);
     }
   };
 
@@ -760,7 +792,12 @@ const Card = (listIdProps, listBoardIdProps) => {
       closeChecklistPopover();
       handleGetAllChecklist();
     } catch (error) {
-      console.error("Error creating todo:", error);
+      if (error.response && error.response.data) {
+        toast.error(`${error.response.data.data}`);
+      } else {
+        toast.error("Error creating checklist: An unexpected error occurred");
+      }
+      console.error("Error creating checklist:", error);
     }
   };
 
@@ -797,7 +834,12 @@ const Card = (listIdProps, listBoardIdProps) => {
       closeChecklistPopover();
       handleGetAllChecklist();
     } catch (error) {
-      console.error("Error updating todo:", error);
+      if (error.response && error.response.data) {
+        toast.error(`${error.response.data.data}`);
+      } else {
+        toast.error("Error updating checklist: An unexpected error occurred");
+      }
+      console.error("Error updating checklist:", error);
     }
   };
 
@@ -827,7 +869,12 @@ const Card = (listIdProps, listBoardIdProps) => {
       }
       handleGetAllChecklist();
     } catch (error) {
-      console.error("Error updating todo status:", error);
+      if (error.response && error.response.data) {
+        toast.error(`${error.response.data.data}`);
+      } else {
+        toast.error("Error archiving checklist: An unexpected error occurred");
+      }
+      console.error("Error archiving checklist:", error);
     }
   };
 
@@ -907,6 +954,11 @@ const Card = (listIdProps, listBoardIdProps) => {
         toast.error("Failed to add task");
       }
     } catch (error) {
+      if (error.response && error.response.data) {
+        toast.error(`${error.response.data.data}`);
+      } else {
+        toast.error("Error creating task: An unexpected error occurred");
+      }
       console.error("Error creating task:", error);
     }
   };
@@ -985,6 +1037,11 @@ const Card = (listIdProps, listBoardIdProps) => {
         toast.error("Failed to update task");
       }
     } catch (error) {
+      if (error.response && error.response.data) {
+        toast.error(`${error.response.data.data}`);
+      } else {
+        toast.error("Error updating task: An unexpected error occurred");
+      }
       console.error("Error updating task:", error);
     }
   };
@@ -1068,7 +1125,12 @@ const Card = (listIdProps, listBoardIdProps) => {
         toast.error("Failed to Check task");
       }
     } catch (error) {
-      console.error("Error updating task check status:", error);
+      if (error.response && error.response.data) {
+        toast.error(`${error.response.data.data}`);
+      } else {
+        toast.error("Error checking task: An unexpected error occurred");
+      }
+      console.error("Error checking task:", error);
     }
   };
 
@@ -1087,7 +1149,12 @@ const Card = (listIdProps, listBoardIdProps) => {
         toast.error("Failed to inactive task.");
       }
     } catch (error) {
-      console.error("Error updating task status:", error);
+      if (error.response && error.response.data) {
+        toast.error(`${error.response.data.data}`);
+      } else {
+        toast.error("Error archiving task: An unexpected error occurred");
+      }
+      console.error("Error archiving task:", error);
     }
   };
 
@@ -1130,8 +1197,12 @@ const Card = (listIdProps, listBoardIdProps) => {
         setIsModalCardShow(false);
       }
     } catch (error) {
-      toast.error("Card move failed!");
-      console.error(error);
+      if (error.response && error.response.data) {
+        toast.error(`${error.response.data.data}`);
+      } else {
+        toast.error("Error moving card: An unexpected error occurred");
+      }
+      console.error("Error moving card:", error);
     }
   };
 
@@ -1149,7 +1220,7 @@ const Card = (listIdProps, listBoardIdProps) => {
 
   useEffect(() => {
     handleGetListByFilter();
-  }, [listIdProps,  listBoardIdProps]); // Add dependencies here
+  }, [listIdProps, listBoardIdProps]);
 
   const handleListChange = (e) => {
     setSelectedListId(e.target.value);
@@ -1492,31 +1563,29 @@ const Card = (listIdProps, listBoardIdProps) => {
                                             </span>
                                             <div className="d-flex gap-1">
                                               <span
-                                                className={`task-priority ${
-                                                  task.priorityLevel === "Low"
+                                                className={`task-priority ${task.priorityLevel === "Low"
                                                     ? "priority-low"
                                                     : task.priorityLevel ===
                                                       "Medium"
-                                                    ? "priority-medium"
-                                                    : task.priorityLevel ===
-                                                      "High"
-                                                    ? "priority-high"
-                                                    : ""
-                                                }`}
+                                                      ? "priority-medium"
+                                                      : task.priorityLevel ===
+                                                        "High"
+                                                        ? "priority-high"
+                                                        : ""
+                                                  }`}
                                               >
                                                 {task.priorityLevel}
                                               </span>
                                               <span
-                                                className={`task-status ${
-                                                  task.status === "New"
+                                                className={`task-status ${task.status === "New"
                                                     ? "status-new"
                                                     : task.status ===
                                                       "InProgress"
-                                                    ? "status-in-progress"
-                                                    : task.status === "Resolved"
-                                                    ? "status-resolved"
-                                                    : ""
-                                                }`}
+                                                      ? "status-in-progress"
+                                                      : task.status === "Resolved"
+                                                        ? "status-resolved"
+                                                        : ""
+                                                  }`}
                                               >
                                                 {task.status}
                                               </span>
@@ -1547,10 +1616,10 @@ const Card = (listIdProps, listBoardIdProps) => {
                                                 style={{ marginRight: "5px" }}
                                               />
                                               {availableUsers.length > 0 &&
-                                              task.assignedUserId
+                                                task.assignedUserId
                                                 ? userLookup[
-                                                    task.assignedUserId
-                                                  ] || "User not found"
+                                                task.assignedUserId
+                                                ] || "User not found"
                                                 : "Unassigned"}
                                             </div>
                                             <div
@@ -1582,7 +1651,7 @@ const Card = (listIdProps, listBoardIdProps) => {
                                     ...prevTask,
                                     [name]:
                                       name === "priorityLevel" ||
-                                      name === "status"
+                                        name === "status"
                                         ? parseInt(value, 10)
                                         : value,
                                   }));
