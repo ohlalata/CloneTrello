@@ -24,39 +24,26 @@ import { faUserGroup, faAngleRight } from "@fortawesome/free-solid-svg-icons";
 import { faPlus } from "@fortawesome/free-solid-svg-icons";
 import { faTable } from "@fortawesome/free-solid-svg-icons";
 import { faTableList } from "@fortawesome/free-solid-svg-icons";
-import { jwtDecode } from "jwt-decode";
 import { toast } from "react-toastify";
 import "react-toastify/ReactToastify.css";
 import { debounce } from "lodash";
-// import Connection from "../../components/signalrConnection";
-import { motion } from 'framer-motion';
+import { motion } from "framer-motion";
 
 const HomePages = () => {
   const [activeKey, setActiveKey] = useState("/home");
-
   const [openItems, setOpenItems] = useState({});
-
   const [listBoard, setListBoard] = useState([]);
-
   const [modalShow, setModalShow] = useState(false);
-
   const [boardName, setBoardName] = useState("");
-
   const [createUser, setCreateUser] = useState("");
-
   const [yourBoard, setYourBoard] = useState([]);
-
   const [deleteBoardId, setDeleteBoardId] = useState("");
-
   const [deleteBoardName, setDeleteBoardName] = useState("");
-
   const [inviteModalShow, setInviteModalShow] = useState(false);
-
   const [searchKeyword, setSearchKeyword] = useState("");
   const [searchResults, setSearchResults] = useState([]);
   const [error, setError] = useState("");
   const [selectedBoardIndex, setSelectedBoardIndex] = useState(null);
-
   const [modalShowDelete, setModalShowDelete] = useState(false);
   const navigate = useNavigate();
 
@@ -103,7 +90,12 @@ const HomePages = () => {
     try {
       const response = await boardService.getAllBoard();
       if (response.data.code == 200) {
-        const result = response.data.data;
+        const result = response.data.data.filter(
+          (board) =>
+            board.isActive == true &&
+            board.isPublic == true &&
+            !yourBoard.includes(board)
+        );
         setListBoard(result);
       }
     } catch (error) {
@@ -216,13 +208,11 @@ const HomePages = () => {
         userId: user.id,
         boardId: boardId,
       };
-      const inviteResponse = await boardMemberService.createBoardMember(requestBody);
+      const inviteResponse = await boardMemberService.createBoardMember(
+        requestBody
+      );
       if (inviteResponse.data.code === 201) {
         toast.success("Board member invited successfully!");
-        // Connection.invoke(
-        //   "ReceiveTotalNotification",
-        //   requestBody.userId
-        // );
         setInviteModalShow(false);
         setError("");
       }
@@ -268,9 +258,6 @@ const HomePages = () => {
     constants.BOARD_THEME_13,
     constants.BOARD_THEME_14,
     constants.BOARD_THEME_15,
-  ];
-
-  const boardThemePublic = [
     constants.BOARD_THEME_16,
     constants.BOARD_THEME_17,
     constants.BOARD_THEME_18,
@@ -288,8 +275,24 @@ const HomePages = () => {
     constants.BOARD_THEME_30,
   ];
 
+  //const boardThemePublic = [];
+
+  //convert UUID to num
+  const hashCode = (str) => {
+    return str?.split("").reduce((acc, char) => {
+      return char.charCodeAt(0) + ((acc << 5) - acc);
+    }, 0);
+  };
+
+  // id item to image
+  const getImageForItem = (itemId) => {
+    const hash = hashCode(itemId);
+    const index = Math.abs(hash) % boardTheme.length;
+    return boardTheme[index];
+  };
+
   return (
-<React.Fragment>
+    <React.Fragment>
       <NavBar />
       <div style={{ display: "block" }}>
         <div className="d-flex align-items-start flex-row justify-content-center">
@@ -407,15 +410,16 @@ const HomePages = () => {
                   <div className="d-flex gap-3 flex-wrap">
                     {yourBoard.map((yourBoards, index) => (
                       <motion.div
-                        key={index}
+                        key={yourBoards.id}
                         className="block__your-board rounded d-flex flex-column justify-content-between"
                         style={{
-                          backgroundImage: `url(${boardTheme[index % boardTheme.length]
-                            })`,
+                          backgroundImage: `url(${getImageForItem(
+                            yourBoards.id
+                          )})`,
                         }}
                         initial={{ scale: 0.9, opacity: 0 }}
                         animate={{ scale: 1, opacity: 1 }}
-                        transition={{ duration: 1}}
+                        transition={{ duration: 1 }}
                       >
                         <Link
                           to={`/board/board-content/${yourBoards.id}`}
@@ -530,8 +534,7 @@ const HomePages = () => {
                         key={index}
                         className="block__your-board rounded d-flex flex-column justify-content-between"
                         style={{
-                          backgroundImage: `url(${boardTheme[index % boardTheme.length]
-                            })`,
+                          backgroundImage: `url(${getImageForItem(board.id)})`,
                         }}
                         initial={{ scale: 0.9, opacity: 0 }}
                         animate={{ scale: 1, opacity: 1 }}

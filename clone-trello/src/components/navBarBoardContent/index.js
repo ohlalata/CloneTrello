@@ -141,7 +141,10 @@ const NavbarBoardContent = (boardID) => {
   const handleChangeBoardName = (e) => {
     if (!e.target.value) {
       toast.warn("Board name is required!");
-      setInputBoardNameTemp(boardName);
+      e.preventDefault();
+      e.stopPropagation();
+      return;
+      //setInputBoardNameTemp(boardName);
     }
     setInputBoardNameTemp(e.target.value);
   };
@@ -230,8 +233,13 @@ const NavbarBoardContent = (boardID) => {
   };
 
   const handleUpdateBoardName = async (id) => {
-    // const formData = new FormData();
-    // formData.append("Name", inputBoardNameTemp);
+    if (inputBoardNameTemp == boardName) {
+      toast.warn("Board name is not change!");
+      setIsBoardNameVisible(false);
+      setInputBoardNameTemp("");
+      handleGetAllBoard();
+      return;
+    }
     let query = {
       id: id,
       name: inputBoardNameTemp,
@@ -414,15 +422,6 @@ const NavbarBoardContent = (boardID) => {
             </div>
           </div>
           <div className="d-flex gap-3">
-            {/* <div>
-              <button className="btn btn-secondary btn-sm d-flex gap-1">
-                <span>
-                  <FontAwesomeIcon icon={faUserPlus} />
-                </span>
-                <span className="fw-semibold fs-6">Share</span>
-              </button>
-            </div> */}
-
             <div
               className="block__option-wrapper d-flex align-items-center"
               onClick={showOffcanvas}
@@ -452,19 +451,6 @@ const NavbarBoardContent = (boardID) => {
                   className="d-flex flex-column gap-2"
                   style={{ color: "#455570" }}
                 >
-                  <div className="option__menu-setting">
-                    <div className="d-flex gap-3 align-items-center ms-2">
-                      <FontAwesomeIcon icon={faBarsStaggered} />
-                      <span>Avtivity</span>
-                    </div>
-                  </div>
-                  <div className="option__menu-setting">
-                    <div className="d-flex gap-3 align-items-center ms-2">
-                      <FontAwesomeIcon icon={faBoxArchive} />
-                      <span>Archived items</span>
-                    </div>
-                  </div>
-                  <div className="w-100 border border-1 my-2"></div>
                   <div
                     className="option__menu-setting"
                     onClick={showLabelOffcanvas}
@@ -472,13 +458,6 @@ const NavbarBoardContent = (boardID) => {
                     <div className="d-flex gap-3 align-items-center ms-2">
                       <FontAwesomeIcon icon={faTags} />
                       <span>Label</span>
-                    </div>
-                  </div>
-                  <div className="w-100 border border-1 my-2"></div>
-                  <div className="option__menu-setting">
-                    <div className="d-flex gap-3 align-items-center ms-2">
-                      <FontAwesomeIcon icon={faArrowRightFromBracket} />
-                      <span>Leave board</span>
                     </div>
                   </div>
                 </div>

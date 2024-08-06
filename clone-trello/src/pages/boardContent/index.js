@@ -11,7 +11,9 @@ import { toast } from "react-toastify";
 import "react-toastify/ReactToastify.css";
 import NavbarBoardContent from "../../components/navBarBoardContent";
 import board from "../../api/Services/board";
-import { motion } from 'framer-motion';
+import { motion } from "framer-motion";
+import * as constants from "../../shared/constants";
+import { has } from "lodash";
 
 const BoardContentPages = () => {
   const { id } = useParams();
@@ -178,10 +180,62 @@ const BoardContentPages = () => {
     handleGetListByFilter();
   }, []);
 
+  const boardTheme = [
+    constants.BOARD_THEME_01,
+    constants.BOARD_THEME_02,
+    constants.BOARD_THEME_03,
+    constants.BOARD_THEME_04,
+    constants.BOARD_THEME_05,
+    constants.BOARD_THEME_06,
+    constants.BOARD_THEME_07,
+    constants.BOARD_THEME_08,
+    constants.BOARD_THEME_09,
+    constants.BOARD_THEME_10,
+    constants.BOARD_THEME_11,
+    constants.BOARD_THEME_12,
+    constants.BOARD_THEME_13,
+    constants.BOARD_THEME_14,
+    constants.BOARD_THEME_15,
+    constants.BOARD_THEME_16,
+    constants.BOARD_THEME_17,
+    constants.BOARD_THEME_18,
+    constants.BOARD_THEME_19,
+    constants.BOARD_THEME_20,
+    constants.BOARD_THEME_21,
+    constants.BOARD_THEME_22,
+    constants.BOARD_THEME_23,
+    constants.BOARD_THEME_24,
+    constants.BOARD_THEME_25,
+    constants.BOARD_THEME_26,
+    constants.BOARD_THEME_27,
+    constants.BOARD_THEME_28,
+    constants.BOARD_THEME_29,
+    constants.BOARD_THEME_30,
+  ];
+
+  //convert UUID to num
+  const hashCode = (str) => {
+    return str?.split("").reduce((acc, char) => {
+      return char.charCodeAt(0) + ((acc << 5) - acc);
+    }, 0);
+  };
+
+  // id item to image
+  const getImageForItem = (itemId) => {
+    const hash = hashCode(itemId);
+    const index = Math.abs(hash) % boardTheme.length;
+    console.log("HASH: ", hash);
+    console.log("INDEX: ", index);
+    return boardTheme[index];
+  };
+
   return (
     <React.Fragment>
       <div className="d-flex block__board-content-container">
-        <ol className="block__catalog-list d-flex gap-1 flex-column p-1">
+        <ol
+          className="block__catalog-list d-flex gap-1 flex-column p-1"
+          style={{ backgroundImage: `url(${getImageForItem(id)})` }}
+        >
           <div className="d-flex w-100 block__navbar-boardContent-wrapper">
             <NavbarBoardContent boardID={id} />
           </div>
@@ -207,7 +261,7 @@ const BoardContentPages = () => {
                               rows={1}
                               ref={textareaRef}
                               placeholder={catalogList.name}
-                              value={titleList}
+                              //value={titleList}
                               onChange={handleChangeListTitle}
                               autoFocus
                               onBlur={() => handleBlurListTitle(catalogList.id)}
@@ -270,7 +324,11 @@ const BoardContentPages = () => {
                                     onChange={(e) => {
                                       const value = e.target.value;
                                       // Only allow integer values
-                                      if ((Number.isInteger(Number(value)) && Number(value) >= 0) || value === "") {
+                                      if (
+                                        (Number.isInteger(Number(value)) &&
+                                          Number(value) >= 0) ||
+                                        value === ""
+                                      ) {
                                         setNewPosition(value);
                                       }
                                     }}
@@ -281,7 +339,9 @@ const BoardContentPages = () => {
                                 <button
                                   className="btn btn-primary w-20"
                                   style={{ marginLeft: "5px" }}
-                                  onClick={() => handleSaveClick(catalogList.id)}
+                                  onClick={() =>
+                                    handleSaveClick(catalogList.id)
+                                  }
                                 >
                                   Save
                                 </button>

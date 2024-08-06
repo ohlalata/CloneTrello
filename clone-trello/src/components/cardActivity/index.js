@@ -3,22 +3,10 @@ import "./style.scss";
 import * as constants from "../../shared/constants";
 import CardActivityService from "../../api/Services/cardActivity";
 import signalR from "../../utils/signalR";
+import { format } from "date-fns";
 
 const CardActivity = (cardId) => {
   const [cardActivity, setCardActivity] = useState([]);
-
-  const handleGetCardActivity = async () => {
-    let query = { cardId: cardId.cardId };
-    try {
-      const response = await CardActivityService.getAllCardActivity(query);
-      if (response.data.code == 200) {
-        console.log("get activity ok!");
-        setCardActivity(response.data.data);
-      }
-    } catch (error) {
-      console.error(error);
-    }
-  };
 
   useEffect(() => {
     const handleReceiveCardActivity = (cardActivity) => {
@@ -28,6 +16,7 @@ const CardActivity = (cardId) => {
         }
         return preCardActivity;
       });
+      handleGetCardActivity();
     };
 
     signalR.signalREventEmitter.on(
@@ -43,6 +32,23 @@ const CardActivity = (cardId) => {
     };
   }, []);
 
+  const handleGetCardActivity = async () => {
+    let query = { cardId: cardId.cardId };
+    try {
+      const response = await CardActivityService.getAllCardActivity(query);
+      if (response.data.code == 200) {
+        console.log("get activity ok!");
+        let result = response.data.data;
+        result.sort(
+          (a, b) => new Date(b.createdDate) - new Date(a.createdDate)
+        );
+        setCardActivity(result);
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
   useEffect(() => {
     handleGetCardActivity();
   }, []);
@@ -56,10 +62,14 @@ const CardActivity = (cardId) => {
           </div>
           <div className="d-flex flex-column">
             <div className="d-flex gap-1">
-              <span>name</span>
-              <span>activity</span>
+              <span className="fw-bold">{cardActivities.userName}</span>
+              <span style={{ color: "#172b4d" }}>
+                {cardActivities.activity}
+              </span>
             </div>
-            <span>time</span>
+            <span style={{ color: "#172b4d" }}>
+              {format(cardActivities.createdDate, "MMMM dd, yyyy, h:mm a")}
+            </span>
           </div>
         </div>
       ))}
