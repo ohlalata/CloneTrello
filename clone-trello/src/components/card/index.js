@@ -532,7 +532,12 @@ const Card = (listIdProps, listBoardIdProps) => {
         handleGetCardByFilter();
       }
     } catch (error) {
-      console.error(error);
+      if (error.response && error.response.data) {
+        toast.error(`${error.response.data.data}`);
+      } else {
+        toast.error("Error updating description: An unexpected error occurred");
+      }
+      console.error("Error updating description:", error);
     }
   };
 
@@ -546,7 +551,12 @@ const Card = (listIdProps, listBoardIdProps) => {
         handleGetCardByFilter();
       }
     } catch (error) {
-      console.error(error);
+      if (error.response && error.response.data) {
+        toast.error(`${error.response.data.data}`);
+      } else {
+        toast.error("Error updating title: An unexpected error occurred");
+      }
+      console.error("Error updating title:", error);
     }
   };
 
@@ -561,7 +571,12 @@ const Card = (listIdProps, listBoardIdProps) => {
         handleGetCardByFilter();
       }
     } catch (error) {
-      console.error(error);
+      if (error.response && error.response.data) {
+        toast.error(`${error.response.data.data}`);
+      } else {
+        toast.error("Error updating title: An unexpected error occurred");
+      }
+      console.error("Error updating title:", error);
     }
   };
 
@@ -576,7 +591,12 @@ const Card = (listIdProps, listBoardIdProps) => {
         handleGetCardByFilter();
       }
     } catch (error) {
-      console.error(error);
+      if (error.response && error.response.data) {
+        toast.error(`${error.response.data.data}`);
+      } else {
+        toast.error("Error creating card: An unexpected error occurred");
+      }
+      console.error("Error creating card:", error);
     }
   };
 
@@ -593,8 +613,12 @@ const Card = (listIdProps, listBoardIdProps) => {
         handleGetCardByFilter();
       }
     } catch (error) {
-      toast.error("Card archived failed!");
-      console.error(error);
+      if (error.response && error.response.data) {
+        toast.error(`${error.response.data.data}`);
+      } else {
+        toast.error("Error archiving card: An unexpected error occurred");
+      }
+      console.error("Error archiving card:", error);
     }
   };
 
@@ -695,8 +719,14 @@ const Card = (listIdProps, listBoardIdProps) => {
         toast.error(`Failed to add member`);
       }
     } catch (error) {
-      toast.error(`Failed to add member`);
-      console.error(error);
+      if (error.response && error.response.data) {
+        toast.error(`${error.response.data.data}`);
+      } else {
+        toast.error(
+          "Error assigning card member: An unexpected error occurred"
+        );
+      }
+      console.error("Error assigning card member:", error);
     }
   };
 
@@ -718,8 +748,12 @@ const Card = (listIdProps, listBoardIdProps) => {
         toast.error("Remove member Failed!");
       }
     } catch (error) {
-      toast.error("Remove member Failed!");
-      console.error(error);
+      if (error.response && error.response.data) {
+        toast.error(`${error.response.data.data}`);
+      } else {
+        toast.error("Error archiving card: An unexpected error occurred");
+      }
+      console.error("Error archiving card:", error);
     }
   };
 
@@ -758,7 +792,12 @@ const Card = (listIdProps, listBoardIdProps) => {
       closeChecklistPopover();
       handleGetAllChecklist();
     } catch (error) {
-      console.error("Error creating todo:", error);
+      if (error.response && error.response.data) {
+        toast.error(`${error.response.data.data}`);
+      } else {
+        toast.error("Error creating checklist: An unexpected error occurred");
+      }
+      console.error("Error creating checklist:", error);
     }
   };
 
@@ -795,7 +834,12 @@ const Card = (listIdProps, listBoardIdProps) => {
       closeChecklistPopover();
       handleGetAllChecklist();
     } catch (error) {
-      console.error("Error updating todo:", error);
+      if (error.response && error.response.data) {
+        toast.error(`${error.response.data.data}`);
+      } else {
+        toast.error("Error updating checklist: An unexpected error occurred");
+      }
+      console.error("Error updating checklist:", error);
     }
   };
 
@@ -825,7 +869,12 @@ const Card = (listIdProps, listBoardIdProps) => {
       }
       handleGetAllChecklist();
     } catch (error) {
-      console.error("Error updating todo status:", error);
+      if (error.response && error.response.data) {
+        toast.error(`${error.response.data.data}`);
+      } else {
+        toast.error("Error archiving checklist: An unexpected error occurred");
+      }
+      console.error("Error archiving checklist:", error);
     }
   };
 
@@ -905,6 +954,11 @@ const Card = (listIdProps, listBoardIdProps) => {
         toast.error("Failed to add task");
       }
     } catch (error) {
+      if (error.response && error.response.data) {
+        toast.error(`${error.response.data.data}`);
+      } else {
+        toast.error("Error creating task: An unexpected error occurred");
+      }
       console.error("Error creating task:", error);
     }
   };
@@ -983,6 +1037,11 @@ const Card = (listIdProps, listBoardIdProps) => {
         toast.error("Failed to update task");
       }
     } catch (error) {
+      if (error.response && error.response.data) {
+        toast.error(`${error.response.data.data}`);
+      } else {
+        toast.error("Error updating task: An unexpected error occurred");
+      }
       console.error("Error updating task:", error);
     }
   };
@@ -1066,7 +1125,12 @@ const Card = (listIdProps, listBoardIdProps) => {
         toast.error("Failed to Check task");
       }
     } catch (error) {
-      console.error("Error updating task check status:", error);
+      if (error.response && error.response.data) {
+        toast.error(`${error.response.data.data}`);
+      } else {
+        toast.error("Error checking task: An unexpected error occurred");
+      }
+      console.error("Error checking task:", error);
     }
   };
 
@@ -1085,7 +1149,12 @@ const Card = (listIdProps, listBoardIdProps) => {
         toast.error("Failed to inactive task.");
       }
     } catch (error) {
-      console.error("Error updating task status:", error);
+      if (error.response && error.response.data) {
+        toast.error(`${error.response.data.data}`);
+      } else {
+        toast.error("Error archiving task: An unexpected error occurred");
+      }
+      console.error("Error archiving task:", error);
     }
   };
 
@@ -1137,8 +1206,12 @@ const Card = (listIdProps, listBoardIdProps) => {
         handleGetCardByFilter();
       }
     } catch (error) {
-      toast.error("Card move failed!");
-      console.error(error);
+      if (error.response && error.response.data) {
+        toast.error(`${error.response.data.data}`);
+      } else {
+        toast.error("Error moving card: An unexpected error occurred");
+      }
+      console.error("Error moving card:", error);
     }
   };
 
