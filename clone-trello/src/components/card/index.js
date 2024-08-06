@@ -1133,6 +1133,8 @@ const Card = (listIdProps, listBoardIdProps) => {
         toast.success("Card moved successfully!");
         setIsMovePopoverOpen(false);
         setIsModalCardShow(false);
+
+        handleGetCardByFilter();
       }
     } catch (error) {
       toast.error("Card move failed!");
