@@ -125,13 +125,18 @@ const Comments = (cardId) => {
       const response = await commentServices.updateComment(query);
       if (response.data.code == 200) {
         console.log("update ok");
-
+        toast.success("Update comment successful");
         setIsUpdateComment(true);
         setEditCommentId(false);
         handleGetAllComment();
       }
     } catch (error) {
-      console.error(error);
+      if (error.response && error.response.data) {
+        toast.error(`${error.response.data.data}`);
+      } else {
+        toast.error("Error Update comment: An unexpected error occurred");
+      }
+      console.error("Error Update comment:", error);
     }
   };
 
@@ -142,11 +147,15 @@ const Comments = (cardId) => {
       if (response.data.code == 200) {
         console.log("delete ok");
         handleGetAllComment();
-        toast.success("Delete comment successful");
+        toast.success("Inactive comment successful");
       }
     } catch (error) {
-      console.error(error);
-      toast.error("Delete comment fail!");
+      if (error.response && error.response.data) {
+        toast.error(`${error.response.data.data}`);
+      } else {
+        toast.error("Error inactive comment: An unexpected error occurred");
+      }
+      console.error("Error inactive comment:", error);
     }
   };
 
@@ -182,8 +191,12 @@ const Comments = (cardId) => {
         toast.success("Create comment successful");
       }
     } catch (error) {
-      console.error(error);
-      toast.error("Create comment fail!");
+      if (error.response && error.response.data) {
+        toast.error(`${error.response.data.data}`);
+      } else {
+        toast.error("Error create comment: An unexpected error occurred");
+      }
+      console.error("Error create comment:", error);
     }
   };
 

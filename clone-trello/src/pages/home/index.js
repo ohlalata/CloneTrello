@@ -127,14 +127,18 @@ const HomePages = () => {
       const response = await boardService.changeBoardStatus(query);
       if (response.data.code == 200) {
         setModalShowDelete(false);
-        toast.success("delete board successful");
+        toast.success("Inactive board successful");
         handleGetAllBoard();
         handleGetBoardByMember();
       }
     } catch (error) {
-      console.error(error);
+      if (error.response && error.response.data) {
+        toast.error(`${error.response.data.data}`);
+      } else {
+        toast.error("Error moving card: An unexpected error occurred");
+      }
+      console.error("Error moving card:", error);
       setModalShowDelete(false);
-      toast.error("delete board  fail!");
     }
   };
 
@@ -145,7 +149,8 @@ const HomePages = () => {
     try {
       const response = await boardService.createBoard(requestBody);
       if (response.data.code == 201) {
-        console.log("create board successful!");
+        console.log("Create board successful!");
+        toast.success("Create board successful");
         handleGetAllBoard();
         handleGetBoardByMember();
         setBoardName("");
