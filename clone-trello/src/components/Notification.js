@@ -12,7 +12,7 @@ function Notification() {
           body: payload?.notification?.body,
         });
         toast.success(`${payload?.notification?.title}: ${payload?.notification?.body}`, {
-          duration: 15000, 
+          duration: 10000, 
           position: 'bottom-right'
         });
       });

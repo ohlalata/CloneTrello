@@ -10,7 +10,7 @@ import {
 import { Popover, Overlay, Button } from "react-bootstrap";
 import * as constants from "../../shared/constants";
 import cardLabelService from "../../api/Services/cardLabel";
-
+import { toast } from "react-toastify";
 import labelService from "../../api/Services/label";
 
 const CardLabel = (cardId) => {
@@ -166,11 +166,17 @@ const CardLabel = (cardId) => {
       const response = await labelService.deleteLabel(query);
       if (response.data.code == 200) {
         console.log("delete card label ok");
+        toast.success("Inactive card label successful");
         setIsUpdateCardLabel(false);
         handleGetAllLabel();
       }
     } catch (error) {
-      console.error(error);
+      if (error.response && error.response.data) {
+        toast.error(`${error.response.data.data}`);
+      } else {
+        toast.error("Error inactive card label: An unexpected error occurred");
+      }
+      console.error("Error inactive card label:", error);
     }
   };
 
@@ -184,11 +190,17 @@ const CardLabel = (cardId) => {
       const response = await labelService.updateLabel(requestBody);
       if (response.data.code == 200) {
         setIsUpdateCardLabel(false);
+        toast.success("Update card label successful");
         setTitleCardLabel("");
         handleGetAllLabel();
       }
     } catch (error) {
-      console.error(error);
+      if (error.response && error.response.data) {
+        toast.error(`${error.response.data.data}`);
+      } else {
+        toast.error("Error updating card label: An unexpected error occurred");
+      }
+      console.error("Error updating card label:", error);
     }
   };
 
@@ -224,6 +236,7 @@ const CardLabel = (cardId) => {
           );
           if (responseCardLabel.data.code == 201) {
             setIsCreateCardLabel(false);
+            toast.success("Create label successful");
             setTitleCardLabel("");
             handleGetAllLabel();
             handleGetAllExistCardLabel();
@@ -233,7 +246,12 @@ const CardLabel = (cardId) => {
         }
       }
     } catch (error) {
-      console.error(error);
+      if (error.response && error.response.data) {
+        toast.error(`${error.response.data.data}`);
+      } else {
+        toast.error("Error create label: An unexpected error occurred");
+      }
+      console.error("Error create label:", error);
     }
   };
 
@@ -329,11 +347,10 @@ const CardLabel = (cardId) => {
                       {constants.LABEL_COLOR.map((color, index) => (
                         <div
                           key={index}
-                          className={`block__color-box ${
-                            selectCardLabel == index
-                              ? "block__selected-color"
-                              : ""
-                          }`}
+                          className={`block__color-box ${selectCardLabel == index
+                            ? "block__selected-color"
+                            : ""
+                            }`}
                           style={{ backgroundColor: color }}
                           onClick={() => handleSelectCardLabel(color, index)}
                         ></div>
@@ -389,8 +406,8 @@ const CardLabel = (cardId) => {
                       name="search-label"
                       type="text"
                       placeholder="Search labels..."
-                      // value={}
-                      // onChange={}
+                    // value={}
+                    // onChange={}
                     ></input>
                   </div>
                   <div>
