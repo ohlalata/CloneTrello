@@ -7,36 +7,6 @@ const getAllBoard = async () => {
   return response;
 };
 
-//------------------------------------------------------------------------------------
-// const getBoardByFilter = async (query) => {
-//   let { pageIndex, pageSize, name } = query;
-
-//   const serviceUrl = urlConstant.endpoint.board.getBoardByFilter; //getBoardByFilter edit
-
-//   let params = {
-//     pageIndex: 1, //default
-//     pageSize: 50, //default
-//   };
-
-//   if (pageIndex && pageSize) {
-//     params = {
-//       pageIndex: parseInt(pageIndex),
-//       pageSize: parseInt(pageSize),
-//     };
-//   }
-
-//   if (name) {
-//     params = {
-//       ...params,
-//       boardName: name,
-//     };
-//   }
-
-//   const response = await axiosLocalHost.normalRequest.get(serviceUrl, params);
-// };
-
-//--------------------------------------------------------------------------------------
-
 const createBoard = async (requestBody) => {
   const serviceUrl = urlConstant.endpoint.board.createBoard;
   let { name } = requestBody;

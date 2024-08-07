@@ -209,7 +209,6 @@ const NavbarBoardContent = (boardID) => {
     try {
       const response = await labelService.getAllLabel(query);
       if (response.data.code == 200) {
-        console.log(response.data.data);
         setBoardLabel(response.data.data);
       }
     } catch (error) {
@@ -257,14 +256,18 @@ const NavbarBoardContent = (boardID) => {
     }
   };
 
+  //
   const handleGetAllBoard = async () => {
     try {
-      const response = await boardService.getAllBoard();
+      const response = await boardService.getBoardByMember();
       if (response.data.code == 200) {
-        const result = response.data.data;
+        let result = response.data.data;
+        console.log(result.filter((board) => board.id == boardID.boardID));
+
         setBoardName(
           result.filter((board) => board.id == boardID.boardID)[0].name
         );
+
         setBoardIsPublic(
           result.filter((board) => board.id == boardID.boardID)[0].isPublic
         );

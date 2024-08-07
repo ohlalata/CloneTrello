@@ -1,7 +1,7 @@
 import React, { useRef, useState, useEffect } from "react";
 import "./style.scss";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faEllipsis, faChevronLeft } from "@fortawesome/free-solid-svg-icons";
+import { faEllipsis } from "@fortawesome/free-solid-svg-icons";
 import { faPlus } from "@fortawesome/free-solid-svg-icons";
 import listServices from "../../api/Services/list";
 import { faXmark } from "@fortawesome/free-solid-svg-icons";
@@ -10,10 +10,8 @@ import Card from "../../components/card";
 import { toast } from "react-toastify";
 import "react-toastify/ReactToastify.css";
 import NavbarBoardContent from "../../components/navBarBoardContent";
-import board from "../../api/Services/board";
 import { motion } from "framer-motion";
 import * as constants from "../../shared/constants";
-import { has } from "lodash";
 
 const BoardContentPages = () => {
   const { id } = useParams();
@@ -27,6 +25,7 @@ const BoardContentPages = () => {
   const [dropdownVisible, setDropdownVisible] = useState(null);
   const [isMoveListMode, setIsMoveListMode] = useState(false);
   const [newPosition, setNewPosition] = useState("");
+  //const [childKey, setChildKey] = useState(0);
 
   const handleClickTitleList = (listIdVisible) => {
     setIsEditingTitleList(listIdVisible);
@@ -65,18 +64,6 @@ const BoardContentPages = () => {
     };
   }, [isAddListInputVisible]);
 
-  const handleGetAllList = async () => {
-    let query = { boardId: id };
-    try {
-      const response = await listServices.getAllList(query);
-      if (response.data.code == 200) {
-        setAllList(response.data.data);
-      }
-    } catch (error) {
-      console.error(error);
-    }
-  };
-
   const handleGetListByFilter = async () => {
     let query = { boardId: id, isActive: true };
     try {
@@ -90,9 +77,6 @@ const BoardContentPages = () => {
   };
 
   const handleUpdateListName = async (listID) => {
-    // const formData = new FormData();
-    // formData.append("BoardId", id);
-    // formData.append("Name", inputTitleList);
     let query = {
       id: listID,
       boardId: id,
@@ -154,6 +138,7 @@ const BoardContentPages = () => {
       if (response.data.code == 200) {
         toast.success("List moved successfully!");
         handleGetListByFilter();
+        //setChildKey(childKey + 1);
       }
     } catch (error) {
       toast.error("List move failed!");
@@ -224,8 +209,6 @@ const BoardContentPages = () => {
   const getImageForItem = (itemId) => {
     const hash = hashCode(itemId);
     const index = Math.abs(hash) % boardTheme.length;
-    console.log("HASH: ", hash);
-    console.log("INDEX: ", index);
     return boardTheme[index];
   };
 
@@ -355,6 +338,9 @@ const BoardContentPages = () => {
                       listIdProps={catalogList.id}
                       listNameProps={catalogList.name}
                       listBoardIdProps={catalogList.boardId}
+                      data={allList}
+                      // key={childKey}
+                      checkMoveCard={handleGetListByFilter}
                     />
                   </div>
                 </motion.li>

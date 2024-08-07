@@ -1,13 +1,7 @@
 import React, { useRef, useState, useEffect } from "react";
 import "./style.scss";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {
-  faPen,
-  faX,
-  faListCheck,
-  faTrash,
-  faPenToSquare,
-} from "@fortawesome/free-solid-svg-icons";
+import { faPen, faListCheck, faTrash } from "@fortawesome/free-solid-svg-icons";
 import cardServices from "../../api/Services/card";
 import { faPlus } from "@fortawesome/free-solid-svg-icons";
 import { faXmark } from "@fortawesome/free-solid-svg-icons";
@@ -15,28 +9,24 @@ import { Modal, ModalBody, ModalHeader, FormControl } from "react-bootstrap";
 import { faTable } from "@fortawesome/free-solid-svg-icons";
 import { faAlignLeft } from "@fortawesome/free-solid-svg-icons";
 import { faListUl } from "@fortawesome/free-solid-svg-icons";
-import * as constants from "../../shared/constants";
 import { faUser } from "@fortawesome/free-regular-svg-icons";
 import { faClock } from "@fortawesome/free-regular-svg-icons";
 import { faTrashCan } from "@fortawesome/free-regular-svg-icons";
 import { toast } from "react-toastify";
 import "react-toastify/ReactToastify.css";
-import { Popover, Overlay, Button, ButtonGroup, Form } from "react-bootstrap";
+import { Popover, Overlay, Button, Form } from "react-bootstrap";
 import { faArrowRight } from "@fortawesome/free-solid-svg-icons";
 import {
   format,
   addDays,
   parse,
-  endOfDay,
   isValid,
   subMinutes,
   subDays,
   subHours,
 } from "date-fns";
-import { DateRange, DayPicker } from "react-day-picker";
+import { DayPicker } from "react-day-picker";
 import "react-day-picker/dist/style.css";
-import { set } from "date-fns";
-import { faTags } from "@fortawesome/free-solid-svg-icons";
 import cardMemberService from "../../api/Services/cardMember";
 import userService from "../../api/Services/user";
 import boardMemberService from "../../api/Services/boardMember";
@@ -45,20 +35,14 @@ import "react-quill/dist/quill.snow.css";
 import todoService from "../../api/Services/todo";
 import { useForm } from "react-hook-form";
 import taskService from "../../api/Services/task";
-import { enUS, vi } from "date-fns/locale";
-//import Connection from "../signalrConnection";
+import { vi } from "date-fns/locale";
 import Comments from "../comments";
 import TaskForm from "../taskForm";
 import CardLabel from "../cardLabel";
-import cardLabelService from "../../api/Services/cardLabel";
 import CardActivity from "../cardActivity";
-import Connection from "../signalrConnection";
 import listServices from "../../api/Services/list";
 
 const Card = (listIdProps, listBoardIdProps) => {
-  // let userProfile = JSON.parse(localStorage.getItem("userProfile")).data.id;
-  // console.log("userProfile", userProfile);
-
   const textareaRefCardTitle = useRef(null);
   const textAreaRefCreateCardTitle = useRef(null);
   const datePopoverRef = useRef(null);
@@ -66,7 +50,6 @@ const Card = (listIdProps, listBoardIdProps) => {
   const checklistPopoverRef = useRef(null);
   const assignPopoverRef = useRef(null);
   const dueDatePopoverRef = useRef(null);
-
   const [EditingCardTitle, setEditingCardTitle] = useState(null);
   const [inputTitleCard, setInputTitleCard] = useState("");
   const [listCard, setListCard] = useState([]);
@@ -78,7 +61,6 @@ const Card = (listIdProps, listBoardIdProps) => {
   const [activityVisible, setActivityVisible] = useState(true);
   const [isCardTitleModal, setIsCardTitleModal] = useState(true);
   const [CardTitleModal, setCardTitleModal] = useState("");
-  //const datePopoverRef = useRef(null);
   const [cardMembers, setCardMembers] = useState([]);
   const [isMemberPopoverOpen, setIsMemberPopoverOpen] = useState(false);
   const [selectedCardId, setSelectedCardId] = useState(null);
@@ -93,29 +75,20 @@ const Card = (listIdProps, listBoardIdProps) => {
   const [valueQuill, setValueQuill] = useState("");
   const quillRef = useRef(null);
   const { register } = useForm();
-  // const onSubmit = (data) => console.log(data);
-  //const [DescriptionTemp, setDescriptionTemp] = useState("");
+
   const [addingItem, setAddingItem] = useState(null);
-  const [newTask, setNewTask] = useState({
-    // name: '',
-    // priorityLevel: '',
-    // status: '',
-    // description: '',
-    // assignedUserId: '',
-    // dueDate: null
-  });
+  const [newTask, setNewTask] = useState({});
   const [isAssignPopoverOpen, setIsAssignPopoverOpen] = useState(false);
   const [availableUsers, setAvailableUsers] = useState([]);
   const [selectedUser, setSelectedUser] = useState(null);
   const [dueDate, setDueDate] = useState(null);
   const [isDatePickerOpen, setIsDatePickerOpen] = useState(false);
-  //const [dueDateLabel, setDueDateLabel] = useState("Due Date");
   const [dueDateLabel, setDueDateLabel] = useState("Due Date");
   const [taskItems, setTaskItems] = useState([]);
   const [editingTask, setEditingTask] = useState(null);
   const [updatedTask, setUpdatedTask] = useState({});
+  const [moveCard, setMoveCard] = useState(0);
 
-  //------------ DATE PICKER-------------
   const [datePopover, setDatePopover] = useState(false);
   const [datePopoverTarget, setDatePopoverTarget] = useState(null);
   const initiallySelectedDate = new Date();
@@ -137,10 +110,8 @@ const Card = (listIdProps, listBoardIdProps) => {
   const [dueDay, setDueDay] = useState(format(daySelected, "MM/dd/yyyy"));
   const [dueTime, setDueTime] = useState(formatAMPM(initiallySelectedDate));
   const [dueDateRemind, setDueDateRemind] = useState("None");
-
   const [labelDay, setLabelDay] = useState("");
   const [visileLabelDay, setVisileLabelDay] = useState("");
-  //const [cardLabels, setCardLabels] = useState([]);
 
   const pastMonth = new Date();
   const dayRange = {
@@ -167,10 +138,6 @@ const Card = (listIdProps, listBoardIdProps) => {
   const dayChange = (day, selectedDay, activeModifiers, e) => {
     e.preventDefault();
     e.stopPropagation();
-    console.log("day: ", day);
-    console.log("selectedDay: ", selectedDay);
-    console.log("activeModifiers: ", activeModifiers);
-    console.log("event: ", e);
     setDaySelected(selectedDay);
     setDueDay(format(selectedDay, "MM/dd/yyyy"));
   };
@@ -245,9 +212,7 @@ const Card = (listIdProps, listBoardIdProps) => {
     }
   }, [isStartDay]);
 
-  //-----------------------------------------------------------------
-  // QUILL
-
+  // quill module option rich text
   const modules = {
     toolbar: [
       [{ header: "1" }, { header: "2" }, { font: [] }],
@@ -288,8 +253,6 @@ const Card = (listIdProps, listBoardIdProps) => {
   const handleChangeQuill = (content) => {
     setValueQuill(content);
   };
-
-  //-----------------------------------------------------------------
 
   const onChangeRemind = (event) => {
     let rawRemind = parse(
@@ -339,7 +302,6 @@ const Card = (listIdProps, listBoardIdProps) => {
       setLabelDay("");
       setVisileLabelDay("");
     }
-
     if (cardDetail?.startDate && cardDetail?.endDate) {
       setLabelDay(
         format(new Date(cardDetail.startDate), "PPP") +
@@ -355,12 +317,9 @@ const Card = (listIdProps, listBoardIdProps) => {
     setIsModalCardShow(!isModalCardShow);
     setDatePopover(false);
     setIsMemberPopoverOpen(false);
-    //handleGetAllCard();
     handleGetCardByFilter();
     displayLabelDay(objCardDetail);
   };
-
-  /////////////////////////////////////////////////////////////////
 
   const handleAddCardTitle = () => {
     setAddCardTitleVisible(true);
@@ -433,14 +392,10 @@ const Card = (listIdProps, listBoardIdProps) => {
       reminderDate: isoRemind,
       title: title,
     };
-    console.log("query", query);
+
     try {
       const response = await cardServices.updateCardDates(query);
       if (response.data.code == 200) {
-        // tat popover date
-        // set lai modal card detail
-        // hien thong tin tren description
-        // get card by filter
         console.log("update day ok");
         console.log(response.data.data);
         setModalCardDetail(response.data.data);
@@ -496,18 +451,6 @@ const Card = (listIdProps, listBoardIdProps) => {
     );
   };
 
-  // const handleGetAllCard = async () => {
-  //   let query = { listId: listIdProps.listIdProps };
-  //   try {
-  //     const response = await cardServices.getAllCard(query);
-  //     if (response.data.code == 200) {
-  //       setListCard(response.data.data);
-  //     }
-  //   } catch (error) {
-  //     console.log(error);
-  //   }
-  // };
-
   const handleGetCardByFilter = async () => {
     let query = { listId: listIdProps.listIdProps, isActive: true };
     try {
@@ -528,7 +471,7 @@ const Card = (listIdProps, listBoardIdProps) => {
         setModalCardDetail(response.data.data);
         setRichTextVisible(false);
         console.log("update description ok!");
-        //handleGetAllCard();
+
         handleGetCardByFilter();
       }
     } catch (error) {
@@ -547,7 +490,6 @@ const Card = (listIdProps, listBoardIdProps) => {
       const response = await cardServices.updateCardTitle(query);
       if (response.data.code == 200) {
         setEditingCardTitle("false");
-        //handleGetAllCard();
         handleGetCardByFilter();
       }
     } catch (error) {
@@ -567,7 +509,6 @@ const Card = (listIdProps, listBoardIdProps) => {
       if (response.data.code == 200) {
         setIsCardTitleModal(true);
         setModalCardDetail(response.data.data);
-        //handleGetAllCard();
         handleGetCardByFilter();
       }
     } catch (error) {
@@ -587,7 +528,6 @@ const Card = (listIdProps, listBoardIdProps) => {
       if (response.data.code == 201) {
         setTitleCard("");
         setAddCardTitleVisible(false);
-        //handleGetAllCard();
         handleGetCardByFilter();
       }
     } catch (error) {
@@ -605,11 +545,8 @@ const Card = (listIdProps, listBoardIdProps) => {
     try {
       const response = await cardServices.changeStatus(query);
       if (response.data.code === 200) {
-        // window.location.reload();
-
         toast.success("Card archived successfully!");
         setIsModalCardShow(false);
-        //handleGetAllCard();
         handleGetCardByFilter();
       }
     } catch (error) {
@@ -643,7 +580,6 @@ const Card = (listIdProps, listBoardIdProps) => {
       const response = await boardMemberService.getAllBoardMember(query);
       if (response.data.code === 200) {
         setBoardMembers(response.data.data);
-
         response.data.data.forEach((member) => {
           handleGetUserDetails(member.userId);
         });
@@ -692,7 +628,6 @@ const Card = (listIdProps, listBoardIdProps) => {
   }, [listIdProps.listBoardIdProps]);
 
   useEffect(() => {
-    //handleGetAllCard();
     handleGetCardByFilter();
     handleGetAllBoardMember();
   }, []);
@@ -879,7 +814,6 @@ const Card = (listIdProps, listBoardIdProps) => {
   };
 
   // module task
-
   const closeAssignPopover = () => {
     setIsAssignPopoverOpen(false);
   };
@@ -908,7 +842,6 @@ const Card = (listIdProps, listBoardIdProps) => {
   };
 
   const handleDueDateClick = () => {
-    //setIsDatePickerOpen(!isDatePickerOpen);
     setIsDatePickerOpen((prev) => !prev);
   };
 
@@ -987,9 +920,6 @@ const Card = (listIdProps, listBoardIdProps) => {
   useEffect(() => {
     displayLabelDay(modalCardDetail);
   }, [modalCardDetail]);
-  //   setDueDateLabel('Due Date');
-  //   setIsAssignPopoverOpen(false);
-  // };
 
   const userLookup = {};
   availableUsers.forEach((user) => {
@@ -1166,30 +1096,10 @@ const Card = (listIdProps, listBoardIdProps) => {
     }
   }, [todoItems]);
 
-  //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
   const [cardLabelChild, setCardLabelChild] = useState([]);
   const handleCardLabelChild = (newItems) => {
     setCardLabelChild(newItems);
   };
-
-  // const handleGetAllCardLabel = async () => {
-  //   let query = { cardId: modalCardDetail.id };
-  //   try {
-  //     const response = await cardLabelService.getAllCardLabel(query);
-  //     if (response.data.code == 200) {
-  //       setCardLabels(response.data.data);
-  //     }
-  //   } catch (error) {
-  //     console.error(error);
-  //   }
-  // };
-
-  // useEffect(() => {
-  //   if (isModalCardShow && modalCardDetail.id) {
-  //     handleGetAllCardLabel();
-  //   }
-  // }, [isModalCardShow, modalCardDetail]);
 
   const handleMoveCard = async (id, newListId) => {
     let query = {
@@ -1202,8 +1112,8 @@ const Card = (listIdProps, listBoardIdProps) => {
         toast.success("Card moved successfully!");
         setIsMovePopoverOpen(false);
         setIsModalCardShow(false);
-
         handleGetCardByFilter();
+        setMoveCard(moveCard + 1);
       }
     } catch (error) {
       if (error.response && error.response.data) {
@@ -1238,6 +1148,14 @@ const Card = (listIdProps, listBoardIdProps) => {
   const handleMove = () => {
     handleMoveCard(modalCardDetail.id, selectedListId);
   };
+
+  useEffect(() => {
+    handleGetCardByFilter();
+  }, [listIdProps.data]);
+
+  useEffect(() => {
+    listIdProps.checkMoveCard();
+  }, [moveCard]);
 
   return (
     <React.Fragment>
