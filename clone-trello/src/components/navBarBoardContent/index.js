@@ -262,12 +262,9 @@ const NavbarBoardContent = (boardID) => {
       const response = await boardService.getBoardByMember();
       if (response.data.code == 200) {
         let result = response.data.data;
-        console.log(result.filter((board) => board.id == boardID.boardID));
-
         setBoardName(
           result.filter((board) => board.id == boardID.boardID)[0].name
         );
-
         setBoardIsPublic(
           result.filter((board) => board.id == boardID.boardID)[0].isPublic
         );

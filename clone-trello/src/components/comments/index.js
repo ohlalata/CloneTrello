@@ -155,9 +155,7 @@ const Comments = (cardId) => {
     try {
       const response = await commentServices.getAllComment(query);
       if (response.data.code == 200) {
-        console.log("get comment ok!");
         setComments(response.data.data);
-        console.log(response.data.data);
       }
     } catch (error) {
       console.error(error);

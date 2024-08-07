@@ -140,7 +140,6 @@ const CardLabel = (cardId) => {
       const response = await cardLabelService.getAllCardLabel(query);
       if (response.data.code == 200) {
         setCardLabel(response.data.data);
-        console.log("CARD LABEL: ", response.data.data);
       }
     } catch (error) {
       console.error(error);
@@ -200,7 +199,6 @@ const CardLabel = (cardId) => {
       if (response.data.code == 200) {
         //setCardLabel(response.data.data);
         setLabelExist(response.data.data);
-        console.log("new Labell", response.data.data);
       }
     } catch (error) {
       console.log(error);

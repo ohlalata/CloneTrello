@@ -7,9 +7,7 @@ let axiosClient = axios.create({
     "Content-Type": "application/json",
   },
 });
-
 //interceptor
-
 const setAuthToken = async (token) => {
   if (token) {
     axiosClient.defaults.headers.common["Authorization"] = "Bearer " + token;
@@ -19,8 +17,6 @@ const setAuthToken = async (token) => {
     localStorage.removeItem("token");
   }
 };
-
-console.log("axiosClient", axiosClient.defaults);
 
 const axiosLocalHost = {
   //sendAuthorizedRequest,

@@ -37,7 +37,6 @@ const CardActivity = (cardId) => {
     try {
       const response = await CardActivityService.getAllCardActivity(query);
       if (response.data.code == 200) {
-        console.log("get activity ok!");
         let result = response.data.data;
         result.sort(
           (a, b) => new Date(b.createdDate) - new Date(a.createdDate)
@@ -56,10 +55,9 @@ const CardActivity = (cardId) => {
   return (
     <React.Fragment>
       {cardActivity.map((cardActivities, key) => (
-        <div className="d-flex gap-2 p-1" key={key}>
-          <div className="block__user-activity">
-            <img src={constants.USER_UNDEFINE_URL} />
-          </div>
+        <div className="d-flex gap-2 p-1 mb-1" key={key}>
+          <div className="block__user-activity"></div>
+
           <div className="d-flex flex-column">
             <div className="d-flex gap-1">
               <span className="fw-bold">{cardActivities.userName}</span>

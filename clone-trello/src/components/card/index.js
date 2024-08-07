@@ -24,6 +24,7 @@ import {
   subMinutes,
   subDays,
   subHours,
+  parseISO,
 } from "date-fns";
 import { DayPicker } from "react-day-picker";
 import "react-day-picker/dist/style.css";
@@ -41,6 +42,7 @@ import TaskForm from "../taskForm";
 import CardLabel from "../cardLabel";
 import CardActivity from "../cardActivity";
 import listServices from "../../api/Services/list";
+import { formatInTimeZone } from "date-fns-tz";
 
 const Card = (listIdProps, listBoardIdProps) => {
   const textareaRefCardTitle = useRef(null);
@@ -92,6 +94,7 @@ const Card = (listIdProps, listBoardIdProps) => {
   const [datePopover, setDatePopover] = useState(false);
   const [datePopoverTarget, setDatePopoverTarget] = useState(null);
   const initiallySelectedDate = new Date();
+
   const [daySelected, setDaySelected] = useState(initiallySelectedDate);
   const [isStartDay, setIsStartDay] = useState(true);
   const [isDueDay, setIsDueDay] = useState(false);
@@ -289,9 +292,24 @@ const Card = (listIdProps, listBoardIdProps) => {
 
   const displayLabelDay = (cardDetail) => {
     console.log("modalCardDetail", cardDetail);
+    const timeZone = "Asia/Ho_Chi_Minh";
+    let formattedDate;
+
+    if (cardDetail?.endDate) {
+      try {
+        formattedDate = formatInTimeZone(
+          parseISO(cardDetail.endDate + "Z"),
+          timeZone,
+          "MMMM do, yyyy, h:mm a"
+        );
+      } catch (error) {
+        console.error("Error parsing date:", error);
+      }
+    }
 
     if (!cardDetail?.startDate && cardDetail?.endDate) {
-      setLabelDay(format(new Date(cardDetail.endDate), "PPP, p"));
+      setLabelDay(formattedDate);
+
       setVisileLabelDay("Due date");
     }
     if (cardDetail?.startDate && !cardDetail?.endDate) {
@@ -299,14 +317,13 @@ const Card = (listIdProps, listBoardIdProps) => {
       setVisileLabelDay("Start date");
     }
     if (!cardDetail?.startDate && !cardDetail?.endDate) {
+      //
       setLabelDay("");
       setVisileLabelDay("");
     }
     if (cardDetail?.startDate && cardDetail?.endDate) {
       setLabelDay(
-        format(new Date(cardDetail.startDate), "PPP") +
-          " - " +
-          format(new Date(cardDetail.endDate), "PPP, p")
+        format(new Date(cardDetail.startDate), "PPP") + " - " + formattedDate //
       );
       setVisileLabelDay("Dates");
     }
@@ -368,6 +385,7 @@ const Card = (listIdProps, listBoardIdProps) => {
       }
     );
     let isoStartDay = isValid(parseStartDay) ? parseStartDay.toISOString() : "";
+    console.log("parseStartDay: ", parseStartDay);
 
     // parse due day
     let parseDueDay = parse(
@@ -377,12 +395,14 @@ const Card = (listIdProps, listBoardIdProps) => {
       { locale: vi }
     );
     let isoDueDay = isValid(parseDueDay) ? parseDueDay.toISOString() : "";
+    console.log("parseDueDay: ", parseDueDay);
 
     // parse remind
     let parseRemind = parse(reminderDate, "MM/dd/yyyy h:mm a", new Date(), {
       locale: vi,
     });
     let isoRemind = isValid(parseRemind) ? parseRemind.toISOString() : "";
+    console.log("parseRemind: ", parseRemind);
 
     let query = {
       id: cardID,
