@@ -87,8 +87,8 @@ const Card = (listIdProps, listBoardIdProps) => {
   const [taskItems, setTaskItems] = useState([]);
   const [editingTask, setEditingTask] = useState(null);
   const [updatedTask, setUpdatedTask] = useState({});
+  const [moveCard, setMoveCard] = useState(0);
 
-  //------------ DATE PICKER-------------
   const [datePopover, setDatePopover] = useState(false);
   const [datePopoverTarget, setDatePopoverTarget] = useState(null);
   const initiallySelectedDate = new Date();
@@ -212,7 +212,7 @@ const Card = (listIdProps, listBoardIdProps) => {
     }
   }, [isStartDay]);
 
-  // QUILL
+  // quill module option rich text
   const modules = {
     toolbar: [
       [{ header: "1" }, { header: "2" }, { font: [] }],
@@ -288,7 +288,7 @@ const Card = (listIdProps, listBoardIdProps) => {
   };
 
   const displayLabelDay = (cardDetail) => {
-    // console.log("modalCardDetail", cardDetail);
+    console.log("modalCardDetail", cardDetail);
 
     if (!cardDetail?.startDate && cardDetail?.endDate) {
       setLabelDay(format(new Date(cardDetail.endDate), "PPP, p"));
@@ -302,7 +302,6 @@ const Card = (listIdProps, listBoardIdProps) => {
       setLabelDay("");
       setVisileLabelDay("");
     }
-
     if (cardDetail?.startDate && cardDetail?.endDate) {
       setLabelDay(
         format(new Date(cardDetail.startDate), "PPP") +
@@ -1113,8 +1112,8 @@ const Card = (listIdProps, listBoardIdProps) => {
         toast.success("Card moved successfully!");
         setIsMovePopoverOpen(false);
         setIsModalCardShow(false);
-
         handleGetCardByFilter();
+        setMoveCard(moveCard + 1);
       }
     } catch (error) {
       if (error.response && error.response.data) {
@@ -1153,6 +1152,10 @@ const Card = (listIdProps, listBoardIdProps) => {
   useEffect(() => {
     handleGetCardByFilter();
   }, [listIdProps.data]);
+
+  useEffect(() => {
+    listIdProps.checkMoveCard();
+  }, [moveCard]);
 
   return (
     <React.Fragment>

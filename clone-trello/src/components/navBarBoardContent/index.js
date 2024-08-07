@@ -256,15 +256,12 @@ const NavbarBoardContent = (boardID) => {
     }
   };
 
+  //
   const handleGetAllBoard = async () => {
     try {
-      const response = await boardService.getAllBoard();
+      const response = await boardService.getBoardByMember();
       if (response.data.code == 200) {
         let result = response.data.data;
-
-        console.log(result);
-        console.log(boardID.boardID);
-
         console.log(result.filter((board) => board.id == boardID.boardID));
 
         setBoardName(

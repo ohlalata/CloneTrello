@@ -25,7 +25,7 @@ const BoardContentPages = () => {
   const [dropdownVisible, setDropdownVisible] = useState(null);
   const [isMoveListMode, setIsMoveListMode] = useState(false);
   const [newPosition, setNewPosition] = useState("");
-  const [childKey, setChildKey] = useState(0);
+  //const [childKey, setChildKey] = useState(0);
 
   const handleClickTitleList = (listIdVisible) => {
     setIsEditingTitleList(listIdVisible);
@@ -63,18 +63,6 @@ const BoardContentPages = () => {
       document.removeEventListener("mousedown", handleClickInputAddListOutside);
     };
   }, [isAddListInputVisible]);
-
-  const handleGetAllList = async () => {
-    let query = { boardId: id };
-    try {
-      const response = await listServices.getAllList(query);
-      if (response.data.code == 200) {
-        setAllList(response.data.data);
-      }
-    } catch (error) {
-      console.error(error);
-    }
-  };
 
   const handleGetListByFilter = async () => {
     let query = { boardId: id, isActive: true };
@@ -150,7 +138,7 @@ const BoardContentPages = () => {
       if (response.data.code == 200) {
         toast.success("List moved successfully!");
         handleGetListByFilter();
-        setChildKey(childKey + 1);
+        //setChildKey(childKey + 1);
       }
     } catch (error) {
       toast.error("List move failed!");
@@ -351,7 +339,8 @@ const BoardContentPages = () => {
                       listNameProps={catalogList.name}
                       listBoardIdProps={catalogList.boardId}
                       data={allList}
-                      key={childKey}
+                      // key={childKey}
+                      checkMoveCard={handleGetListByFilter}
                     />
                   </div>
                 </motion.li>

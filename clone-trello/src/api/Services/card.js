@@ -92,7 +92,6 @@ const updateCardDates = async (query) => {
       data.reminderDate = reminderDate;
     }
   }
-  //console.log("data", data);
   const response = await axiosLocalHost.normalRequest.put(serviceUrl, data);
   return response;
 };
@@ -122,7 +121,7 @@ const moveCard = async (query) => {
     const response = await axiosLocalHost.normalRequest.put(serviceUrl);
     return response;
   } catch (error) {
-    throw error; 
+    throw error;
   }
 };
 
