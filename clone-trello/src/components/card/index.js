@@ -45,6 +45,7 @@ import listServices from "../../api/Services/list";
 import { formatInTimeZone } from "date-fns-tz";
 
 const Card = (listIdProps, listBoardIdProps) => {
+  const timeZone = "Asia/Ho_Chi_Minh";
   const textareaRefCardTitle = useRef(null);
   const textAreaRefCreateCardTitle = useRef(null);
   const datePopoverRef = useRef(null);
@@ -277,6 +278,25 @@ const Card = (listIdProps, listBoardIdProps) => {
     }
   };
 
+  const [dayRemind, setDayRemind] = useState("");
+  const displayDayRemind = (cardDetail) => {
+    let formattedDate;
+
+    if (cardDetail?.reminderDate) {
+      try {
+        formattedDate = formatInTimeZone(
+          parseISO(cardDetail?.reminderDate + "Z"),
+          timeZone,
+          "MMMM do, yyyy, h:mm a"
+        );
+      } catch (error) {
+        console.error("Error parsing remind date:", error);
+      }
+    }
+
+    setDayRemind(formattedDate);
+  };
+
   const handleChangeCardTitleModal = (e) => {
     setCardTitleModal(e.target.value);
   };
@@ -292,7 +312,7 @@ const Card = (listIdProps, listBoardIdProps) => {
 
   const displayLabelDay = (cardDetail) => {
     console.log("modalCardDetail", cardDetail);
-    const timeZone = "Asia/Ho_Chi_Minh";
+
     let formattedDate;
 
     if (cardDetail?.endDate) {
@@ -323,7 +343,7 @@ const Card = (listIdProps, listBoardIdProps) => {
     }
     if (cardDetail?.startDate && cardDetail?.endDate) {
       setLabelDay(
-        format(new Date(cardDetail.startDate), "PPP") + " - " + formattedDate //
+        format(new Date(cardDetail.startDate), "PPP") + " - " + formattedDate
       );
       setVisileLabelDay("Dates");
     }
@@ -336,6 +356,7 @@ const Card = (listIdProps, listBoardIdProps) => {
     setIsMemberPopoverOpen(false);
     handleGetCardByFilter();
     displayLabelDay(objCardDetail);
+    displayDayRemind(objCardDetail);
   };
 
   const handleAddCardTitle = () => {
@@ -939,6 +960,7 @@ const Card = (listIdProps, listBoardIdProps) => {
 
   useEffect(() => {
     displayLabelDay(modalCardDetail);
+    displayDayRemind(modalCardDetail);
   }, [modalCardDetail]);
 
   const userLookup = {};
@@ -1292,12 +1314,25 @@ const Card = (listIdProps, listBoardIdProps) => {
               </div>
               <div className="mt-1">
                 {visileLabelDay && labelDay && (
-                  <div className="d-flex flex-column gap-1">
-                    <span className="fw-semibold content__visual-label-day">
-                      {visileLabelDay}
-                    </span>
-                    <div>
-                      <span className="content__label-day p-1">{labelDay}</span>
+                  <div className="d-flex flex-column gap-2">
+                    <div className="d-flex gap-2">
+                      <span className="fw-semibold content__visual-label-day">
+                        {visileLabelDay}
+                      </span>
+                      <div>
+                        <span className="content__label-day p-1">
+                          {labelDay}
+                        </span>
+                      </div>
+                    </div>
+
+                    <div className="d-flex gap-2 align-items-center">
+                      <span className="fw-semibold content__visual-label-day ">
+                        Remind date
+                      </span>
+                      <span className="content__label-day p-1">
+                        {dayRemind}
+                      </span>
                     </div>
                   </div>
                 )}
