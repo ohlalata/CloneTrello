@@ -529,7 +529,7 @@ const HomePages = () => {
                 <div className="d-flex justify-content-between">
                   <div className="d-flex gap-2 align-items-center">
                     <FontAwesomeIcon icon={faTableList} size="xl" />
-                    <h6 className="fw-bold my-1 fs-5">Workspace</h6>
+                    <h6 className="fw-bold my-1 fs-5">Public Boards</h6>
                   </div>
                 </div>
                 <div>
