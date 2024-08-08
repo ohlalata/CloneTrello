@@ -58,9 +58,9 @@ const CardActivity = (cardId) => {
       {cardActivity.map((cardActivities, key) => (
         <div className="d-flex gap-2 p-1" key={key}>
           <div className="block__user-activity">
-            <img src={constants.USER_UNDEFINE_URL} />
+            {/* <img src={constants.USER_UNDEFINE_URL} /> */}
           </div>
-          <div className="d-flex flex-column">
+          <div className="d-flex flex-column mt-2">
             <div className="d-flex gap-1">
               <span className="fw-bold">{cardActivities.userName}</span>
               <span style={{ color: "#172b4d" }}>
